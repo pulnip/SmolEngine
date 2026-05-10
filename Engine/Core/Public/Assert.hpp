@@ -1,0 +1,32 @@
+#pragma once
+
+#include <format>
+#include <source_location>
+#include <string_view>
+#include <cassert>
+
+namespace Smol
+{
+    namespace detail{
+        [[noreturn]] void assert_fail(
+            const char* expr,
+            std::source_location,
+            std::string_view msg = {}
+        ) noexcept;
+    }
+}
+
+#if defined(_DEBUG) || !defined(NDEBUG)
+    #define SMOL_ASSERT(expr, ...) \
+        do{ \
+            if(!(expr)) [[unlikely]]{ \
+                Smol::detail::assert_fail( \
+                    #expr, \
+                    std::source_location::current() \
+                    __VA_OPT__(, std::format(__VA_ARGS__)) \
+                ); \
+            } \
+        } while(false)
+#else
+    #define SMOL_ASSERT(expr, ...) ((void)0)
+#endif
