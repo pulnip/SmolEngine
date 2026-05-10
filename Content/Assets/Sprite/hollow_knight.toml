@@ -1,2 +1,6 @@
 # meta file for hollow_knight.png
-[[Tile]]
+TargetFile = "hollow_knight.png" # for validation
+[Grid]
+Columns = 16
+Rows = 16
+[[Animations]]
