@@ -1,0 +1,64 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "binaryDir": "build"
+        },
+        {
+            "name": "Windows-llvm",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "generator": "Ninja Multi-Config",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/windows-llvm.cmake"
+        },
+        {
+            "name": "macOS-brew-llvm",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            },
+            "generator": "Ninja Multi-Config",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/brew-llvm.cmake"
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "Windows-llvm-Debug",
+            "configurePreset": "Windows-llvm",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Windows-llvm-RelWithDebInfo",
+            "configurePreset": "Windows-llvm",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Windows-llvm-Release",
+            "configurePreset": "Windows-llvm",
+            "configuration": "Release"
+        },
+        {
+            "name": "macOS-brew-llvm-Debug",
+            "configurePreset": "macOS-brew-llvm",
+            "configuration": "Debug"
+        },
+        {
+            "name": "macOS-brew-llvm-RelWithDebInfo",
+            "configurePreset": "macOS-brew-llvm",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "macOS-brew-llvm-Release",
+            "configurePreset": "macOS-brew-llvm",
+            "configuration": "Release"
+        }
+    ]
+}

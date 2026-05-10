@@ -1,0 +1,8 @@
+# build result
+build/
+
+# clangd extension
+.cache/
+
+# macOS Finder
+.DS_Store

@@ -1,0 +1,23 @@
+{
+    "cmake.useVsDeveloperEnvironment": "always",
+    "files.associations": {
+        "*.toml": "toml",
+        "*.h": "c",
+        "*.c": "c",
+        "*.hpp": "cpp",
+        "*.cpp": "cpp"
+    },
+    "files.exclude": {
+        "**/DX11RHI/**": true,
+        "**/*.hlsl": true,
+        "**/MetalRHI/**": true,
+        "**/*.metal": true
+    },
+    "search.exclude": {
+        "**/DX11RHI/**": true,
+        "**/*.hlsl": true,
+        "**/MetalRHI/**": true,
+        "**/*.metal": true
+    },
+    "clangd.path": "/path/to/clangd"
+}
