@@ -7,6 +7,6 @@ namespace Smol
     template<typename T>
     using RAII = std::unique_ptr<T>;
 
-    class Actor;
-    using ActorRAII = RAII<Actor>;
+    class Object;
+    using ObjectRAII = RAII<Object>;
 }

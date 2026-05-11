@@ -3,5 +3,8 @@
 #include "Actor.hpp"
 
 class MyActor: public Smol::Actor{
-    void update(float) override;
+public:
+    MyActor();
+
+    void OnUpdate(float) override;
 };

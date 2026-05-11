@@ -3,8 +3,9 @@
 
 int main(int, char*[]){
     auto a = Smol::ActorFactory::Get().Create("MyActor");
+    a->AddComponent<Smol::RigidBody>();
 
-    a->update(0.0f);
+    a->OnUpdate(0.0f);
 
     return 0;
 }

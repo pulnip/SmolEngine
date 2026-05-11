@@ -2,7 +2,7 @@
 
 #include <functional>
 #include <string>
-#include "CoreFWD.hpp"
+#include "ActorFWD.hpp"
 #include "Semantics.hpp"
 
 namespace Smol
