@@ -16,8 +16,8 @@ PRIVATE
 )
 
 target_include_directories(ExampleActor
-PUBLIC
-    ${ALL_HEADERS}
+PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 target_link_libraries(ExampleActor
