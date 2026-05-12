@@ -8,5 +8,6 @@ PRIVATE
 target_link_libraries(SmolMain
 PRIVATE
     Smol::Core
+    Smol::Serialization
     "$<LINK_LIBRARY:WHOLE_ARCHIVE,ExampleActor>"
 )

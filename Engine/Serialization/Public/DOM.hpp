@@ -1,0 +1,96 @@
+#pragma once
+
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <variant>
+#include <vector>
+#include "CoreFWD.hpp"
+#include "Primitives.hpp"
+#include "Semantics.hpp"
+
+namespace Smol
+{
+    namespace DOM
+    {
+        class Value;
+
+        using Array = std::vector<Value>;
+        using Table = std::unordered_map<std::string, Value>;
+
+        class Value{
+        private:
+            using ArrayRAII = RAII<Array>;
+            using TableRAII = RAII<Table>;
+
+            std::variant<
+                std::monostate,
+                bool,
+                i64,
+                f64,
+                std::string,
+                ArrayRAII,
+                TableRAII
+            > value = std::monostate();
+
+        public:
+            Value() = default;
+            Value(bool v) noexcept: value(v){}
+            Value(i64 v) noexcept: value(v){}
+            Value(f64 v) noexcept: value(v){}
+            Value(std::string v):value(v){}
+            Value(const char* v):value(std::string(v)){}
+            Value(Array&& v): value(std::make_unique<Array>(std::move(v))){}
+            Value(Table&& v): value(std::make_unique<Table>(std::move(v))){}
+
+            SMOL_DECLARE_MOVE_ONLY_NOEXCEPT(Value)
+
+            enum class Kind{
+                None,
+                Bool,
+                Int,
+                Float,
+                String,
+                Array,
+                Table
+            };
+
+            Kind kind() const noexcept;
+
+            bool is_none() const noexcept{ return std::holds_alternative<std::monostate>(value); }
+            bool is_bool() const noexcept{ return std::holds_alternative<bool>(value); }
+            bool is_int() const noexcept{ return std::holds_alternative<i64>(value); }
+            bool is_float() const noexcept{ return std::holds_alternative<f64>(value); }
+            bool is_string() const noexcept{ return std::holds_alternative<std::string>(value); }
+            bool is_array() const noexcept{ return std::holds_alternative<ArrayRAII>(value); }
+            bool is_table() const noexcept{ return std::holds_alternative<TableRAII>(value); }
+
+            std::optional<bool> asBool() const noexcept;
+            std::optional<i64> asInt() const noexcept;
+            std::optional<f64> asFloat() const noexcept;
+            const std::string* asString() const noexcept;
+            const Array* asArray() const noexcept;
+            const Table* asTable() const noexcept;
+
+            const Value* at(std::string_view path) const noexcept;
+
+            template<typename T>
+            std::optional<T> get(std::string_view path) const noexcept;
+
+            template<typename F>
+            void forEach(std::string_view p, F&& fn) const{
+                auto n = at(p);
+                if(n == nullptr) return;
+
+                auto arr = n->asArray();
+                if(arr == nullptr) return;
+
+                for(auto& val: *arr){
+                    fn(val);
+                }
+            }
+        };
+    }
+}
