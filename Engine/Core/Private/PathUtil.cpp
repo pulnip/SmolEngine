@@ -12,7 +12,7 @@
 
 namespace Smol
 {
-    std::filesystem::path get_executable_dir(){
+    std::filesystem::path getExecutableDir(){
     #if defined(_WIN32)
         wchar_t buffer[MAX_PATH];
         GetModuleFileNameW(nullptr, buffer, MAX_PATH);
@@ -30,14 +30,14 @@ namespace Smol
     #endif
     }
 
-    std::filesystem::path get_absolute_path(const std::filesystem::path& path){
+    std::filesystem::path getAbsolutePath(const std::filesystem::path& path){
         if(path.is_absolute())
             return path;
 
-        return get_executable_dir() / path;
+        return getExecutableDir() / path;
     }
 
-    std::filesystem::path to_path(const char* utf8Str){
+    std::filesystem::path toPath(const char* utf8Str){
     #ifdef _WIN32
         int wlen = MultiByteToWideChar(CP_UTF8, 0, utf8Str, -1, nullptr, 0);
         std::wstring wide(wlen, 0);
@@ -48,7 +48,7 @@ namespace Smol
     #endif
     }
 
-    std::filesystem::path to_path(const char* utf8Str, size_t len){
+    std::filesystem::path toPath(const char* utf8Str, size_t len){
     #ifdef _WIN32
         int wlen = MultiByteToWideChar(CP_UTF8, 0, utf8Str, static_cast<int>(len), nullptr, 0);
         std::wstring wide(wlen, 0);
@@ -59,7 +59,7 @@ namespace Smol
     #endif
     }
 
-    std::string to_utf8String(const std::filesystem::path& path){
+    std::string toUTF8String(const std::filesystem::path& path){
     #ifdef __cpp_char8_t
         auto u8str = path.u8string();
         return std::string(u8str.begin(), u8str.end());

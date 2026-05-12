@@ -70,11 +70,11 @@ namespace Smol
     inline constexpr float dot(Vec2 lhs, Vec2 rhs){
         return lhs.x*rhs.x + lhs.y*rhs.y;
     }
-    inline constexpr float norm_squared(Vec2 v){
+    inline constexpr float normSquared(Vec2 v){
         return dot(v, v);
     }
     inline float norm(Vec2 v){
-        return std::sqrt(norm_squared(v));
+        return std::sqrt(normSquared(v));
     }
     inline Vec2 normalize(Vec2 v){
         return v / norm(v);
@@ -89,17 +89,17 @@ namespace Smol
     inline constexpr Vec3 ones(){
         return {1.0f, 1.0f, 1.0f};
     }
-    inline constexpr Vec3 unit_x(){
+    inline constexpr Vec3 unitX(){
         return {1.0f, 0.0f, 0.0f};
     }
-    inline constexpr Vec3 unit_y(){
+    inline constexpr Vec3 unitY(){
         return {0.0f, 1.0f, 0.0f};
     }
-    inline constexpr Vec3 unit_z(){
+    inline constexpr Vec3 unitZ(){
         return {0.0f, 0.0f, 1.0f};
     }
 
-    inline constexpr Mat4 unit_mat(){
+    inline constexpr Mat4 unitMat(){
         return {
             Vec4{1.0f, 0.0f, 0.0f, 0.0f},
             Vec4{0.0f, 1.0f, 0.0f, 0.0f},
@@ -179,11 +179,11 @@ namespace Smol
     inline constexpr float dot(Vec3 lhs, Vec3 rhs){
         return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
     }
-    inline constexpr float norm_squared(Vec3 v){
+    inline constexpr float normSquared(Vec3 v){
         return dot(v, v);
     }
     inline float norm(Vec3 v){
-        return std::sqrt(norm_squared(v));
+        return std::sqrt(normSquared(v));
     }
     inline Vec3 normalize(Vec3 v){
         return v / norm(v);
@@ -196,7 +196,7 @@ namespace Smol
         };
     }
 
-    inline constexpr Vec4 unit_quat(){
+    inline constexpr Vec4 unitQuat(){
         return {0.0f, 0.0f, 0.0f, 1.0f};
     }
     inline constexpr Mat4 transpose(const Mat4 mat){
@@ -286,11 +286,11 @@ namespace Smol
     inline constexpr float dot(Vec4 lhs, Vec4 rhs){
         return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z + lhs.w*rhs.w;
     }
-    inline constexpr float norm_squared(Vec4 v){
+    inline constexpr float normSquared(Vec4 v){
         return dot(v, v);
     }
     inline float norm(Vec4 v){
-        return std::sqrt(norm_squared(v));
+        return std::sqrt(normSquared(v));
     }
     inline Vec4 normalize(Vec4 v){
         return v / norm(v);
@@ -343,7 +343,7 @@ namespace Smol
         return normalize(q);
     }
 
-    inline Vec4 rotate_x(float theta){
+    inline Vec4 rotateX(float theta){
         float half = theta * 0.5f;
         return{
             std::sin(half),
@@ -352,7 +352,7 @@ namespace Smol
             std::cos(half)
         };
     }
-    inline Vec4 rotate_y(float theta){
+    inline Vec4 rotateY(float theta){
         float half = theta * 0.5f;
         return{
             0.0f,
@@ -361,7 +361,7 @@ namespace Smol
             std::cos(half)
         };
     }
-    inline Vec4 rotate_z(float theta){
+    inline Vec4 rotateZ(float theta){
         float half = theta * 0.5f;
         return{
             0.0f,
@@ -374,9 +374,9 @@ namespace Smol
         float siny_cosp = 2*(quat.w*quat.y + quat.x*quat.z);
         float cosy_cosp = 1 - 2*(quat.y*quat.y + quat.x*quat.x);
         float theta = std::atan2(siny_cosp, cosy_cosp);
-        return rotate_y(theta);
+        return rotateY(theta);
     }
-    inline auto axis_angle(Vec3 axis, float radian){
+    inline auto axisAngle(Vec3 axis, float radian){
         auto half = radian / 2;
         float s = std::sin(half);
         return Vec4{
@@ -399,9 +399,9 @@ namespace Smol
         auto r = rotate(e_x, q);
         return static_cast<Vec3>(r);
     }
-    inline constexpr auto ground_right(Vec4 quat){
+    inline constexpr auto groundRight(Vec4 quat){
         auto f = right(quat);
-        return f - dot(f, unit_y())*unit_y();
+        return f - dot(f, unitY())*unitY();
     }
     inline constexpr auto up(Vec4 q){
         auto e_y = Vec4{0.0f, 1.0f, 0.0f, 0.0f};
@@ -413,9 +413,9 @@ namespace Smol
         auto r = rotate(e_z, q);
         return static_cast<Vec3>(r);
     }
-    inline constexpr auto ground_forward(Vec4 quat){
+    inline constexpr auto groundForward(Vec4 quat){
         auto f = forward(quat);
-        return f - dot(f, unit_y())*unit_y();
+        return f - dot(f, unitY())*unitY();
     }
 
     inline constexpr auto operator==(Vec4 lhs, Vec4 rhs){
@@ -464,7 +464,7 @@ namespace Smol
         };
     }
 
-    inline auto look_at(Vec3 eye, Vec3 target, Vec3 up){
+    inline auto lookAt(Vec3 eye, Vec3 target, Vec3 up){
         auto f = normalize(target - eye);
         auto r = normalize(cross(f, up));
         auto u = cross(r, f);
@@ -477,7 +477,7 @@ namespace Smol
         };
     }
 
-    inline auto rotate_x_mat(float theta){
+    inline auto rotateXMat(float theta){
         float c = std::cos(theta);
         float s = std::sin(theta);
         // column-major
@@ -489,7 +489,7 @@ namespace Smol
         };
     }
 
-    inline auto rotate_y_mat(float theta){
+    inline auto rotateYMat(float theta){
         float c = std::cos(theta);
         float s = std::sin(theta);
         // column-major
@@ -501,7 +501,7 @@ namespace Smol
         };
     }
 
-    inline auto rotate_z_mat(float theta){
+    inline auto rotateZMat(float theta){
         float c = std::cos(theta);
         float s = std::sin(theta);
         // column-major
@@ -513,7 +513,7 @@ namespace Smol
         };
     }
 
-    inline constexpr auto translate_mat(Vec3 t){
+    inline constexpr auto translateMat(Vec3 t){
         // column-major
         return Mat4{
             Vec4{1.0f, 0.0f, 0.0f, 0.0f},
@@ -523,7 +523,7 @@ namespace Smol
         };
     }
 
-    inline constexpr auto rotate_mat(Vec4 q){
+    inline constexpr auto rotateMat(Vec4 q){
         float xx = q.x * q.x, yy = q.y * q.y, zz = q.z * q.z;
         float xy = q.x * q.y, xz = q.x * q.z, yz = q.y * q.z;
         float wx = q.w * q.x, wy = q.w * q.y, wz = q.w * q.z;
@@ -536,7 +536,7 @@ namespace Smol
         };
     }
 
-    inline constexpr auto scale_mat(Vec3 s){
+    inline constexpr auto scaleMat(Vec3 s){
         return Mat4{
             Vec4{ s.x, 0.0f, 0.0f, 0.0f},
             Vec4{0.0f,  s.y, 0.0f, 0.0f},
@@ -546,9 +546,9 @@ namespace Smol
     }
 
     inline constexpr auto model_mat(Vec3 pos, Vec4 q, Vec3 scale){
-        auto t = translate_mat(pos);
-        auto r = rotate_mat(q);
-        auto s = scale_mat(scale);
+        auto t = translateMat(pos);
+        auto r = rotateMat(q);
+        auto s = scaleMat(scale);
 
         return t*r*s;
     }
@@ -556,8 +556,8 @@ namespace Smol
     inline constexpr auto view_mat(Vec3 pos, Vec4 q){
         auto inv = conjugate(q);
 
-        auto r =    rotate_mat( inv);
-        auto t = translate_mat(-pos);
+        auto r =    rotateMat( inv);
+        auto t = translateMat(-pos);
 
         return r*t;
     }
@@ -578,7 +578,7 @@ namespace Smol
         return true;
     }
 
-    inline constexpr double to_radian(double degree) noexcept{
+    inline constexpr double toRadian(double degree) noexcept{
         return degree * (std::numbers::pi / 180.0);
     }
 }
