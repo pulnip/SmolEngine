@@ -19,10 +19,10 @@ namespace Smol
         return TomlTraits<T>::from(tbl);
     }
 
-    // template<typename T>
-    // T loadToml(const std::filesystem::path& path){
-    //     auto tbl = parseTomlFile(path);
+    template<typename T>
+    T loadTomlFile(const std::filesystem::path& path){
+        auto tbl = parseTomlFile(path);
 
-    //     return TomlTraits<T>::from(tbl);
-    // }
+        return TomlTraits<T>::from(tbl);
+    }
 }

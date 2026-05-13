@@ -133,8 +133,7 @@ struct TomlTraits<TestResult1>{
 };
 
 TEST(SerializerUsecase, SpriteTOML){
-    std::string tomlText = TEST_TOML1;
-    auto result = loadToml<TestResult1>(tomlText);
+    auto result = loadToml<TestResult1>(TEST_TOML1);
 
     const auto& metadata = result.metadata;
     EXPECT_EQ(metadata.image, "character.png");
