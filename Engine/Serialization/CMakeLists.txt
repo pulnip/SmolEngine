@@ -5,11 +5,6 @@ PRIVATE
     TOML_EXCEPTIONS=1
 )
 
-target_include_directories(SmolSerialization
-SYSTEM PRIVATE
-    "${stb_SOURCE_DIR}"
-)
-
 target_link_libraries(SmolSerialization
 PUBLIC
     Smol::Core
