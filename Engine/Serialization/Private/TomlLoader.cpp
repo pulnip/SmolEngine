@@ -1,4 +1,3 @@
-#include <toml++/impl/forward_declarations.hpp>
 #include <toml++/toml.hpp>
 #include "PathUtil.hpp"
 #include "TomlLoader.hpp"
