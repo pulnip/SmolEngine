@@ -3,12 +3,12 @@
 
 namespace{
     struct PathToken{
-        std::string_view key;        // empty if pure index
+        Smol::StrView key;        // empty if pure index
         std::optional<size_t> index; // present if [N] follows
         bool valid = true;
     };
 
-    PathToken nextToken(std::string_view& path){
+    PathToken nextToken(Smol::StrView& path){
         PathToken tok;
         if(path.empty()){
             tok.valid = false;
@@ -79,7 +79,7 @@ namespace Smol
         }, value);
     }
 
-    const DOM::Value* DOM::Value::at(std::string_view path) const noexcept{
+    const DOM::Value* DOM::Value::at(StrView path) const noexcept{
         const Value* cur = this;
         while(cur != nullptr && !path.empty()){
             auto tok = nextToken(path);
@@ -147,25 +147,25 @@ namespace Smol
     }
 
     template<>
-    std::optional<bool> DOM::Value::get<bool>(std::string_view p) const noexcept{
+    std::optional<bool> DOM::Value::get<bool>(StrView p) const noexcept{
         auto* n = at(p);
 
         return n ? n->asBool() : std::nullopt;
     }
     template<>
-    std::optional<i64> DOM::Value::get<i64>(std::string_view p) const noexcept{
+    std::optional<i64> DOM::Value::get<i64>(StrView p) const noexcept{
         auto* n = at(p);
 
         return n ? n->asInt() : std::nullopt;
     }
     template<>
-    std::optional<f64> DOM::Value::get<f64>(std::string_view p) const noexcept{
+    std::optional<f64> DOM::Value::get<f64>(StrView p) const noexcept{
         auto* n = at(p);
 
         return n ? n->asFloat() : std::nullopt;
     }
     template<>
-    std::optional<Str> DOM::Value::get<Str>(std::string_view p) const noexcept{
+    std::optional<Str> DOM::Value::get<Str>(StrView p) const noexcept{
         auto* n = at(p);
         if(n == nullptr){
             return std::nullopt;

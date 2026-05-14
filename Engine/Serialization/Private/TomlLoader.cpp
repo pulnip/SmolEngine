@@ -45,7 +45,7 @@ namespace Smol
         });
     }
 
-    DOM::Value parseTomlString(std::string_view str){
+    DOM::Value parseTomlString(StrView str){
         auto pr = toml::parse(str);
 
         return parseFromNode(pr);

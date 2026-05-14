@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include "Assert.hpp"
 
 namespace Smol
@@ -25,6 +26,7 @@ namespace Smol
 
     using CStr = const char*;
     using Str = std::string;
+    using StrView = std::string_view;
 
     struct Vec3;
     struct Vec4;

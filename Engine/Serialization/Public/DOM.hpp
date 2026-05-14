@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <optional>
-#include <string_view>
 #include <unordered_map>
 #include <variant>
 #include <vector>
@@ -73,13 +72,13 @@ namespace Smol
             const Array* asArray() const noexcept;
             const Table* asTable() const noexcept;
 
-            const Value* at(std::string_view path) const noexcept;
+            const Value* at(StrView path) const noexcept;
 
             template<typename T>
-            std::optional<T> get(std::string_view path) const noexcept;
+            std::optional<T> get(StrView path) const noexcept;
 
             template<typename F>
-            void forEach(std::string_view p, F&& fn) const{
+            void forEach(StrView p, F&& fn) const{
                 auto n = at(p);
                 if(n == nullptr) return;
 
