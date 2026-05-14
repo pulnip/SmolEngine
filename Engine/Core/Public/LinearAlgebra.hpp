@@ -43,21 +43,21 @@ namespace Smol
         lhs.y *= rhs.y;
         return lhs;
     }
-    inline constexpr Vec2 operator*(float f, Vec2 v){
+    inline constexpr Vec2 operator*(f32 f, Vec2 v){
         return {f * v.x, f * v.y};
     }
-    inline constexpr Vec2 operator*(Vec2 v, float f){
+    inline constexpr Vec2 operator*(Vec2 v, f32 f){
         return f * v;
     }
-    inline constexpr Vec2& operator*=(Vec2& v, float f){
+    inline constexpr Vec2& operator*=(Vec2& v, f32 f){
         v.x *= f;
         v.y *= f;
         return v;
     }
-    inline constexpr Vec2 operator/(Vec2 v, float f){
+    inline constexpr Vec2 operator/(Vec2 v, f32 f){
         return {v.x/f, v.y/f};
     }
-    inline constexpr Vec2& operator/=(Vec2& v, float f){
+    inline constexpr Vec2& operator/=(Vec2& v, f32 f){
         v.x /= f;
         v.y /= f;
         return v;
@@ -67,19 +67,19 @@ namespace Smol
         return lhs.x==rhs.x && lhs.y==rhs.y;
     }
 
-    inline constexpr float dot(Vec2 lhs, Vec2 rhs){
+    inline constexpr f32 dot(Vec2 lhs, Vec2 rhs){
         return lhs.x*rhs.x + lhs.y*rhs.y;
     }
-    inline constexpr float normSquared(Vec2 v){
+    inline constexpr f32 normSquared(Vec2 v){
         return dot(v, v);
     }
-    inline float norm(Vec2 v){
+    inline f32 norm(Vec2 v){
         return std::sqrt(normSquared(v));
     }
     inline Vec2 normalize(Vec2 v){
         return v / norm(v);
     }
-    inline constexpr float cross(Vec2 lhs, Vec2 rhs){
+    inline constexpr f32 cross(Vec2 lhs, Vec2 rhs){
         return lhs.x*rhs.y - lhs.y*rhs.x;
     }
 
@@ -142,30 +142,30 @@ namespace Smol
         lhs.z *= rhs.z;
         return lhs;
     }
-    inline constexpr Vec3 operator*(float f, Vec3 v){
+    inline constexpr Vec3 operator*(f32 f, Vec3 v){
         return {
             f * v.x,
             f * v.y,
             f * v.z
         };
     }
-    inline constexpr Vec3 operator*(Vec3 v, float f){
+    inline constexpr Vec3 operator*(Vec3 v, f32 f){
         return f * v;
     }
-    inline constexpr Vec3& operator*=(Vec3& v, float f){
+    inline constexpr Vec3& operator*=(Vec3& v, f32 f){
         v.x *= f;
         v.y *= f;
         v.z *= f;
         return v;
     }
-    inline constexpr Vec3 operator/(Vec3 v, float f){
+    inline constexpr Vec3 operator/(Vec3 v, f32 f){
         return {
             v.x/f,
             v.y/f,
             v.z/f
         };
     }
-    inline constexpr Vec3& operator/=(Vec3& v, float f){
+    inline constexpr Vec3& operator/=(Vec3& v, f32 f){
         v.x /= f;
         v.y /= f;
         v.z /= f;
@@ -176,13 +176,13 @@ namespace Smol
         return lhs.x==rhs.x && lhs.y==rhs.y && lhs.z==rhs.z;
     }
 
-    inline constexpr float dot(Vec3 lhs, Vec3 rhs){
+    inline constexpr f32 dot(Vec3 lhs, Vec3 rhs){
         return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
     }
-    inline constexpr float normSquared(Vec3 v){
+    inline constexpr f32 normSquared(Vec3 v){
         return dot(v, v);
     }
-    inline float norm(Vec3 v){
+    inline f32 norm(Vec3 v){
         return std::sqrt(normSquared(v));
     }
     inline Vec3 normalize(Vec3 v){
@@ -250,7 +250,7 @@ namespace Smol
         lhs.w *= rhs.w;
         return lhs;
     }
-    inline constexpr Vec4 operator*(float f, Vec4 v){
+    inline constexpr Vec4 operator*(f32 f, Vec4 v){
         return {
             f * v.x,
             f * v.y,
@@ -258,17 +258,17 @@ namespace Smol
             f * v.w
         };
     }
-    inline constexpr Vec4 operator*(Vec4 v, float f){
+    inline constexpr Vec4 operator*(Vec4 v, f32 f){
         return f * v;
     }
-    inline constexpr Vec4& operator*=(Vec4& v, float f){
+    inline constexpr Vec4& operator*=(Vec4& v, f32 f){
         v.x *= f;
         v.y *= f;
         v.z *= f;
         v.w *= f;
         return v;
     }
-    inline constexpr Vec4 operator/(Vec4 v, float f){
+    inline constexpr Vec4 operator/(Vec4 v, f32 f){
         return {
             v.x / f,
             v.y / f,
@@ -276,20 +276,20 @@ namespace Smol
             v.w / f,
         };
     }
-    inline constexpr Vec4& operator/=(Vec4& v, float f){
+    inline constexpr Vec4& operator/=(Vec4& v, f32 f){
         v.x /= f;
         v.y /= f;
         v.z /= f;
         v.w /= f;
         return v;
     }
-    inline constexpr float dot(Vec4 lhs, Vec4 rhs){
+    inline constexpr f32 dot(Vec4 lhs, Vec4 rhs){
         return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z + lhs.w*rhs.w;
     }
-    inline constexpr float normSquared(Vec4 v){
+    inline constexpr f32 normSquared(Vec4 v){
         return dot(v, v);
     }
-    inline float norm(Vec4 v){
+    inline f32 norm(Vec4 v){
         return std::sqrt(normSquared(v));
     }
     inline Vec4 normalize(Vec4 v){
@@ -304,36 +304,36 @@ namespace Smol
         };
     }
     inline Vec4 quat(Vec3 r, Vec3 u, Vec3 f){
-        float m00 = r.x, m01 = u.x, m02 = f.x;
-        float m10 = r.y, m11 = u.y, m12 = f.y;
-        float m20 = r.z, m21 = u.z, m22 = f.z;
+        f32 m00 = r.x, m01 = u.x, m02 = f.x;
+        f32 m10 = r.y, m11 = u.y, m12 = f.y;
+        f32 m20 = r.z, m21 = u.z, m22 = f.z;
 
-        float trace = m00 + m11 + m22;
+        f32 trace = m00 + m11 + m22;
         Vec4 q;
 
         if(trace > 0.0f){
-            float s = std::sqrt(trace + 1.0f) * 2.0f;
+            f32 s = std::sqrt(trace + 1.0f) * 2.0f;
             q.x = (m21 - m12) / s;
             q.y = (m02 - m20) / s;
             q.z = (m10 - m01) / s;
             q.w = 0.25f * s;
         }
         else if((m00 > m11) && (m00 > m22)){
-            float s = std::sqrt(1.0f + m00 - m11 - m22) * 2.0f;
+            f32 s = std::sqrt(1.0f + m00 - m11 - m22) * 2.0f;
             q.x = 0.25f * s;
             q.y = (m01 + m10) / s;
             q.z = (m02 + m20) / s;
             q.w = (m21 - m12) / s;
         }
         else if(m11 > m22){
-            float s = std::sqrt(1.0f + m11 - m00 - m22) * 2.0f;
+            f32 s = std::sqrt(1.0f + m11 - m00 - m22) * 2.0f;
             q.x = (m01 + m10) / s;
             q.y = 0.25f * s;
             q.z = (m12 + m21) / s;
             q.w = (m02 - m20) / s;
         }
         else{
-            float s = std::sqrt(1.0f + m22 - m00 - m11) * 2.0f; // s=4*q.z
+            f32 s = std::sqrt(1.0f + m22 - m00 - m11) * 2.0f; // s=4*q.z
             q.x = (m02 + m20) / s;
             q.y = (m12 + m21) / s;
             q.z = 0.25f * s;
@@ -343,8 +343,8 @@ namespace Smol
         return normalize(q);
     }
 
-    inline Vec4 rotateX(float theta){
-        float half = theta * 0.5f;
+    inline Vec4 rotateX(f32 theta){
+        f32 half = theta * 0.5f;
         return{
             std::sin(half),
             0.0f,
@@ -352,8 +352,8 @@ namespace Smol
             std::cos(half)
         };
     }
-    inline Vec4 rotateY(float theta){
-        float half = theta * 0.5f;
+    inline Vec4 rotateY(f32 theta){
+        f32 half = theta * 0.5f;
         return{
             0.0f,
             std::sin(half),
@@ -361,8 +361,8 @@ namespace Smol
             std::cos(half)
         };
     }
-    inline Vec4 rotateZ(float theta){
-        float half = theta * 0.5f;
+    inline Vec4 rotateZ(f32 theta){
+        f32 half = theta * 0.5f;
         return{
             0.0f,
             0.0f,
@@ -371,14 +371,14 @@ namespace Smol
         };
     }
     inline auto yaw(Vec4 quat){
-        float siny_cosp = 2*(quat.w*quat.y + quat.x*quat.z);
-        float cosy_cosp = 1 - 2*(quat.y*quat.y + quat.x*quat.x);
-        float theta = std::atan2(siny_cosp, cosy_cosp);
+        f32 siny_cosp = 2*(quat.w*quat.y + quat.x*quat.z);
+        f32 cosy_cosp = 1 - 2*(quat.y*quat.y + quat.x*quat.x);
+        f32 theta = std::atan2(siny_cosp, cosy_cosp);
         return rotateY(theta);
     }
-    inline auto axisAngle(Vec3 axis, float radian){
+    inline auto axisAngle(Vec3 axis, f32 radian){
         auto half = radian / 2;
-        float s = std::sin(half);
+        f32 s = std::sin(half);
         return Vec4{
             axis.x * s,
             axis.y * s,
@@ -433,7 +433,7 @@ namespace Smol
     }
 
     inline auto perspective(
-        float fovY, float aspect, float nearZ, float farZ
+        f32 fovY, f32 aspect, f32 nearZ, f32 farZ
     ){
         auto tanHalfFovY = std::tan(0.5f * fovY);
         auto dz = nearZ - farZ;
@@ -451,7 +451,7 @@ namespace Smol
         };
     }
 
-    inline constexpr auto orthographic(float w, float h, float nearZ, float farZ){
+    inline constexpr auto orthographic(f32 w, f32 h, f32 nearZ, f32 farZ){
         auto e22 = 1/(farZ-nearZ);
         auto e23 = -nearZ*e22;
 
@@ -477,9 +477,9 @@ namespace Smol
         };
     }
 
-    inline auto rotateXMat(float theta){
-        float c = std::cos(theta);
-        float s = std::sin(theta);
+    inline auto rotateXMat(f32 theta){
+        f32 c = std::cos(theta);
+        f32 s = std::sin(theta);
         // column-major
         return Mat4{
             Vec4{1.0f, 0.0f, 0.0f, 0.0f},
@@ -489,9 +489,9 @@ namespace Smol
         };
     }
 
-    inline auto rotateYMat(float theta){
-        float c = std::cos(theta);
-        float s = std::sin(theta);
+    inline auto rotateYMat(f32 theta){
+        f32 c = std::cos(theta);
+        f32 s = std::sin(theta);
         // column-major
         return Mat4{
             Vec4{   c, 0.0f,   -s, 0.0f},
@@ -501,9 +501,9 @@ namespace Smol
         };
     }
 
-    inline auto rotateZMat(float theta){
-        float c = std::cos(theta);
-        float s = std::sin(theta);
+    inline auto rotateZMat(f32 theta){
+        f32 c = std::cos(theta);
+        f32 s = std::sin(theta);
         // column-major
         return Mat4{
             Vec4{   c,    s, 0.0f, 0.0f},
@@ -524,9 +524,9 @@ namespace Smol
     }
 
     inline constexpr auto rotateMat(Vec4 q){
-        float xx = q.x * q.x, yy = q.y * q.y, zz = q.z * q.z;
-        float xy = q.x * q.y, xz = q.x * q.z, yz = q.y * q.z;
-        float wx = q.w * q.x, wy = q.w * q.y, wz = q.w * q.z;
+        f32 xx = q.x * q.x, yy = q.y * q.y, zz = q.z * q.z;
+        f32 xy = q.x * q.y, xz = q.x * q.z, yz = q.y * q.z;
+        f32 wx = q.w * q.x, wy = q.w * q.y, wz = q.w * q.z;
         // column-major
         return Mat4{
             Vec4{1-2*(yy+zz),   2*(xy+wz),   2*(xz-wy), 0.0f},
@@ -563,9 +563,9 @@ namespace Smol
     }
 
     inline constexpr bool overlap(
-        float m1, float M1,
-        float m2, float M2,
-        float epsilon = 0
+        f32 m1, f32 M1,
+        f32 m2, f32 M2,
+        f32 epsilon = 0
     ){
         SMOL_ASSERT(epsilon >= 0);
         if(m1 > m2){
@@ -578,7 +578,7 @@ namespace Smol
         return true;
     }
 
-    inline constexpr double toRadian(double degree) noexcept{
+    inline constexpr f64 toRadian(f64 degree) noexcept{
         return degree * (std::numbers::pi / 180.0);
     }
 }

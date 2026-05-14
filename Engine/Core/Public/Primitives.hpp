@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 #include "Assert.hpp"
 
 namespace Smol
@@ -22,14 +23,17 @@ namespace Smol
     using f32 = float;
     using f64 = double;
 
+    using CStr = const char*;
+    using Str = std::string;
+
     struct Vec3;
     struct Vec4;
 
     // column vector
     struct Vec2{
-        float x = 0.0f, y = 0.0f;
+        f32 x = 0.0f, y = 0.0f;
 
-        constexpr float& operator[](size_t i){
+        constexpr f32& operator[](size_t i){
             switch(i){
             case 0: return x;
             case 1: return y;
@@ -38,7 +42,7 @@ namespace Smol
                 std::unreachable();
             }
         }
-        constexpr const float& operator[](size_t i) const{
+        constexpr const f32& operator[](size_t i) const{
             switch(i){
             case 0: return x;
             case 1: return y;
@@ -60,9 +64,9 @@ namespace Smol
 
     // column vector
     struct Vec3{
-        float x = 0.0f, y = 0.0f, z = 0.0f;
+        f32 x = 0.0f, y = 0.0f, z = 0.0f;
 
-        constexpr float& operator[](size_t i){
+        constexpr f32& operator[](size_t i){
             switch(i){
             case 0: return x;
             case 1: return y;
@@ -72,7 +76,7 @@ namespace Smol
                 std::unreachable();
             }
         }
-        constexpr const float& operator[](size_t i) const{
+        constexpr const f32& operator[](size_t i) const{
             switch(i){
             case 0: return x;
             case 1: return y;
@@ -97,9 +101,9 @@ namespace Smol
 
     // column vector
     struct Vec4{
-        float x = 0.0f, y = 0.0f, z = 0.0f, w = 0.0f;
+        f32 x = 0.0f, y = 0.0f, z = 0.0f, w = 0.0f;
 
-        constexpr float& operator[](size_t i){
+        constexpr f32& operator[](size_t i){
             switch(i){
             case 0: return x;
             case 1: return y;
@@ -110,7 +114,7 @@ namespace Smol
                 std::unreachable();
             }
         }
-        constexpr const float& operator[](size_t i) const{
+        constexpr const f32& operator[](size_t i) const{
             switch(i){
             case 0: return x;
             case 1: return y;
@@ -147,13 +151,13 @@ namespace Smol
         return {x, y, z, 0.0f};
     }
 
-    inline constexpr Vec3 to_vec3(Vec2 v, float z=0.0f){
+    inline constexpr Vec3 to_vec3(Vec2 v, f32 z=0.0f){
         return {v.x, v.y, z};
     }
-    inline constexpr Vec4 to_vec4(Vec2 v, float z=0.0f, float w=0.0f){
+    inline constexpr Vec4 to_vec4(Vec2 v, f32 z=0.0f, f32 w=0.0f){
         return {v.x, v.y, z, w};
     }
-    inline constexpr Vec4 to_vec4(Vec3 v, float w=0.0f){
+    inline constexpr Vec4 to_vec4(Vec3 v, f32 w=0.0f){
         return {v.x, v.y, v.z, w};
     }
 }

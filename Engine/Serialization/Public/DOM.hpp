@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 #include <string_view>
 #include <unordered_map>
 #include <variant>
@@ -18,7 +17,7 @@ namespace Smol
         class Value;
 
         using Array = std::vector<Value>;
-        using Table = std::unordered_map<std::string, Value>;
+        using Table = std::unordered_map<Str, Value>;
 
         class Value{
         private:
@@ -30,7 +29,7 @@ namespace Smol
                 bool,
                 i64,
                 f64,
-                std::string,
+                Str,
                 ArrayRAII,
                 TableRAII
             > value = std::monostate();
@@ -40,8 +39,8 @@ namespace Smol
             Value(bool v) noexcept: value(v){}
             Value(i64 v) noexcept: value(v){}
             Value(f64 v) noexcept: value(v){}
-            Value(std::string v):value(v){}
-            Value(const char* v):value(std::string(v)){}
+            Value(Str v):value(v){}
+            Value(const char* v):value(Str(v)){}
             Value(Array&& v): value(std::make_unique<Array>(std::move(v))){}
             Value(Table&& v): value(std::make_unique<Table>(std::move(v))){}
 
@@ -63,14 +62,14 @@ namespace Smol
             bool is_bool() const noexcept{ return std::holds_alternative<bool>(value); }
             bool is_int() const noexcept{ return std::holds_alternative<i64>(value); }
             bool is_float() const noexcept{ return std::holds_alternative<f64>(value); }
-            bool is_string() const noexcept{ return std::holds_alternative<std::string>(value); }
+            bool is_string() const noexcept{ return std::holds_alternative<Str>(value); }
             bool is_array() const noexcept{ return std::holds_alternative<ArrayRAII>(value); }
             bool is_table() const noexcept{ return std::holds_alternative<TableRAII>(value); }
 
             std::optional<bool> asBool() const noexcept;
             std::optional<i64> asInt() const noexcept;
             std::optional<f64> asFloat() const noexcept;
-            const std::string* asString() const noexcept;
+            const Str* asString() const noexcept;
             const Array* asArray() const noexcept;
             const Table* asTable() const noexcept;
 

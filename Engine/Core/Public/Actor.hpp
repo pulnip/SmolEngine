@@ -73,7 +73,7 @@ namespace Smol
             requires (IsBuiltinComponent<T>())
         T* GetComponent();
 
-        virtual void OnUpdate(float) = 0;
+        virtual void OnUpdate(f32) = 0;
     };
 }
 

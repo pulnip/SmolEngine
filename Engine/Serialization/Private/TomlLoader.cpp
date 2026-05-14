@@ -35,7 +35,7 @@ namespace Smol
             else if constexpr(toml::is_table<T>){
                 Table tbl;
                 for(auto&& [k, child]: v){
-                    tbl.emplace(std::string(k.str()), parseFromNode(child));
+                    tbl.emplace(Str(k.str()), parseFromNode(child));
                 }
 
                 return Value(std::move(tbl));

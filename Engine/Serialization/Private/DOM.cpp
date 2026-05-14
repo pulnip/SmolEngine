@@ -64,7 +64,7 @@ namespace Smol
             else if constexpr(std::is_same_v<T, f64>){
                 return Kind::Float;
             }
-            else if constexpr(std::is_same_v<T, std::string>){
+            else if constexpr(std::is_same_v<T, Str>){
                 return Kind::String;
             }
             else if constexpr(std::is_same_v<T, ArrayRAII>){
@@ -93,7 +93,7 @@ namespace Smol
                     return nullptr;
                 }
 
-                auto it = tbl->find(std::string(tok.key));
+                auto it = tbl->find(Str(tok.key));
                 if(it == tbl->end()){
                     return nullptr;
                 }
@@ -120,22 +120,22 @@ namespace Smol
 
         return std::nullopt;
     }
-    std::optional<int64_t> DOM::Value::asInt() const noexcept{
-        if(auto* p = std::get_if<int64_t>(&value)){
+    std::optional<i64> DOM::Value::asInt() const noexcept{
+        if(auto* p = std::get_if<i64>(&value)){
             return *p;
         }
 
         return std::nullopt;
     }
-    std::optional<double> DOM::Value::asFloat() const noexcept{
-        if(auto* p = std::get_if<double>(&value)){
+    std::optional<f64> DOM::Value::asFloat() const noexcept{
+        if(auto* p = std::get_if<f64>(&value)){
             return *p;
         }
 
         return std::nullopt;
     }
-    const std::string* DOM::Value::asString() const noexcept{
-        return std::get_if<std::string>(&value);
+    const Str* DOM::Value::asString() const noexcept{
+        return std::get_if<Str>(&value);
     }
     const DOM::Array* DOM::Value::asArray() const noexcept{
         if(auto* p = std::get_if<ArrayRAII>(&value)) return p->get();
@@ -165,7 +165,7 @@ namespace Smol
         return n ? n->asFloat() : std::nullopt;
     }
     template<>
-    std::optional<std::string> DOM::Value::get<std::string>(std::string_view p) const noexcept{
+    std::optional<Str> DOM::Value::get<Str>(std::string_view p) const noexcept{
         auto* n = at(p);
         if(n == nullptr){
             return std::nullopt;

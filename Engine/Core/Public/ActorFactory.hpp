@@ -1,9 +1,9 @@
 #pragma once
 
 #include <functional>
-#include <string>
 #include "ActorFWD.hpp"
 #include "Semantics.hpp"
+#include "Primitives.hpp"
 
 namespace Smol
 {
@@ -21,7 +21,7 @@ namespace Smol
 
         static ActorFactory& Get();
 
-        bool Register(std::string name, CreateFn);
-        RAII<Actor> Create(std::string name);
+        bool Register(Str name, CreateFn);
+        RAII<Actor> Create(Str name);
     };
 }

@@ -87,7 +87,7 @@ TEST(Serializer, SpriteTOML){
 
 struct TestResult1{
     struct Metadata{
-        std::string image;
+        Str image;
         i64 tileWidth = 0;
         i64 tileHeight = 0;
     } metadata;
@@ -96,7 +96,7 @@ struct TestResult1{
         i64 rows = 0;
     } grid;
     struct Animation{
-        std::string name;
+        Str name;
         i64 startRow = 0;
         i64 tileCount = 0;
         i64 frameDurationMs = 0;
@@ -110,7 +110,7 @@ struct TomlTraits<TestResult1>{
         TestResult1 result;
 
         auto& metadata = result.metadata;
-        metadata.image = root.get<std::string>("metadata.image").value_or("");
+        metadata.image = root.get<Str>("metadata.image").value_or("");
         metadata.tileWidth = root.get<i64>("metadata.tile_width").value_or(0);
         metadata.tileHeight = root.get<i64>("metadata.tile_height").value_or(0);
 
@@ -120,7 +120,7 @@ struct TomlTraits<TestResult1>{
 
         root.forEach("animations", [&result](const DOM::Value& node){
             TestResult1::Animation animation{
-                .name = node.get<std::string>("name").value_or(""),
+                .name = node.get<Str>("name").value_or(""),
                 .startRow = node.get<i64>("start_row").value_or(0),
                 .tileCount = node.get<i64>("tile_count").value_or(0),
                 .frameDurationMs = node.get<i64>("frame_duration_ms").value_or(0)
