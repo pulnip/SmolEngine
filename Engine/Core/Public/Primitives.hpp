@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include "Assert.hpp"
 
 namespace Smol
@@ -74,7 +75,7 @@ namespace Smol
             case 1: return y;
             case 2: return z;
             default:
-                SMOL_ASSERT(false && "Vec3 index out of range");
+                SMOL_ASSERT(false, "Vec3 index out of range");
                 std::unreachable();
             }
         }
@@ -84,7 +85,7 @@ namespace Smol
             case 1: return y;
             case 2: return z;
             default:
-                SMOL_ASSERT(false && "Vec3 index out of range");
+                SMOL_ASSERT(false, "Vec3 index out of range");
                 std::unreachable();
             }
         }

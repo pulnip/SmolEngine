@@ -1,2 +1,5 @@
-[[WindowsTargetSettings]]
-TargetGraphicsRHI="DX11"
+[GameMapSettings]
+GameStartupScene = "Scene/ExampleScene.toml"
+
+[WindowsTargetSettings]
+TargetGraphicsRHI = "DX11"

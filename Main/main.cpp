@@ -1,8 +1,12 @@
-#include "ActorFactory.hpp"
 #include "Actor.hpp"
+#include "ActorFactory.hpp"
 
 int main(int, char*[]){
-    auto a = Smol::ActorFactory::Get().Create("MyActor");
+    using namespace Smol;
+
+    auto a = CreateActor("MyActor");
+
+    auto o = CreateObject("SpecialActor");
     a->AddComponent<Smol::RigidBody>();
 
     a->OnUpdate(0.0f);

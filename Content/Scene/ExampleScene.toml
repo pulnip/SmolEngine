@@ -1,2 +1,5 @@
+SceneVersion = 1
+SceneName = "ExampleScene"
+
 [[Actors]]
 Type = "MyActor"

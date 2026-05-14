@@ -22,5 +22,6 @@ PRIVATE
 
 target_link_libraries(ExampleActor
 PRIVATE
-    SmolCore
+    Smol::Core
+    Smol::Reflection
 )

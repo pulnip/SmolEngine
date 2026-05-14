@@ -1,8 +1,15 @@
 #include "MyActor.hpp"
 #include "CustomComponent.hpp"
+#include "ActorFactory.hpp"
 #include <print>
 
 SMOL_ACTOR(MyActor)
+    .SetProperty("hp", &MyActor::hp)
+SMOL_ACTOR_END()
+
+SMOL_ACTOR(SpecialActor)
+    .SetFactory([](){ return std::make_unique<SpecialActor>(42); })
+SMOL_ACTOR_END()
 
 MyActor::MyActor(){
     AddComponent<CustomComponent>();

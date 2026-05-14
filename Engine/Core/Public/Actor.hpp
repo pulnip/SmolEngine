@@ -3,7 +3,7 @@
 #include <array>
 #include <unordered_map>
 #include <vector>
-#include "ActorFactory.hpp"
+#include "ActorFWD.hpp"
 #include "Component.hpp"
 #include "Primitives.hpp"
 #include "Object.hpp"
@@ -75,13 +75,4 @@ namespace Smol
 
         virtual void OnUpdate(f32) = 0;
     };
-}
-
-#define SMOL_ACTOR(Type) \
-namespace{ \
-    const auto _##Type##_registered = []{ \
-        return Smol::ActorFactory::Get().Register(#Type, []{ \
-            return std::make_unique<Type>(); \
-        }); \
-    }(); \
 }
