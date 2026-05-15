@@ -9,14 +9,20 @@ namespace Smol
     ActorRAII CreateActor(StrView name);
 }
 
-#define SMOL_ACTOR(Type) \
-namespace{ \
-    const auto _##Type##_registered = []{ \
-        return Smol::Reflect<Type>() \
-            .SetName(#Type) \
-            .Inherits<Smol::Actor>()
+#define SMOL_CLASS_BODY(Type) \
+public: \
+    static auto _SmolReflectImpl(); \
+private: \
 
-#define SMOL_ACTOR_END() \
-            .Build(); \
-    }(); \
+#define SMOL_ACTOR(Type) \
+inline auto Type::_SmolReflectImpl(){ \
+    return ::Smol::Reflect<Type>() \
+        .SetName(#Type) \
+        .Inherits<::Smol::Actor>()
+
+#define SMOL_ACTOR_END(Type) \
+        .Build(); \
+} \
+namespace{ \
+    const auto _##Type##Registered = Type::_SmolReflectImpl(); \
 }

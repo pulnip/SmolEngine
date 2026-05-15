@@ -1,9 +1,11 @@
 #pragma once
 
-#include "Actor.hpp"
+#include "ActorFactory.hpp"
 
 class MyActor: public Smol::Actor{
-public:
+    SMOL_CLASS_BODY(MyActor)
+
+private:
     int hp;
 
 public:
@@ -13,6 +15,8 @@ public:
 };
 
 class SpecialActor: public Smol::Actor{
+    SMOL_CLASS_BODY(SpecialActor)
+
 public:
     SpecialActor(int var){}
 

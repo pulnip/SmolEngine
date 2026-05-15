@@ -5,11 +5,11 @@
 
 SMOL_ACTOR(MyActor)
     .SetProperty("hp", &MyActor::hp)
-SMOL_ACTOR_END()
+SMOL_ACTOR_END(MyActor)
 
 SMOL_ACTOR(SpecialActor)
     .SetFactory([](){ return std::make_unique<SpecialActor>(42); })
-SMOL_ACTOR_END()
+SMOL_ACTOR_END(SpecialActor)
 
 MyActor::MyActor(){
     AddComponent<CustomComponent>();
