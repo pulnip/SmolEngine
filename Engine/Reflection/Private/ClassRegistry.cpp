@@ -29,4 +29,22 @@ namespace Smol
 
         return ret;
     }
+
+    void ApplyProperties(const ClassDesc& desc, void* object, const DOM::Value& table){
+        if(desc.parent != nullptr){
+            ApplyProperties(*desc.parent, object, table);
+        }
+
+        for(const auto& [name, prop]: desc.properties){
+            auto node = table.at(name);
+
+            if(node == nullptr){
+                // TODO. LOG WARN
+                continue;
+            }
+
+            auto member = prop.accessor->Get(object);
+            prop.typeInfo.deserialize(member, *node);
+        }
+    }
 }

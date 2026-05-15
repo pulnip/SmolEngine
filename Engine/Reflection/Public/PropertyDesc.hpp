@@ -28,8 +28,7 @@ namespace Smol
     };
 
     struct PropertyDesc{
-        Str name;
-        const TypeInfo* typeInfo;
+        const TypeInfo& typeInfo;
         RAII<PropertyAccessor> accessor;
         PropertyMeta meta;
     };

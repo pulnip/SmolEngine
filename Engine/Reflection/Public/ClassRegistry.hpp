@@ -1,9 +1,10 @@
 #pragma once
 
+#include <format>
 #include <functional>
 #include <typeindex>
 #include <unordered_map>
-#include <vector>
+#include "Assert.hpp"
 #include "Primitives.hpp"
 #include "PropertyDesc.hpp"
 #include "StringUtil.hpp"
@@ -15,16 +16,20 @@ namespace Smol
         Str name;
         const ClassDesc* parent = nullptr;
         std::function<ObjectRAII()> factory;
-        std::vector<PropertyDesc> properties;
+        StringHashMap<PropertyDesc> properties;
 
         template<typename Class, typename Member>
         PropertyDesc& AddProperty(Str name, Member Class::* member){
-            return properties.emplace_back(PropertyDesc{
-                .name = std::move(name),
-                .typeInfo = GetTypeInfo<Member>(),
+            auto topoName = std::format("{}.{}", this->name, name);
+
+            auto [it, ret] = properties.try_emplace(std::move(topoName), PropertyDesc{
+                .typeInfo = *GetTypeInfo<Member>(),
                 .accessor = std::make_unique<MemberAccessor<Class, Member>>(member),
                 .meta = {}
             });
+
+            SMOL_ASSERT(ret);
+            return it->second;
         }
     };
 
@@ -56,4 +61,6 @@ namespace Smol
 
         bool Register(ClassDesc& desc);
     };
+
+    void ApplyProperties(const ClassDesc&, void* object, const DOM::Value&);
 }
