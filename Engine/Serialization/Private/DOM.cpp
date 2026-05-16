@@ -152,18 +152,109 @@ namespace Smol
 
         return n ? n->asBool() : std::nullopt;
     }
+
+    template<>
+    std::optional<i8> DOM::Value::get<i8>(StrView p) const noexcept{
+        auto* n = at(p);
+
+        if(auto opt = n->asInt()){
+            return static_cast<i8>(*opt);
+        }
+
+        return std::nullopt;
+    }
+
+    template<>
+    std::optional<i16> DOM::Value::get<i16>(StrView p) const noexcept{
+        auto* n = at(p);
+
+        if(auto opt = n->asInt()){
+            return static_cast<i16>(*opt);
+        }
+
+        return std::nullopt;
+    }
+
+    template<>
+    std::optional<i32> DOM::Value::get<i32>(StrView p) const noexcept{
+        auto* n = at(p);
+
+        if(auto opt = n->asInt()){
+            return static_cast<i32>(*opt);
+        }
+
+        return std::nullopt;
+    }
+
     template<>
     std::optional<i64> DOM::Value::get<i64>(StrView p) const noexcept{
         auto* n = at(p);
 
         return n ? n->asInt() : std::nullopt;
     }
+
+    template<>
+    std::optional<u8> DOM::Value::get<u8>(StrView p) const noexcept{
+        auto* n = at(p);
+
+        if(auto opt = n->asInt()){
+            return static_cast<u8>(*opt);
+        }
+
+        return std::nullopt;
+    }
+
+    template<>
+    std::optional<u16> DOM::Value::get<u16>(StrView p) const noexcept{
+        auto* n = at(p);
+
+        if(auto opt = n->asInt()){
+            return static_cast<u16>(*opt);
+        }
+
+        return std::nullopt;
+    }
+
+    template<>
+    std::optional<u32> DOM::Value::get<u32>(StrView p) const noexcept{
+        auto* n = at(p);
+
+        if(auto opt = n->asInt()){
+            return static_cast<u32>(*opt);
+        }
+
+        return std::nullopt;
+    }
+
+    template<>
+    std::optional<u64> DOM::Value::get<u64>(StrView p) const noexcept{
+        auto* n = at(p);
+
+        if(auto opt = n->asInt()){
+            return static_cast<u64>(*opt);
+        }
+
+        return std::nullopt;
+    }
+
+    template<>
+    std::optional<f32> DOM::Value::get<f32>(StrView p) const noexcept{
+        auto* n = at(p);
+
+        if(auto opt = n->asFloat()){
+            return static_cast<f32>(*opt);
+        }
+
+        return std::nullopt;
+    }
+
     template<>
     std::optional<f64> DOM::Value::get<f64>(StrView p) const noexcept{
         auto* n = at(p);
 
         return n ? n->asFloat() : std::nullopt;
     }
+
     template<>
     std::optional<Str> DOM::Value::get<Str>(StrView p) const noexcept{
         auto* n = at(p);
