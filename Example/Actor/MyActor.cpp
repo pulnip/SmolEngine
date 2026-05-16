@@ -4,7 +4,6 @@
 #include <print>
 
 SMOL_ACTOR(MyActor)
-    .SetProperty("hp", &MyActor::hp)
 SMOL_ACTOR_END(MyActor)
 
 SMOL_ACTOR(SpecialActor)

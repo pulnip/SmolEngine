@@ -1,0 +1,13 @@
+[metadata]
+name = "SmolApp"
+version = "v1.0.0"
+identifier = "io.github.pulnip.smol"
+
+[window]
+title = "SmolApp"
+width = 800
+height = 600
+fullscreen = false
+resizable = false
+borderless = false
+always_on_top = false

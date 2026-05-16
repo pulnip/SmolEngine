@@ -18,4 +18,5 @@ include(config)
 
 add_subdirectory(Engine)
 add_subdirectory(Example)
+add_subdirectory(Runtime)
 # add_subdirectory(Source)
