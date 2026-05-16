@@ -51,7 +51,7 @@ namespace Smol
         return parseFromNode(pr);
     }
 
-    DOM::Value parseFile(const std::filesystem::path& path){
+    DOM::Value parseTomlFile(const std::filesystem::path& path){
         auto utf8Path = toUTF8String(path);
         auto pr = toml::parse_file(utf8Path);
 
