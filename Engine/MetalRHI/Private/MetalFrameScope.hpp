@@ -1,0 +1,18 @@
+#pragma once
+
+#include "RHIFrameScope.hpp"
+#include "AutoreleasePoolScope.hpp"
+
+namespace Smol
+{
+    class MetalFrameScope final: public RHIFrameScope{
+    private:
+        AutoreleasePoolScope autoreleasePool;
+
+    public:
+        MetalFrameScope() = default;
+        ~MetalFrameScope() = default;
+
+        SMOL_DECLARE_PINNED(MetalFrameScope)
+    };
+}

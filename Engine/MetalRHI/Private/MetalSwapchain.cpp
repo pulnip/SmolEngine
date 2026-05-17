@@ -1,0 +1,47 @@
+#include <Metal/Metal.hpp>
+#include <QuartzCore/QuartzCore.hpp>
+#include "Assert.hpp"
+#include "MetalSwapchain.hpp"
+#include "MetalUtil.hpp"
+
+namespace Smol
+{
+    MetalSwapchain::MetalSwapchain(
+        MTL::Device& device,
+        const RHISwapchainCreateDesc& desc
+    )
+        : width(desc.bufferDesc.width)
+        , height(desc.bufferDesc.height)
+        , format(desc.bufferDesc.format)
+    {
+        metalLayer = static_cast<CA::MetalLayer*>(desc.windowHandle);
+        SMOL_ASSERT(metalLayer != nullptr);
+
+        metalLayer->setDevice(&device);
+        metalLayer->setPixelFormat(convertPixelFormat(desc.bufferDesc.format));
+        metalLayer->setFramebufferOnly(false);
+        metalLayer->setDrawableSize(CGSizeMake(desc.bufferDesc.width, desc.bufferDesc.height));
+
+        // NOTE. discard desc.debugName, desc.vsync
+    }
+
+    MetalSwapchain::~MetalSwapchain(){
+        currentDrawable = nullptr;
+    }
+
+    bool MetalSwapchain::AcquireNextImage() noexcept{
+        currentDrawable = metalLayer->nextDrawable();
+        return currentDrawable != nullptr;
+    }
+
+    void MetalSwapchain::Resize(u32 newWidth, u32 newHeight){
+        width = newWidth;
+        height = newHeight;
+        metalLayer->setDrawableSize(CGSizeMake(newWidth, newHeight));
+        currentDrawable = nullptr;
+    }
+
+    MTL::Texture* MetalSwapchain::GetCurrentTexture() const noexcept{
+        return currentDrawable ? currentDrawable->texture() : nullptr;
+    }
+}

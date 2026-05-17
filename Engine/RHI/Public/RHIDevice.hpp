@@ -1,0 +1,66 @@
+#pragma once
+
+#include "Semantics.hpp"
+#include "Primitives.hpp"
+#include "RHIFWD.hpp"
+#include "RHIDefinitions.hpp"
+
+namespace Smol
+{
+    using NativeDeviceHandle = void*;
+
+    class RHIDevice{
+    public:
+        SMOL_DECLARE_INTERFACE(RHIDevice)
+
+        virtual RHIFrameScopeRAII CreateFrameScope() = 0;
+
+        virtual RHIBufferRAII CreateBuffer(
+            const RHIBufferCreateDesc&,
+            StrView name = {}
+        ) = 0;
+        virtual RHITextureRAII CreateTexture(
+            const RHITextureCreateDesc&,
+            StrView name = {}
+        ) = 0;
+        virtual RHISamplerRAII CreateSampler(
+            const RHISamplerState&
+        ) = 0;
+
+        virtual RHIGraphicsPipelineStateRAII CreatePipelineState(
+            const RHIGraphicsPipelineStateDesc&,
+            StrView name = {}
+        ) = 0;
+        virtual RHIComputePipelineStateRAII CreatePipelineState(
+            const RHIComputePipelineStateDesc&,
+            StrView name = {}
+        ) = 0;
+
+        virtual RHISwapchainRAII CreateSwapchain(
+            const RHISwapchainCreateDesc&
+        ) = 0;
+
+        virtual RHICommandListRAII CreateCommandList() = 0;
+
+        virtual RHIFenceRAII CreateFence(u64 initialValue = 0) = 0;
+
+        FramePacerRAII CreateFramePacer();
+
+        virtual void Submit(
+            RHICommandList&,
+            RHISwapchain* swapchain = nullptr
+        ) = 0;
+
+        virtual RHICapabilities GetCapabilities() const noexcept = 0;
+
+        // return native type for UI
+        // in Metal, MTL::Device
+        virtual NativeDeviceHandle Get() noexcept = 0;
+        // DeviceContext for D3D11, CommandQueue for D3D12
+        // not used at Metal
+        virtual void* GetContextOrQueue() noexcept{ return nullptr; };
+    };
+
+    // each platform should implement this function
+    RHIDeviceRAII CreateDevice();
+}

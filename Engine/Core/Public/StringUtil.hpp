@@ -8,7 +8,7 @@
 
 namespace Smol
 {
-    Str to_upper(StrView);
+    Str toUpper(StrView);
 
     struct StringHash{
         using is_transparent = void;
@@ -20,6 +20,6 @@ namespace Smol
     template<typename T>
     using StringHashMap = std::unordered_map<Str, T, StringHash, std::equal_to<>>;
 
-    Str read_file_as_string(const std::filesystem::path&);
-    std::vector<u8> read_file_as_binary(const std::filesystem::path&);
+    Str readFileAsString(const std::filesystem::path&);
+    std::vector<u8> readFileAsBinary(const std::filesystem::path&);
 }

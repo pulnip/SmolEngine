@@ -18,5 +18,18 @@ target_link_libraries(SmolApp
 PRIVATE
     Smol::Core
     Smol::Platform
+    Smol::RHI
     Smol::Scene
 )
+
+if(RENDER_BACKEND STREQUAL "DX11")
+    target_link_libraries(SmolApp
+    PRIVATE
+        Smol::DX11RHI
+    )
+elseif(RENDER_BACKEND STREQUAL "Metal")
+    target_link_libraries(SmolApp
+    PRIVATE
+        Smol::MetalRHI
+    )
+endif()

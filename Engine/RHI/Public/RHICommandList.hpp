@@ -1,0 +1,179 @@
+#pragma once
+
+#include <span>
+#include "RHIFWD.hpp"
+#include "Semantics.hpp"
+#include "RHIDefinitions.hpp"
+
+namespace Smol
+{
+    // Command list for recording GPU commands
+    class RHICommandList{
+    public:
+        SMOL_DECLARE_INTERFACE(RHICommandList)
+
+        // Command list lifecycle
+        virtual void Begin() = 0;
+        virtual void Flush() = 0;
+        virtual void Close() = 0;
+        virtual void Reset() = 0;
+
+        // Render pass control
+        virtual void BeginRenderPass(
+            std::span<RHITexture*> renderTargets,
+            const RHIClearColor& clearColor = {},
+            RHITexture* depthTarget = nullptr,
+            const RHIClearDepthStencil& clearDS = {},
+            RHILoadAction loadAction = RHILoadAction::Load,
+            RHIStoreAction storeAction = RHIStoreAction::Store,
+            CStr debugName = nullptr
+        ) = 0;
+
+        virtual void BeginRenderPass(
+            RHISwapchain& backBuffer,
+            const RHIClearColor& clearColor = {},
+            RHITexture* depthTarget = nullptr,
+            const RHIClearDepthStencil& clearDS = {},
+            RHILoadAction loadAction  = RHILoadAction::Load,
+            RHIStoreAction storeAction = RHIStoreAction::Store,
+            CStr debugName = nullptr
+        ) = 0;
+
+        virtual void EndRenderPass() = 0;
+
+        // Pipeline state
+        virtual void SetPipelineState(RHIGraphicsPipelineState&) = 0;
+        virtual void SetPipelineState(RHIComputePipelineState&) = 0;
+
+        // Vertex and index buffers
+        virtual void SetVertexBuffer(
+            const RHIBuffer&,
+            u32 slot,
+            u32 stride, // sizeof(Vertex)
+            u32 offset = 0
+        ) = 0;
+
+        virtual void SetIndexBuffer(
+            const RHIBuffer&,
+            RHIIndexFormat format = RHIIndexFormat::UInt32,
+            u32 offset = 0
+        ) = 0;
+
+        // Constant buffers
+        virtual void SetConstantBuffer(
+            const RHIBuffer&,
+            u32 slot,
+            RHIShaderStage,
+            u32 offset = 0
+        ) = 0;
+
+        // Shader resources (textures, buffers)
+        virtual void SetTexture(
+            RHITexture&,
+            u32 slot,
+            RHIBindingAccess,
+            RHIShaderStage
+        ) = 0;
+
+        // only for Compute Shader
+        virtual void SetBuffer(
+            RHIBuffer&,
+            u32 slot,
+            RHIBindingAccess,
+            RHIShaderStage stage = RHIShaderStage::ComputeShader
+        ) = 0;
+
+        virtual void SetBytes(
+            const void* bytes,
+            u32 slot,
+            usize size,
+            RHIShaderStage stage = RHIShaderStage::ComputeShader
+        ) = 0;
+
+        virtual void SetSampler(
+            const RHISampler&,
+            u32 slot,
+            RHIShaderStage
+        ) = 0;
+
+        // Viewport and scissor
+        virtual void SetViewport(const RHIViewport&) = 0;
+        virtual void SetScissorRect(const RHIScissorRect&) = 0;
+
+        // Draw commands
+        virtual void Draw(
+            u32 vertexCount,
+            u32 instanceCount = 1,
+            u32 startVertex = 0,
+            u32 startInstance = 0
+        ) = 0;
+
+        virtual void DrawIndexed(
+            u32 indexCount,
+            u32 instanceCount = 1,
+            u32 startIndex = 0,
+            i32 baseVertex = 0,
+            u32 startInstance = 0
+        ) = 0;
+
+        virtual void BeginCompute() = 0;
+
+        virtual void EndCompute() = 0;
+
+        // Compute dispatch
+        virtual void Dispatch(
+            RHISize3D gridSize
+        ) = 0;
+
+        // Resource barriers (state transitions)
+        // Note: 'before' state is obtained from texture.getState() internally
+        virtual void TransitionBarrier(
+            RHITexture& texture,
+            RHIResourceState after
+        ) = 0;
+
+        virtual void TransitionBarrier(
+            RHIBuffer& buffer,
+            RHIResourceState after
+        ) = 0;
+
+        virtual void SignalFence(RHIFence&, u64 value) = 0;
+        virtual void WaitFence(RHIFence&, u64 value) = 0;
+
+        // Copy operations
+        virtual void Copy(
+            RHIBuffer& src,
+            RHIBuffer& dst,
+            usize srcOffset,
+            usize dstOffset,
+            usize size
+        ) = 0;
+
+        virtual void Copy(
+            RHITexture& src,
+            RHITexture& dst
+        ) = 0;
+
+        virtual void Copy(
+            RHITexture& src,
+            RHISwapchain& dst
+        ) = 0;
+
+        virtual void Copy(
+            RHIBuffer& src,
+            RHITexture& dst,
+            u32 mipLevel = 0,
+            u32 arraySlice = 0
+        ) = 0;
+
+        virtual void WaitUntilCompleted() = 0;
+
+        // Debug markers (for GPU profiling)
+        virtual void BeginEvent(CStr name) = 0;
+        virtual void EndEvent() = 0;
+        virtual void SetMarker(CStr name) = 0;
+
+        // for UI, CommandBuffer for Metal, CommandList for D3D12
+        virtual void* GetNative() const noexcept{ return nullptr; }
+    };
+}

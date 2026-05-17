@@ -47,11 +47,15 @@ if(RENDER_BACKEND STREQUAL "DX11")
             "Please check your Windows SDK installation."
         )
     endif()
+
+    set(RENDER_BACKEND_TARGET Smol::DX11RHI)
 elseif(RENDER_BACKEND STREQUAL "Metal")
     find_library(METAL_LIBRARY Metal REQUIRED)
     find_library(METALKIT_LIBRARY MetalKit REQUIRED)
     find_library(QUARTZCORE_LIBRARY QuartzCore REQUIRED)
     find_library(FOUNDATION_LIBRARY Foundation REQUIRED)
+
+    set(RENDER_BACKEND_TARGET Smol::MetalRHI)
 else()
     message(FATAL_ERROR "Unsupported RENDER_BACKEND: ${RENDER_BACKEND}")
 endif()
