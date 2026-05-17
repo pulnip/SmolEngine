@@ -36,7 +36,7 @@ namespace Smol
     struct Vec2{
         f32 x = 0.0f, y = 0.0f;
 
-        constexpr f32& operator[](size_t i){
+        constexpr f32& operator[](usize i){
             switch(i){
             case 0: return x;
             case 1: return y;
@@ -45,7 +45,7 @@ namespace Smol
                 std::unreachable();
             }
         }
-        constexpr const f32& operator[](size_t i) const{
+        constexpr const f32& operator[](usize i) const{
             switch(i){
             case 0: return x;
             case 1: return y;
@@ -69,7 +69,7 @@ namespace Smol
     struct Vec3{
         f32 x = 0.0f, y = 0.0f, z = 0.0f;
 
-        constexpr f32& operator[](size_t i){
+        constexpr f32& operator[](usize i){
             switch(i){
             case 0: return x;
             case 1: return y;
@@ -79,7 +79,7 @@ namespace Smol
                 std::unreachable();
             }
         }
-        constexpr const f32& operator[](size_t i) const{
+        constexpr const f32& operator[](usize i) const{
             switch(i){
             case 0: return x;
             case 1: return y;
@@ -106,7 +106,7 @@ namespace Smol
     struct Vec4{
         f32 x = 0.0f, y = 0.0f, z = 0.0f, w = 0.0f;
 
-        constexpr f32& operator[](size_t i){
+        constexpr f32& operator[](usize i){
             switch(i){
             case 0: return x;
             case 1: return y;
@@ -117,7 +117,7 @@ namespace Smol
                 std::unreachable();
             }
         }
-        constexpr const f32& operator[](size_t i) const{
+        constexpr const f32& operator[](usize i) const{
             switch(i){
             case 0: return x;
             case 1: return y;

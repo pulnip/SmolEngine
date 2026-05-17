@@ -14,7 +14,7 @@ namespace Smol
             u32 offset = 0
         ) = 0;
 
-        // Notice! only valid for Metal and D3D11
+        // Notice! only valid for Metal and DX11
         virtual void Download(
             void* data, u32 size,
             u32 offset = 0

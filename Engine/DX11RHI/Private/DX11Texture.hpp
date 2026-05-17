@@ -1,0 +1,67 @@
+#pragma once
+
+#include <unordered_map>
+#include "DX11Definitions.hpp"
+#include "RHIAPI.hpp"
+#include "RHIDefinitions.hpp"
+#include "RHITexture.hpp"
+
+namespace Smol
+{
+    class DX11Texture final: public RHITexture{
+    private:
+        TextureRAII texture = nullptr;
+        usize width, height;
+        RHIPixelFormat format = RHIPixelFormat::Unknown;
+        RHIResourceState currentState = RHIResourceState::Common;
+
+        Device& device;
+        DeviceContext& context;
+
+        std::unordered_map<RHITextureViewDesc, SRVRAII> srvs;
+        std::unordered_map<RHITextureViewDesc, RTVRAII> rtvs;
+        std::unordered_map<RHITextureViewDesc, UAVRAII> uavs;
+        std::unordered_map<RHITextureViewDesc, DSVRAII> dsvs;
+
+    public:
+        DX11Texture(
+            Device& device,
+            DeviceContext& context,
+            const RHITextureCreateDesc& desc,
+            StrView name
+        );
+
+        ~DX11Texture();
+
+        void Upload(
+            const void* data,
+            u32 mipLevel,
+            u32 arraySlice
+        ) RHI_OVERRIDE;
+
+        RHIPixelFormat GetFormat() const noexcept RHI_OVERRIDE{
+            return format;
+        }
+        usize GetWidth() const noexcept RHI_OVERRIDE{
+            return width;
+        }
+        usize GetHeight() const noexcept RHI_OVERRIDE{
+            return height;
+        }
+
+        RHIResourceState GetState() const RHI_OVERRIDE{
+            return currentState;
+        }
+
+        void SetState(RHIResourceState state) RHI_OVERRIDE{
+            currentState = state;
+        }
+
+        Texture* Get() const{ return texture.Get(); }
+
+        SRV* GetOrCreateSRV(const RHITextureViewDesc&);
+        RTV* GetOrCreateRTV(const RHITextureViewDesc&);
+        UAV* GetOrCreateUAV(const RHITextureViewDesc&);
+        DSV* GetOrCreateDSV(const RHITextureViewDesc&);
+    };
+}

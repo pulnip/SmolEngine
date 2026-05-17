@@ -358,7 +358,7 @@ namespace Smol
         RHIRenderTargetBlendState renderTargets[8];
     };
 
-    constexpr auto RHI_MAX_RENDER_TARGETS = 8;
+    constexpr u32 RHI_MAX_RENDER_TARGETS = 8;
 
     struct RHIGraphicsPipelineStateDesc{
         std::optional<std::span<const RHIVertexElement>> vertexLayout = std::nullopt;

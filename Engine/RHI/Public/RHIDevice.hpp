@@ -56,7 +56,7 @@ namespace Smol
         // return native type for UI
         // in Metal, MTL::Device
         virtual NativeDeviceHandle Get() noexcept = 0;
-        // DeviceContext for D3D11, CommandQueue for D3D12
+        // DeviceContext for DX11, CommandQueue for DX12
         // not used at Metal
         virtual void* GetContextOrQueue() noexcept{ return nullptr; };
     };
