@@ -19,5 +19,4 @@ PRIVATE
     Smol::Core
     Smol::Platform
     Smol::Scene
-    "$<LINK_LIBRARY:WHOLE_ARCHIVE,ExampleActor>"
 )

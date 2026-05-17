@@ -17,6 +17,5 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 include(config)
 
 add_subdirectory(Engine)
-add_subdirectory(Example)
 add_subdirectory(Runtime)
-# add_subdirectory(Source)
+add_subdirectory(Source)

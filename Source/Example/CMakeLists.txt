@@ -6,22 +6,23 @@ file(GLOB ALL_SOURCES
     "*.cpp"
 )
 
-add_library(ExampleActor)
+add_library(ExampleLib)
 
-target_sources(ExampleActor
+target_sources(ExampleLib
 PUBLIC
     ${ALL_HEADERS}
 PRIVATE
     ${ALL_SOURCES}
 )
 
-target_include_directories(ExampleActor
-PRIVATE
+target_include_directories(ExampleLib
+PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-target_link_libraries(ExampleActor
-PRIVATE
+target_link_libraries(ExampleLib
+PUBLIC
     Smol::Core
     Smol::Reflection
+PRIVATE
 )

@@ -5,10 +5,10 @@
 namespace Smol
 {
     World::World(StrView scenePath){
-        auto a = CreateActor("MyActor");
+        auto a = CreateActor("SimpleActor");
         a->AddComponent<Smol::RigidBody>();
 
-        auto o = CreateActor("SpecialActor");
+        auto o = CreateActor("ComplexActor");
 
         actors.emplace_back(std::move(a));
         actors.emplace_back(std::move(o));
