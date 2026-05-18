@@ -1,3 +1,4 @@
+#include <Metal/MTLCommandQueue.hpp>
 #include <Metal/Metal.hpp>
 #include <QuartzCore/QuartzCore.hpp>
 #include "Assert.hpp"
@@ -39,6 +40,10 @@ namespace Smol
         height = newHeight;
         metalLayer->setDrawableSize(CGSizeMake(newWidth, newHeight));
         currentDrawable = nullptr;
+    }
+
+    void MetalSwapchain::Present(MTL::CommandBuffer& buffer) const{
+        buffer.presentDrawable(currentDrawable);
     }
 
     MTL::Texture* MetalSwapchain::GetCurrentTexture() const noexcept{

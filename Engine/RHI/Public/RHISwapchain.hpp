@@ -19,8 +19,6 @@ namespace Smol
         virtual u32 GetWidth() const noexcept = 0;
         virtual u32 GetHeight() const noexcept = 0;
 
-        virtual void Present() const = 0;
-
         virtual void* GetCurrentNativeTexture() const = 0;
     };
 }

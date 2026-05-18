@@ -15,6 +15,7 @@ namespace Smol
     class RHIComputePipelineState;
     class RHISwapchain;
 
+    class CommandListPool;
     class FramePacer;
 
     using RHIDeviceRAII = RAII<RHIDevice>;

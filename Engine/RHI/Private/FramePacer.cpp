@@ -13,7 +13,6 @@ namespace Smol
         RHIDevice& device;
         RHIFenceRAII fence;
         u64 currentFenceValue = 0;
-        u32 currentFrame = 0;
 
     public:
         RHIFrameFenceManager(RHIDevice& device)
@@ -34,10 +33,11 @@ namespace Smol
         // Begin a new frame
         // Waits for N-2 frame to ensure GPU is done with it
         void BeginFrame(){
-            if(currentFenceValue >= RHI_FRAMES_IN_FLIGHT){
-                auto waitValue = currentFenceValue - RHI_FRAMES_IN_FLIGHT;
-                fence->WaitCPU(waitValue);
-            }
+            [[unlikely]] if(currentFenceValue < RHI_FRAMES_IN_FLIGHT)
+                return;
+
+            auto waitValue = currentFenceValue - RHI_FRAMES_IN_FLIGHT;
+            fence->WaitCPU(waitValue);
         }
 
         // End the current frame
@@ -45,25 +45,18 @@ namespace Smol
         void EndFrame(){
             // Increment fence value for next wait
             ++currentFenceValue;
-
-            // Move to next frame
-            currentFrame = (currentFrame + 1) % RHI_FRAMES_IN_FLIGHT;
         }
 
         // Wait for all frames to complete
         void WaitForAll(){
-            if(currentFenceValue > 0){
-                fence->WaitCPU(currentFenceValue);
-            }
+            [[unlikely]] if(currentFenceValue == 0)
+                return;
+
+            fence->WaitCPU(currentFenceValue);
 
             LOG_INFO("RHI",
                 "Waited for all {} frames to complete", RHI_FRAMES_IN_FLIGHT
             );
-        }
-
-        // Get current frame index
-        u32 GetCurrentFrameIndex() const noexcept{
-            return currentFrame;
         }
 
         // Get fence for current frame
@@ -113,10 +106,6 @@ namespace Smol
             LOG_INFO("RHI", "Frame pacer idle");
         }
 
-        u32 GetCurrentFrameIndex() const noexcept{
-            return fenceManager.GetCurrentFrameIndex();
-        }
-
         auto GetCurrentFence(this auto& self) noexcept{
             return self.fenceManager.GetCurrentFence();
         }
@@ -142,10 +131,6 @@ namespace Smol
 
     void FramePacer::WaitForIdle(){
         impl->WaitForIdle();
-    }
-
-    u32 FramePacer::GetCurrentFrameIndex() const{
-        return impl->GetCurrentFrameIndex();
     }
 
     RHIFence* FramePacer::GetCurrentFence(){

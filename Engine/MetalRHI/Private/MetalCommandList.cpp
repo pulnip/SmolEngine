@@ -7,7 +7,6 @@
 #include <QuartzCore/QuartzCore.hpp>
 #include "Assert.hpp"
 #include "MetalBuffer.hpp"
-#include "MetalFence.hpp"
 #include "MetalPipelineState.hpp"
 #include "MetalSampler.hpp"
 #include "MetalSwapchain.hpp"
@@ -514,34 +513,6 @@ namespace Smol
     ){
         // no-op for Metal
         buffer.SetState(after);
-    }
-
-    void MetalCommandList::SignalFence(
-        RHIFence& fence,
-        u64 value
-    ){
-        SMOL_ASSERT(commandBuffer != nullptr,
-            "Did you call RHICommandList::begin()?"
-        );
-
-        auto& metalFence = static_cast<MetalFence&>(fence);
-        commandBuffer->encodeSignalEvent(
-            metalFence.Get(), value
-        );
-    }
-
-    void MetalCommandList::WaitFence(
-        RHIFence& fence,
-        u64 value
-    ){
-        SMOL_ASSERT(commandBuffer != nullptr,
-            "Did you call RHICommandList::begin()?"
-        );
-
-        auto& metalFence = static_cast<MetalFence&>(fence);
-        commandBuffer->encodeWait(
-            metalFence.Get(), value
-        );
     }
 
     void MetalCommandList::Copy(

@@ -137,9 +137,6 @@ namespace Smol
             RHIResourceState after
         ) = 0;
 
-        virtual void SignalFence(RHIFence&, u64 value) = 0;
-        virtual void WaitFence(RHIFence&, u64 value) = 0;
-
         // Copy operations
         virtual void Copy(
             RHIBuffer& src,

@@ -29,9 +29,6 @@ namespace Smol
         // Wait for all frames to complete
         void WaitForIdle();
 
-        // Get current frame index (0 to RHI_FRAMES_IN_FLIGHT-1)
-        u32 GetCurrentFrameIndex() const;
-
         // Get fence for current frame
         RHIFence* GetCurrentFence();
         const RHIFence* GetCurrentFence() const;

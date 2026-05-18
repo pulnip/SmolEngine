@@ -19,7 +19,7 @@ namespace Smol
 
         bool Initialize() override;
         bool Update() override;
-        bool Render(RHIDevice&) override;
+        bool Render(CommandListPool&) override;
         void Finalize() override;
     };
 }

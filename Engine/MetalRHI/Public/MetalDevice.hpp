@@ -46,6 +46,8 @@ namespace Smol
 
         RHIFenceRAII CreateFence(u64 initialValue = 0) RHI_OVERRIDE;
 
+        void SignalFence(RHICommandList&, RHIFence&, u64 value) RHI_OVERRIDE;
+
         RHICapabilities GetCapabilities() const noexcept RHI_OVERRIDE;
 
         void Submit(RHICommandList&, RHISwapchain*) RHI_OVERRIDE;

@@ -1,4 +1,5 @@
 #include "AppConfig.hpp"
+#include "CommandListPool.hpp"
 #include "RHIDevice.hpp"
 #include "AppMainLoop.hpp"
 #include "Renderer.hpp"
@@ -23,10 +24,10 @@ namespace Smol
     bool AppMainLoop::Update(){
         world.Update(0.0f);
 
-        return false;
+        return true;
     }
 
-    bool AppMainLoop::Render(RHIDevice&){
+    bool AppMainLoop::Render(CommandListPool&){
         return true;
     }
 

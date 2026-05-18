@@ -7,6 +7,8 @@
     #include <SDL3/SDL_metal.h>
 #endif
 #include <imgui_impl_sdl3.h>
+#include "CommandListPool.hpp"
+#include "FramePacer.hpp"
 #include "MainLoop.hpp"
 #include "OS.hpp"
 #include "RHISwapchain.hpp"
@@ -25,11 +27,14 @@ namespace Smol
         RHISwapchainRAII swapchain = nullptr;
         u32 width = 0, height = 0;
 
+        FramePacer framePacer;
+        CommandListPool cmdListPool;
+
     public:
         Impl(const RuntimeConfig&, RHIDevice&);
         ~Impl();
 
-        void Run(MainLoop&, RHIDevice& device);
+        void Run(MainLoop&, RHIDevice&);
 
         u32 GetWidth() const{ return width; }
         u32 GetHeight() const{ return height; }
@@ -38,6 +43,9 @@ namespace Smol
         bool ProcessEvents();
 
         SDL_Window* createWindow(const RuntimeConfig::WindowConfig&);
+
+        void BeginFrame(RHIDevice&);
+        void EndFrame(RHIDevice&);
     };
 
     OS::OS(
@@ -52,7 +60,10 @@ namespace Smol
     OS::Impl::Impl(
         const RuntimeConfig& config,
         RHIDevice& device
-    ){
+    )
+        : framePacer(device)
+        , cmdListPool(device)
+    {
         if(!SDL_SetAppMetadata(
             config.name.c_str(),
             config.version.c_str(),
@@ -79,6 +90,10 @@ namespace Smol
                 SDL_GetError()
             ));
         }
+
+    #if defined(SMOL_METALRHI)
+        view = SDL_Metal_CreateView(window);
+    #endif
 
         RHITextureCreateDesc backBufferDesc{
             .width = config.window.width,
@@ -127,18 +142,16 @@ namespace Smol
             return;
 
         while(true){
-            if(!ProcessEvents())
+            [[unlikely]] if(!ProcessEvents())
                 break;
 
-            if(!mainLoop.Update())
+            [[unlikely]] if(!mainLoop.Update())
                 break;
 
-            device.BeginFrame();
-            if(!mainLoop.Render(device))
+            BeginFrame(device);
+            [[unlikely]] if(!mainLoop.Render(cmdListPool))
                 break;
-            device.EndFrame();
-
-            swapchain->Present();
+            EndFrame(device);
         }
 
         mainLoop.Finalize();
@@ -164,7 +177,7 @@ namespace Smol
         width = config.width;
         height = config.height;
 
-        SDL_WindowFlags flags = 
+        SDL_WindowFlags flags =
             (config.fullscreen    ? SDL_WINDOW_FULLSCREEN    : 0) |
             (config.resizable     ? SDL_WINDOW_RESIZABLE     : 0) |
             (config.borderless    ? SDL_WINDOW_BORDERLESS    : 0) |
@@ -176,6 +189,25 @@ namespace Smol
             config.height,
             flags
         );
+    }
+
+    void OS::Impl::BeginFrame(RHIDevice& device){
+        framePacer.BeginFrame();
+
+        if(swapchain != nullptr)
+            swapchain->AcquireNextImage();
+
+        cmdListPool.BeginFrame();
+    }
+
+    void OS::Impl::EndFrame(RHIDevice& device){
+        cmdListPool.SubmitFrame(
+            swapchain.get(),
+            framePacer.GetCurrentFence(),
+            framePacer.GetNextFenceValue()
+        );
+
+        framePacer.EndFrame();
     }
 
     u32 OS::GetWidth() const{ return impl->GetWidth(); }

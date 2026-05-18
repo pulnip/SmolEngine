@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Metal/MTLCommandQueue.hpp>
 #include <Metal/MTLDevice.hpp>
 #include <Metal/MTLTexture.hpp>
 #include <QuartzCore/CAMetalDrawable.hpp>
@@ -40,6 +41,8 @@ namespace Smol
         u32 GetHeight() const noexcept RHI_OVERRIDE{
             return height;
         }
+
+        void Present(MTL::CommandBuffer&) const;
 
         void* GetCurrentNativeTexture() const noexcept RHI_OVERRIDE{
             return GetCurrentTexture();

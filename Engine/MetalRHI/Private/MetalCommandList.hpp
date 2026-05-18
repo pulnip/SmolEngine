@@ -149,10 +149,6 @@ namespace Smol
             RHIResourceState after
         ) RHI_OVERRIDE;
 
-        void SignalFence(RHIFence& fence, u64 value) RHI_OVERRIDE;
-
-        void WaitFence(RHIFence& fence, u64 value) RHI_OVERRIDE;
-
         void Copy(
             RHIBuffer& src,
             RHIBuffer& dst,

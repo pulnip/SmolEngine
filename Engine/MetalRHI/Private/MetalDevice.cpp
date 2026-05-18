@@ -106,18 +106,7 @@ namespace Smol
             return std::make_unique<MetalFence>(*device, initialValue);
         }
 
-        void Submit(RHICommandList& cmdList, RHISwapchain* swapchain) noexcept{
-            auto& mtlCmdList = static_cast<MetalCommandList&>(cmdList);
-            auto cmdBuffer = mtlCmdList.Get();
-            if(swapchain != nullptr){
-                auto& mtlSwapchain = static_cast<MetalSwapchain&>(*swapchain);
-                auto drawable = mtlSwapchain.GetCurrentDrawable();
-
-                cmdBuffer->presentDrawable(drawable);
-            }
-
-            cmdBuffer->commit();
-        }
+        void Submit(RHICommandList& cmdList, RHISwapchain* swapchain);
 
         MTL::Device* Get() noexcept{ return device; }
     };
@@ -179,6 +168,20 @@ namespace Smol
         return impl->CreateFence(initialValue);
     }
 
+    void MetalDevice::SignalFence(
+        RHICommandList& cmdList,
+        RHIFence& fence,
+        u64 value
+    ){
+        auto& mtlCmdList = static_cast<MetalCommandList&>(cmdList);
+        auto& mtlFence = static_cast<MetalFence&>(fence);
+
+        auto cmdBuf = mtlCmdList.Get();
+        auto event = mtlFence.Get();
+
+        cmdBuf->encodeSignalEvent(event, value);
+    }
+
     RHICapabilities MetalDevice::GetCapabilities() const noexcept{
         return {
             .flipTextureV = true,
@@ -188,6 +191,23 @@ namespace Smol
 
     void MetalDevice::Submit(RHICommandList& cmdList, RHISwapchain* swapchain){
         impl->Submit(cmdList, swapchain);
+    }
+
+    void MetalDevice::Impl::Submit(
+        RHICommandList& cmdList,
+        RHISwapchain* swapchain
+    ){
+        auto& mtlCmdList = static_cast<MetalCommandList&>(cmdList);
+        auto cmdBuffer = mtlCmdList.Get();
+        if(swapchain != nullptr){
+
+            auto& mtlSwapchain = static_cast<MetalSwapchain&>(*swapchain);
+            auto drawable = mtlSwapchain.GetCurrentDrawable();
+
+            cmdBuffer->presentDrawable(drawable);
+        }
+
+        cmdBuffer->commit();
     }
 
     void* MetalDevice::Get() noexcept{

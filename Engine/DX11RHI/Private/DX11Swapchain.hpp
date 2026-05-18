@@ -46,11 +46,11 @@ namespace Smol
             return height;
         }
 
-        void Present() const RHI_OVERRIDE;
-
         void* GetCurrentNativeTexture() const noexcept RHI_OVERRIDE{
             return GetCurrentTexture();
         }
+
+        void Present() const;
 
         Texture* GetCurrentTexture() const noexcept;
         RTV* GetCurrentRTV() const noexcept;

@@ -225,6 +225,13 @@ namespace Smol
         };
     }
 
+    void DX11Device::Submit(RHICommandList&, RHISwapchain* swapchain){
+        if(swapchain != nullptr){
+            auto& dxSwapchain = static_cast<DX11Swapchain&>(*swapchain);
+            dxSwapchain.Present();
+        }
+    }
+
     void* DX11Device::Get() noexcept{
         return impl->Get();
     }

@@ -16,15 +16,15 @@ namespace Smol
             usize nextIndex = 0;
         };
         std::array<FrameSlot, RHI_FRAMES_IN_FLIGHT> slots;
+        u32 frameIndex = 0;
 
     public:
         CommandListPool(RHIDevice&);
         ~CommandListPool();
 
-        void BeginFrame(u32 frameIndex);
+        RHICommandList* Acquire();
 
-        RHICommandList* Acquire(u32 frameIndex);
-
-        void Submit(u32 frameIndex);
+        void BeginFrame();
+        void SubmitFrame(RHISwapchain*, RHIFence*, u64 fenceValue);
     };
 }

@@ -142,14 +142,6 @@ namespace Smol
             // NOTE. No-Op for DX11
         }
 
-        void SignalFence(RHIFence&, u64) noexcept RHI_OVERRIDE{
-            // NOTE. No-Op for DX11
-        }
-
-        void WaitFence(RHIFence&, u64) noexcept RHI_OVERRIDE{
-            // NOTE. No-Op for DX11
-        }
-
         void Copy(
             RHIBuffer& src,
             RHIBuffer& dst,
