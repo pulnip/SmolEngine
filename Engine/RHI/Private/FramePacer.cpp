@@ -83,13 +83,6 @@ namespace Smol
         RHIFrameScopeRAII scope = nullptr;
         RHIFrameFenceManager fenceManager;
 
-        u64 frameNumber = 0;
-        std::chrono::time_point<std::chrono::high_resolution_clock> lastFrameTime = std::chrono::high_resolution_clock::now();
-        f64 deltaTime = 0.0;
-        f64 fps = 0.0;
-        f64 frameTimeAccum = 0.0;
-        u32 frameCount = 0;
-
     public:
         Impl(RHIDevice& device)
             : device(device)
@@ -105,27 +98,6 @@ namespace Smol
             fenceManager.BeginFrame();
 
             // Update timing
-            auto currentTime = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<f64> elapsed = currentTime - lastFrameTime;
-            deltaTime = elapsed.count();
-            lastFrameTime = currentTime;
-
-            // Update FPS counter
-            frameTimeAccum += deltaTime;
-            ++frameCount;
-
-            if(frameTimeAccum >= 1.0){
-                fps = static_cast<f64>(frameCount) / frameTimeAccum;
-                frameTimeAccum = 0.0;
-                frameCount = 0;
-
-                LOG_DEBUG("RHI",
-                    "FPS: {:.1f}, Frame Time: {:.2f}ms",
-                    fps, deltaTime * 1000.0
-                );
-            }
-
-            ++frameNumber;
             return true;
         }
 
@@ -144,11 +116,6 @@ namespace Smol
         u32 GetCurrentFrameIndex() const noexcept{
             return fenceManager.GetCurrentFrameIndex();
         }
-
-        u64 GetFrameNumber() const noexcept{ return frameNumber; }
-        f64 GetDeltaTime() const noexcept{ return deltaTime; }
-        f64 GetFPS() const noexcept{ return fps; }
-        f64 GetFrameTimeMs() const noexcept{ return deltaTime * 1000.0; }
 
         auto GetCurrentFence(this auto& self) noexcept{
             return self.fenceManager.GetCurrentFence();
@@ -179,18 +146,6 @@ namespace Smol
 
     u32 FramePacer::GetCurrentFrameIndex() const{
         return impl->GetCurrentFrameIndex();
-    }
-    u64 FramePacer::GetFrameNumber() const{
-        return impl->GetFrameNumber();
-    }
-    f64 FramePacer::GetDeltaTime() const{
-        return impl->GetDeltaTime();
-    }
-    f64 FramePacer::GetFPS() const{
-        return impl->GetFPS();
-    }
-    f64 FramePacer::GetFrameTimeMs() const{
-        return impl->GetFrameTimeMs();
     }
 
     RHIFence* FramePacer::GetCurrentFence(){

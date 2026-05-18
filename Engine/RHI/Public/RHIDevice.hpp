@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CoreFWD.hpp"
 #include "Semantics.hpp"
 #include "Primitives.hpp"
 #include "RHIFWD.hpp"
@@ -10,8 +11,17 @@ namespace Smol
     using NativeDeviceHandle = void*;
 
     class RHIDevice{
+    private:
+        class Impl;
+        RAII<Impl> impl;
+
     public:
-        SMOL_DECLARE_INTERFACE(RHIDevice)
+        RHIDevice();
+        virtual ~RHIDevice();
+        SMOL_DECLARE_PINNED(RHIDevice)
+
+        void BeginFrame();
+        void EndFrame();
 
         virtual RHIFrameScopeRAII CreateFrameScope() = 0;
 
@@ -44,12 +54,9 @@ namespace Smol
 
         virtual RHIFenceRAII CreateFence(u64 initialValue = 0) = 0;
 
-        FramePacerRAII CreateFramePacer();
+        virtual void SignalFence(RHIFence&, u64 value) = 0;
 
-        virtual void Submit(
-            RHICommandList&,
-            RHISwapchain* swapchain = nullptr
-        ) = 0;
+        virtual void Submit(RHICommandList&) = 0;
 
         virtual RHICapabilities GetCapabilities() const noexcept = 0;
 

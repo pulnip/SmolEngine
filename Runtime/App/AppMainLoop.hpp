@@ -1,6 +1,8 @@
 #pragma once
 
 #include "MainLoop.hpp"
+#include "Renderer.hpp"
+#include "RHIFWD.hpp"
 #include "World.hpp"
 
 namespace Smol
@@ -9,13 +11,15 @@ namespace Smol
 
     class AppMainLoop: public MainLoop{
     private:
+        Renderer renderer;
         World world;
 
     public:
-        AppMainLoop(const AppConfig&);
+        AppMainLoop(const AppConfig&, RHIDevice&);
 
         bool Initialize() override;
         bool Update() override;
+        bool Render(RHIDevice&) override;
         void Finalize() override;
     };
 }

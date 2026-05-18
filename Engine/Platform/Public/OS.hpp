@@ -2,6 +2,7 @@
 
 #include "CoreFWD.hpp"
 #include "Primitives.hpp"
+#include "RHIFWD.hpp"
 #include "Semantics.hpp"
 
 namespace Smol
@@ -9,11 +10,6 @@ namespace Smol
     class MainLoop;
 
     struct RuntimeConfig;
-    // type itself is context-dependent
-    // in Windows, NativeWindowHandle = HWND
-    // in macOS, NativeWindowHandle = CA::MetalLayer*
-    // otherwise, nullptr
-    using NativeWindowHandle = void*;
 
     class OS{
     private:
@@ -23,18 +19,16 @@ namespace Smol
         static OS* singleton;
 
     public:
-        OS(const RuntimeConfig&);
+        OS(const RuntimeConfig&, RHIDevice&);
         ~OS();
         SMOL_DECLARE_PINNED(OS)
 
-        void Run(MainLoop&);
+        void Run(MainLoop&, RHIDevice&);
 
         inline static OS* Get(){ return singleton; }
 
         u32 GetWidth() const;
         u32 GetHeight() const;
-
-        NativeWindowHandle GetWindow() const;
     };
 
     // direct access to ptr is unsafe, but handy helper

@@ -18,7 +18,7 @@ target_link_libraries(SmolApp
 PRIVATE
     Smol::Core
     Smol::Platform
-    Smol::RHI
+    Smol::Render
     Smol::Scene
 )
 

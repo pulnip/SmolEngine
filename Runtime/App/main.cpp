@@ -10,11 +10,11 @@ constexpr CStr APP_CONFIG_PATH = "Config/DefaultApp.toml";
 int main(int, char*[]){
     auto config = loadTomlFile<AppConfig>(APP_CONFIG_PATH);
 
-    OS os(config.runtime);
     auto device = Smol::CreateDevice();
-    AppMainLoop mainLoop(config);
+    OS os(config.runtime, *device);
+    AppMainLoop mainLoop(config, *device);
 
-    os.Run(mainLoop);
+    os.Run(mainLoop, *device);
 
     return 0;
 }

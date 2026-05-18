@@ -31,14 +31,6 @@ namespace Smol
 
         // Get current frame index (0 to RHI_FRAMES_IN_FLIGHT-1)
         u32 GetCurrentFrameIndex() const;
-        // Get absolute frame number
-        u64 GetFrameNumber() const;
-        // Get time since last frame (in seconds)
-        f64 GetDeltaTime() const;
-        // Get current FPS
-        f64 GetFPS() const;
-        // Get frame time in milliseconds
-        f64 GetFrameTimeMs() const;
 
         // Get fence for current frame
         RHIFence* GetCurrentFence();

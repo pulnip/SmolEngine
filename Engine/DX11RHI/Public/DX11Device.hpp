@@ -49,7 +49,13 @@ namespace Smol
 
         RHICapabilities GetCapabilities() const noexcept RHI_OVERRIDE;
 
-        void Submit(RHICommandList&, RHISwapchain*) RHI_OVERRIDE;
+        void SignalFence(RHIFence&, u64) RHI_OVERRIDE{
+            // NOTE. No-Op for DX11
+        }
+
+        void Submit(RHICommandList&) RHI_OVERRIDE{
+            // NOTE. No-Op for DX11
+        }
 
         void* Get() noexcept RHI_OVERRIDE;
         void* GetContextOrQueue() noexcept RHI_OVERRIDE;

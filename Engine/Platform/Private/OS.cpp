@@ -1,3 +1,5 @@
+#include "RHIDefinitions.hpp"
+#include "RHIDevice.hpp"
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_video.h>
@@ -7,6 +9,7 @@
 #include <imgui_impl_sdl3.h>
 #include "MainLoop.hpp"
 #include "OS.hpp"
+#include "RHISwapchain.hpp"
 #include "RuntimeConfig.hpp"
 
 namespace Smol
@@ -19,18 +22,17 @@ namespace Smol
     #if defined(SMOL_METALRHI)
         SDL_MetalView view;
     #endif
-        u32 width, height;
+        RHISwapchainRAII swapchain = nullptr;
+        u32 width = 0, height = 0;
 
     public:
-        Impl(const RuntimeConfig&);
+        Impl(const RuntimeConfig&, RHIDevice&);
         ~Impl();
 
-        void Run(MainLoop&);
+        void Run(MainLoop&, RHIDevice& device);
 
         u32 GetWidth() const{ return width; }
         u32 GetHeight() const{ return height; }
-
-        NativeWindowHandle GetWindow() const;
 
     private:
         bool ProcessEvents();
@@ -38,13 +40,19 @@ namespace Smol
         SDL_Window* createWindow(const RuntimeConfig::WindowConfig&);
     };
 
-    OS::OS(const RuntimeConfig& config){
+    OS::OS(
+        const RuntimeConfig& config,
+        RHIDevice& device
+    )
+        : impl(std::make_unique<Impl>(config, device))
+    {
         singleton = this;
-
-        impl = std::make_unique<Impl>(config);
     }
 
-    OS::Impl::Impl(const RuntimeConfig& config){
+    OS::Impl::Impl(
+        const RuntimeConfig& config,
+        RHIDevice& device
+    ){
         if(!SDL_SetAppMetadata(
             config.name.c_str(),
             config.version.c_str(),
@@ -71,6 +79,32 @@ namespace Smol
                 SDL_GetError()
             ));
         }
+
+        RHITextureCreateDesc backBufferDesc{
+            .width = config.window.width,
+            .height = config.window.height,
+            .format = RHIPixelFormat::RGBA8_UNORM
+        };
+
+        swapchain = device.CreateSwapchain(RHISwapchainCreateDesc{
+        #if defined(SMOL_DX11RHI)
+            .windowHandle = SDL_GetPointerProperty(
+                SDL_GetWindowProperties(window),
+                SDL_PROP_WINDOW_WIN32_HWND_POINTER,
+                nullptr
+            ),
+        #elif defined(SMOL_METALRHI)
+            .windowHandle = SDL_Metal_GetLayer(view),
+        #endif
+            .bufferDesc = backBufferDesc,
+            // triple buffering
+            .bufferCount = 3,
+            .vsync = true,
+            .allowTearing = false
+        #if defined(_DEBUG) || !defined(NDEBUG)
+            , .debugName = std::format("Swapchain for {}", config.window.title)
+        #endif
+        });
     }
 
     OS::~OS(){
@@ -84,11 +118,11 @@ namespace Smol
         }
     }
 
-    void OS::Run(MainLoop& mainLoop){
-        impl->Run(mainLoop);
+    void OS::Run(MainLoop& mainLoop, RHIDevice& device){
+        impl->Run(mainLoop, device);
     }
 
-    void OS::Impl::Run(MainLoop& mainLoop){
+    void OS::Impl::Run(MainLoop& mainLoop, RHIDevice& device){
         if(!mainLoop.Initialize())
             return;
 
@@ -98,6 +132,13 @@ namespace Smol
 
             if(!mainLoop.Update())
                 break;
+
+            device.BeginFrame();
+            if(!mainLoop.Render(device))
+                break;
+            device.EndFrame();
+
+            swapchain->Present();
         }
 
         mainLoop.Finalize();
@@ -139,22 +180,4 @@ namespace Smol
 
     u32 OS::GetWidth() const{ return impl->GetWidth(); }
     u32 OS::GetHeight() const{ return impl->GetHeight(); }
-
-    NativeWindowHandle OS::GetWindow() const{
-        return impl->GetWindow();
-    }
-
-    NativeWindowHandle OS::Impl::GetWindow() const{
-    #if defined(_WIN32)
-        return SDL_GetPointerProperty(
-            SDL_GetWindowProperties(window),
-            SDL_PROP_WINDOW_WIN32_HWND_POINTER,
-            nullptr
-        );
-    #elif defined(__APPLE__) && defined(SMOL_METALRHI)
-        return SDL_Metal_GetLayer(view);
-    #else
-        return nullptr;
-    #endif
-    }
 }

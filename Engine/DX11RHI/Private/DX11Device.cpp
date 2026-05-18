@@ -157,11 +157,6 @@ namespace Smol
             return std::make_unique<DX11Fence>(*device.Get(), initialValue);
         }
 
-        void Submit(RHICommandList& cmdList, RHISwapchain* swapchain) noexcept{
-            if(swapchain != nullptr)
-                static_cast<DX11Swapchain&>(*swapchain).Present();
-        }
-
         Device* Get() noexcept{ return device.Get(); }
         DeviceContext* GetContext() noexcept{ return context.Get(); }
     };
@@ -228,10 +223,6 @@ namespace Smol
             .flipTextureV = true,
             .clipSpaceMinZ = 0.0f
         };
-    }
-
-    void DX11Device::Submit(RHICommandList& cmdList, RHISwapchain* swapchain){
-        impl->Submit(cmdList, swapchain);
     }
 
     void* DX11Device::Get() noexcept{
