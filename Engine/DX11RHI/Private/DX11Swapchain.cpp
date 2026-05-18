@@ -69,7 +69,7 @@ namespace Smol
         createBackBufferResource();
     }
 
-    void DX11Swapchain::Present(){
+    void DX11Swapchain::Present() const{
         UINT syncInterval = vsync ? 1 : 0;
         UINT flags = (!vsync && allowTearing) ?
             DXGI_PRESENT_ALLOW_TEARING : 0;
