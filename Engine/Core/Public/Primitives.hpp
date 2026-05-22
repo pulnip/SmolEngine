@@ -41,7 +41,7 @@ namespace Smol
             case 0: return x;
             case 1: return y;
             default:
-                SMOL_ASSERT(false && "Vec2 index out of range");
+                SMOL_ASSERT(false, "Vec2 index out of range");
                 std::unreachable();
             }
         }
@@ -50,7 +50,7 @@ namespace Smol
             case 0: return x;
             case 1: return y;
             default:
-                SMOL_ASSERT(false && "Vec2 index out of range");
+                SMOL_ASSERT(false, "Vec2 index out of range");
                 std::unreachable();
             }
         }
@@ -113,7 +113,7 @@ namespace Smol
             case 2: return z;
             case 3: return w;
             default:
-                SMOL_ASSERT(false && "Vec4 index out of range");
+                SMOL_ASSERT(false, "Vec4 index out of range");
                 std::unreachable();
             }
         }
@@ -124,7 +124,7 @@ namespace Smol
             case 2: return z;
             case 3: return w;
             default:
-                SMOL_ASSERT(false && "Vec4 index out of range");
+                SMOL_ASSERT(false, "Vec4 index out of range");
                 std::unreachable();
             }
         }
