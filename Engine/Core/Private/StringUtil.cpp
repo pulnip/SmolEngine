@@ -6,10 +6,10 @@
 
 namespace Smol
 {
-    Str to_upper(StrView view){
+    Str toUpper(StrView view){
         Str upper(view);
         std::transform(view.begin(), view.end(), upper.begin(),
-            [](unsigned char c){ return std::toupper(c); }
+            [](auto c){ return std::toupper(c); }
         );
         return upper;
     }

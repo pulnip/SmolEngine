@@ -1,6 +1,4 @@
 #include <filesystem>
-#include "PathUtil.hpp"
-
 #if defined(_WIN32)
     #include <Windows.h>
 #elif defined(__APPLE__)
@@ -9,13 +7,18 @@
     #include <unistd.h>
     #include <limits.h>
 #endif
+#include "PathUtil.hpp"
 
 namespace Smol
 {
     std::filesystem::path getExecutableDir(){
     #if defined(_WIN32)
         wchar_t buffer[MAX_PATH];
-        GetModuleFileNameW(nullptr, buffer, MAX_PATH);
+        GetModuleFileNameW(
+            nullptr,
+            buffer,
+            MAX_PATH
+        );
         return std::filesystem::path(buffer).parent_path();
     #elif defined(__APPLE__)
         char buffer[PATH_MAX];
@@ -39,9 +42,23 @@ namespace Smol
 
     std::filesystem::path toPath(const char* utf8Str){
     #ifdef _WIN32
-        int wlen = MultiByteToWideChar(CP_UTF8, 0, utf8Str, -1, nullptr, 0);
+        auto wlen = MultiByteToWideChar(
+            CP_UTF8,
+            0,
+            utf8Str,
+            -1,
+            nullptr,
+            0
+        );
         std::wstring wide(wlen, 0);
-        MultiByteToWideChar(CP_UTF8, 0, utf8Str, -1, wide.data(), wlen);
+
+        MultiByteToWideChar(CP_UTF8,
+            0,
+            utf8Str,
+            -1,
+            wide.data(),
+            wlen
+        );
         return std::filesystem::path(wide);
     #else
         return std::filesystem::path(utf8Str);
@@ -50,9 +67,23 @@ namespace Smol
 
     std::filesystem::path toPath(const char* utf8Str, size_t len){
     #ifdef _WIN32
-        int wlen = MultiByteToWideChar(CP_UTF8, 0, utf8Str, static_cast<int>(len), nullptr, 0);
+        int wlen = MultiByteToWideChar(
+            CP_UTF8,
+            0,
+            utf8Str,
+            static_cast<int>(len),
+            nullptr,
+            0
+        );
         std::wstring wide(wlen, 0);
-        MultiByteToWideChar(CP_UTF8, 0, utf8Str, static_cast<int>(len), wide.data(), wlen);
+
+        MultiByteToWideChar(CP_UTF8,
+            0,
+            utf8Str,
+            static_cast<int>(len),
+            wide.data(),
+            wlen
+        );
         return std::filesystem::path(wide);
     #else
         return std::filesystem::path(std::string(utf8Str, len));
