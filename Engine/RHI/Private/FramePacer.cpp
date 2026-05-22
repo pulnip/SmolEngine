@@ -1,4 +1,4 @@
-#include "Log.hpp"
+#include "LogLocal.hpp"
 #include "RHIDevice.hpp"
 #include "RHIFence.hpp"
 #include "RHIFrameScope.hpp"
@@ -19,8 +19,7 @@ namespace Smol
             : device(device)
             , fence(device.CreateFence(0))
         {
-            LOG_INFO("RHI",
-                "Created frame fence manager with {} frames in flight",
+            LOG_INFO("Created frame fence manager with {} frames in flight",
                 RHI_FRAMES_IN_FLIGHT
             );
         }
@@ -54,8 +53,8 @@ namespace Smol
 
             fence->WaitCPU(currentFenceValue);
 
-            LOG_INFO("RHI",
-                "Waited for all {} frames to complete", RHI_FRAMES_IN_FLIGHT
+            LOG_INFO("Waited for all {} frames to complete",
+                RHI_FRAMES_IN_FLIGHT
             );
         }
 
@@ -103,7 +102,7 @@ namespace Smol
 
         void WaitForIdle(){
             fenceManager.WaitForAll();
-            LOG_INFO("RHI", "Frame pacer idle");
+            LOG_INFO("Frame pacer idle");
         }
 
         auto GetCurrentFence(this auto& self) noexcept{
