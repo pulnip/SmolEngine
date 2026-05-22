@@ -36,19 +36,10 @@ namespace Smol
     struct Vec2{
         f32 x = 0.0f, y = 0.0f;
 
-        constexpr f32& operator[](usize i){
+        constexpr auto& operator[](this auto& self, usize i) noexcept{
             switch(i){
-            case 0: return x;
-            case 1: return y;
-            default:
-                SMOL_ASSERT(false, "Vec2 index out of range");
-                std::unreachable();
-            }
-        }
-        constexpr const f32& operator[](usize i) const{
-            switch(i){
-            case 0: return x;
-            case 1: return y;
+            case 0: return self.x;
+            case 1: return self.y;
             default:
                 SMOL_ASSERT(false, "Vec2 index out of range");
                 std::unreachable();
@@ -69,21 +60,11 @@ namespace Smol
     struct Vec3{
         f32 x = 0.0f, y = 0.0f, z = 0.0f;
 
-        constexpr f32& operator[](usize i){
+        constexpr auto& operator[](this auto& self, usize i) noexcept{
             switch(i){
-            case 0: return x;
-            case 1: return y;
-            case 2: return z;
-            default:
-                SMOL_ASSERT(false, "Vec3 index out of range");
-                std::unreachable();
-            }
-        }
-        constexpr const f32& operator[](usize i) const{
-            switch(i){
-            case 0: return x;
-            case 1: return y;
-            case 2: return z;
+            case 0: return self.x;
+            case 1: return self.y;
+            case 2: return self.z;
             default:
                 SMOL_ASSERT(false, "Vec3 index out of range");
                 std::unreachable();
@@ -106,23 +87,12 @@ namespace Smol
     struct Vec4{
         f32 x = 0.0f, y = 0.0f, z = 0.0f, w = 0.0f;
 
-        constexpr f32& operator[](usize i){
+        constexpr auto& operator[](this auto& self, usize i) noexcept{
             switch(i){
-            case 0: return x;
-            case 1: return y;
-            case 2: return z;
-            case 3: return w;
-            default:
-                SMOL_ASSERT(false, "Vec4 index out of range");
-                std::unreachable();
-            }
-        }
-        constexpr const f32& operator[](usize i) const{
-            switch(i){
-            case 0: return x;
-            case 1: return y;
-            case 2: return z;
-            case 3: return w;
+            case 0: return self.x;
+            case 1: return self.y;
+            case 2: return self.z;
+            case 3: return self.w;
             default:
                 SMOL_ASSERT(false, "Vec4 index out of range");
                 std::unreachable();
@@ -154,13 +124,13 @@ namespace Smol
         return {x, y, z, 0.0f};
     }
 
-    inline constexpr Vec3 to_vec3(Vec2 v, f32 z=0.0f){
+    inline constexpr Vec3 toVec3(Vec2 v, f32 z=0.0f) noexcept{
         return {v.x, v.y, z};
     }
-    inline constexpr Vec4 to_vec4(Vec2 v, f32 z=0.0f, f32 w=0.0f){
+    inline constexpr Vec4 toVec4(Vec2 v, f32 z=0.0f, f32 w=0.0f) noexcept{
         return {v.x, v.y, z, w};
     }
-    inline constexpr Vec4 to_vec4(Vec3 v, f32 w=0.0f){
+    inline constexpr Vec4 toVec4(Vec3 v, f32 w=0.0f) noexcept{
         return {v.x, v.y, v.z, w};
     }
 }

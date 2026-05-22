@@ -16,90 +16,90 @@ namespace Smol
 #endif
     static_assert(std::is_standard_layout_v<Mat4>);
 
-    inline constexpr Vec2 operator+(Vec2 lhs, Vec2 rhs){
+    inline constexpr Vec2 operator+(Vec2 lhs, Vec2 rhs) noexcept{
         return {lhs.x+rhs.x, lhs.y+rhs.y};
     }
-    inline constexpr Vec2& operator+=(Vec2& lhs, Vec2 rhs){
+    inline constexpr Vec2& operator+=(Vec2& lhs, Vec2 rhs) noexcept{
         lhs.x += rhs.x;
         lhs.y += rhs.y;
         return lhs;
     }
-    inline constexpr Vec2 operator-(Vec2 v){
+    inline constexpr Vec2 operator-(Vec2 v) noexcept{
         return {-v.x, -v.y};
     }
-    inline constexpr Vec2 operator-(Vec2 lhs, Vec2 rhs){
+    inline constexpr Vec2 operator-(Vec2 lhs, Vec2 rhs) noexcept{
         return {lhs.x-rhs.x, lhs.y-rhs.y};
     }
-    inline constexpr Vec2& operator-=(Vec2& lhs, Vec2 rhs){
+    inline constexpr Vec2& operator-=(Vec2& lhs, Vec2 rhs) noexcept{
         lhs.x -= rhs.x;
         lhs.y -= rhs.y;
         return lhs;
     }
-    inline constexpr Vec2 operator*(Vec2 lhs, Vec2 rhs){
+    inline constexpr Vec2 operator*(Vec2 lhs, Vec2 rhs) noexcept{
         return {lhs.x * rhs.x, lhs.y * rhs.y};
     }
-    inline constexpr Vec2& operator*=(Vec2& lhs, Vec2 rhs){
+    inline constexpr Vec2& operator*=(Vec2& lhs, Vec2 rhs) noexcept{
         lhs.x *= rhs.x;
         lhs.y *= rhs.y;
         return lhs;
     }
-    inline constexpr Vec2 operator*(f32 f, Vec2 v){
+    inline constexpr Vec2 operator*(f32 f, Vec2 v) noexcept{
         return {f * v.x, f * v.y};
     }
-    inline constexpr Vec2 operator*(Vec2 v, f32 f){
+    inline constexpr Vec2 operator*(Vec2 v, f32 f) noexcept{
         return f * v;
     }
-    inline constexpr Vec2& operator*=(Vec2& v, f32 f){
+    inline constexpr Vec2& operator*=(Vec2& v, f32 f) noexcept{
         v.x *= f;
         v.y *= f;
         return v;
     }
-    inline constexpr Vec2 operator/(Vec2 v, f32 f){
+    inline constexpr Vec2 operator/(Vec2 v, f32 f) noexcept{
         return {v.x/f, v.y/f};
     }
-    inline constexpr Vec2& operator/=(Vec2& v, f32 f){
+    inline constexpr Vec2& operator/=(Vec2& v, f32 f) noexcept{
         v.x /= f;
         v.y /= f;
         return v;
     }
 
-    inline constexpr bool operator==(Vec2 lhs, Vec2 rhs){
+    inline constexpr bool operator==(Vec2 lhs, Vec2 rhs) noexcept{
         return lhs.x==rhs.x && lhs.y==rhs.y;
     }
 
-    inline constexpr f32 dot(Vec2 lhs, Vec2 rhs){
+    inline constexpr f32 dot(Vec2 lhs, Vec2 rhs) noexcept{
         return lhs.x*rhs.x + lhs.y*rhs.y;
     }
-    inline constexpr f32 normSquared(Vec2 v){
+    inline constexpr f32 normSquared(Vec2 v) noexcept{
         return dot(v, v);
     }
-    inline f32 norm(Vec2 v){
+    inline f32 norm(Vec2 v) noexcept{
         return std::sqrt(normSquared(v));
     }
-    inline Vec2 normalize(Vec2 v){
+    inline Vec2 normalize(Vec2 v) noexcept{
         return v / norm(v);
     }
-    inline constexpr f32 cross(Vec2 lhs, Vec2 rhs){
+    inline constexpr f32 cross(Vec2 lhs, Vec2 rhs) noexcept{
         return lhs.x*rhs.y - lhs.y*rhs.x;
     }
 
-    inline constexpr Vec3 zeros(){
+    inline constexpr Vec3 zeros() noexcept{
         return {0.0f, 0.0f, 0.0f};
     }
-    inline constexpr Vec3 ones(){
+    inline constexpr Vec3 ones() noexcept{
         return {1.0f, 1.0f, 1.0f};
     }
-    inline constexpr Vec3 unitX(){
+    inline constexpr Vec3 unitX() noexcept{
         return {1.0f, 0.0f, 0.0f};
     }
-    inline constexpr Vec3 unitY(){
+    inline constexpr Vec3 unitY() noexcept{
         return {0.0f, 1.0f, 0.0f};
     }
-    inline constexpr Vec3 unitZ(){
+    inline constexpr Vec3 unitZ() noexcept{
         return {0.0f, 0.0f, 1.0f};
     }
 
-    inline constexpr Mat4 unitMat(){
+    inline constexpr Mat4 unitMat() noexcept{
         return {
             Vec4{1.0f, 0.0f, 0.0f, 0.0f},
             Vec4{0.0f, 1.0f, 0.0f, 0.0f},
@@ -108,87 +108,87 @@ namespace Smol
         };
     }
 
-    inline constexpr Vec3 operator+(Vec3 lhs, Vec3 rhs){
+    inline constexpr Vec3 operator+(Vec3 lhs, Vec3 rhs) noexcept{
         return {lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z};
     }
-    inline constexpr Vec3& operator+=(Vec3& lhs, Vec3 rhs){
+    inline constexpr Vec3& operator+=(Vec3& lhs, Vec3 rhs) noexcept{
         lhs.x += rhs.x;
         lhs.y += rhs.y;
         lhs.z += rhs.z;
         return lhs;
     }
-    inline constexpr Vec3 operator-(Vec3 v){
+    inline constexpr Vec3 operator-(Vec3 v) noexcept{
         return {-v.x, -v.y, -v.z};
     }
-    inline constexpr Vec3 operator-(Vec3 lhs, Vec3 rhs){
+    inline constexpr Vec3 operator-(Vec3 lhs, Vec3 rhs) noexcept{
         return {lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z};
     }
-    inline constexpr Vec3& operator-=(Vec3& lhs, Vec3 rhs){
+    inline constexpr Vec3& operator-=(Vec3& lhs, Vec3 rhs) noexcept{
         lhs.x -= rhs.x;
         lhs.y -= rhs.y;
         lhs.z -= rhs.z;
         return lhs;
     }
-    inline constexpr Vec3 operator*(Vec3 lhs, Vec3 rhs){
+    inline constexpr Vec3 operator*(Vec3 lhs, Vec3 rhs) noexcept{
         return {
             lhs.x * rhs.x,
             lhs.y * rhs.y,
             lhs.z * rhs.z
         };
     }
-    inline constexpr Vec3& operator*=(Vec3& lhs, Vec3 rhs){
+    inline constexpr Vec3& operator*=(Vec3& lhs, Vec3 rhs) noexcept{
         lhs.x *= rhs.x;
         lhs.y *= rhs.y;
         lhs.z *= rhs.z;
         return lhs;
     }
-    inline constexpr Vec3 operator*(f32 f, Vec3 v){
+    inline constexpr Vec3 operator*(f32 f, Vec3 v) noexcept{
         return {
             f * v.x,
             f * v.y,
             f * v.z
         };
     }
-    inline constexpr Vec3 operator*(Vec3 v, f32 f){
+    inline constexpr Vec3 operator*(Vec3 v, f32 f) noexcept{
         return f * v;
     }
-    inline constexpr Vec3& operator*=(Vec3& v, f32 f){
+    inline constexpr Vec3& operator*=(Vec3& v, f32 f) noexcept{
         v.x *= f;
         v.y *= f;
         v.z *= f;
         return v;
     }
-    inline constexpr Vec3 operator/(Vec3 v, f32 f){
+    inline constexpr Vec3 operator/(Vec3 v, f32 f) noexcept{
         return {
             v.x/f,
             v.y/f,
             v.z/f
         };
     }
-    inline constexpr Vec3& operator/=(Vec3& v, f32 f){
+    inline constexpr Vec3& operator/=(Vec3& v, f32 f) noexcept{
         v.x /= f;
         v.y /= f;
         v.z /= f;
         return v;
     }
 
-    inline constexpr bool operator==(Vec3 lhs, Vec3 rhs){
+    inline constexpr bool operator==(Vec3 lhs, Vec3 rhs) noexcept{
         return lhs.x==rhs.x && lhs.y==rhs.y && lhs.z==rhs.z;
     }
 
-    inline constexpr f32 dot(Vec3 lhs, Vec3 rhs){
+    inline constexpr f32 dot(Vec3 lhs, Vec3 rhs) noexcept{
         return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
     }
-    inline constexpr f32 normSquared(Vec3 v){
+    inline constexpr f32 normSquared(Vec3 v) noexcept{
         return dot(v, v);
     }
-    inline f32 norm(Vec3 v){
+    inline f32 norm(Vec3 v) noexcept{
         return std::sqrt(normSquared(v));
     }
-    inline Vec3 normalize(Vec3 v){
+    inline Vec3 normalize(Vec3 v) noexcept{
         return v / norm(v);
     }
-    inline constexpr Vec3 cross(Vec3 lhs, Vec3 rhs){
+    inline constexpr Vec3 cross(Vec3 lhs, Vec3 rhs) noexcept{
         return {
             lhs.y*rhs.z - lhs.z*rhs.y,
             lhs.z*rhs.x - lhs.x*rhs.z,
@@ -196,10 +196,10 @@ namespace Smol
         };
     }
 
-    inline constexpr Vec4 unitQuat(){
+    inline constexpr Vec4 unitQuat() noexcept{
         return {0.0f, 0.0f, 0.0f, 1.0f};
     }
-    inline constexpr Mat4 transpose(const Mat4 mat){
+    inline constexpr Mat4 transpose(const Mat4 mat) noexcept{
         return Mat4{
             Vec4{mat[0][0], mat[1][0], mat[2][0], mat[3][0]},
             Vec4{mat[0][1], mat[1][1], mat[2][1], mat[3][1]},
@@ -208,34 +208,34 @@ namespace Smol
         };
     }
 
-    inline constexpr Vec4 conjugate(Vec4 q){
+    inline constexpr Vec4 conjugate(Vec4 q) noexcept{
         return {-q.x, -q.y, -q.z, q.w};
     }
 
-    inline constexpr Vec4 operator+(Vec4 lhs, Vec4 rhs){
+    inline constexpr Vec4 operator+(Vec4 lhs, Vec4 rhs) noexcept{
         return {lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z, lhs.w+rhs.w};
     }
-    inline constexpr Vec4& operator+=(Vec4& lhs, Vec4 rhs){
+    inline constexpr Vec4& operator+=(Vec4& lhs, Vec4 rhs) noexcept{
         lhs.x += rhs.x;
         lhs.y += rhs.y;
         lhs.z += rhs.z;
         lhs.w += rhs.w;
         return lhs;
     }
-    inline constexpr Vec4 operator-(Vec4 v){
+    inline constexpr Vec4 operator-(Vec4 v) noexcept{
         return {-v.x, -v.y, -v.z, -v.w};
     }
-    inline constexpr Vec4 operator-(Vec4 lhs, Vec4 rhs){
+    inline constexpr Vec4 operator-(Vec4 lhs, Vec4 rhs) noexcept{
         return {lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z, lhs.w-rhs.w};
     }
-    inline constexpr Vec4& operator-=(Vec4& lhs, Vec4 rhs){
+    inline constexpr Vec4& operator-=(Vec4& lhs, Vec4 rhs) noexcept{
         lhs.x -= rhs.x;
         lhs.y -= rhs.y;
         lhs.z -= rhs.z;
         lhs.w -= rhs.w;
         return lhs;
     }
-    inline constexpr Vec4 operator*(Vec4 lhs, Vec4 rhs){
+    inline constexpr Vec4 operator*(Vec4 lhs, Vec4 rhs) noexcept{
         return {
             lhs.x * rhs.x,
             lhs.y * rhs.y,
@@ -243,14 +243,14 @@ namespace Smol
             lhs.w * rhs.w
         };
     }
-    inline constexpr Vec4& operator*=(Vec4& lhs, Vec4 rhs){
+    inline constexpr Vec4& operator*=(Vec4& lhs, Vec4 rhs) noexcept{
         lhs.x *= rhs.x;
         lhs.y *= rhs.y;
         lhs.z *= rhs.z;
         lhs.w *= rhs.w;
         return lhs;
     }
-    inline constexpr Vec4 operator*(f32 f, Vec4 v){
+    inline constexpr Vec4 operator*(f32 f, Vec4 v) noexcept{
         return {
             f * v.x,
             f * v.y,
@@ -258,17 +258,17 @@ namespace Smol
             f * v.w
         };
     }
-    inline constexpr Vec4 operator*(Vec4 v, f32 f){
+    inline constexpr Vec4 operator*(Vec4 v, f32 f) noexcept{
         return f * v;
     }
-    inline constexpr Vec4& operator*=(Vec4& v, f32 f){
+    inline constexpr Vec4& operator*=(Vec4& v, f32 f) noexcept{
         v.x *= f;
         v.y *= f;
         v.z *= f;
         v.w *= f;
         return v;
     }
-    inline constexpr Vec4 operator/(Vec4 v, f32 f){
+    inline constexpr Vec4 operator/(Vec4 v, f32 f) noexcept{
         return {
             v.x / f,
             v.y / f,
@@ -276,26 +276,26 @@ namespace Smol
             v.w / f,
         };
     }
-    inline constexpr Vec4& operator/=(Vec4& v, f32 f){
+    inline constexpr Vec4& operator/=(Vec4& v, f32 f) noexcept{
         v.x /= f;
         v.y /= f;
         v.z /= f;
         v.w /= f;
         return v;
     }
-    inline constexpr f32 dot(Vec4 lhs, Vec4 rhs){
+    inline constexpr f32 dot(Vec4 lhs, Vec4 rhs) noexcept{
         return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z + lhs.w*rhs.w;
     }
-    inline constexpr f32 normSquared(Vec4 v){
+    inline constexpr f32 normSquared(Vec4 v) noexcept{
         return dot(v, v);
     }
-    inline f32 norm(Vec4 v){
+    inline f32 norm(Vec4 v) noexcept{
         return std::sqrt(normSquared(v));
     }
-    inline Vec4 normalize(Vec4 v){
+    inline Vec4 normalize(Vec4 v) noexcept{
         return v / norm(v);
     }
-    inline constexpr Vec4 quat(Vec4 lhs, Vec4 rhs){
+    inline constexpr Vec4 quat(Vec4 lhs, Vec4 rhs) noexcept{
         return Vec4{
             lhs.w*rhs.x + lhs.x*rhs.w + lhs.y*rhs.z - lhs.z*rhs.y,
             lhs.w*rhs.y - lhs.x*rhs.z + lhs.y*rhs.w + lhs.z*rhs.x,
@@ -303,7 +303,7 @@ namespace Smol
             lhs.w*rhs.w - lhs.x*rhs.x - lhs.y*rhs.y - lhs.z*rhs.z
         };
     }
-    inline Vec4 quat(Vec3 r, Vec3 u, Vec3 f){
+    inline Vec4 quat(Vec3 r, Vec3 u, Vec3 f) noexcept{
         f32 m00 = r.x, m01 = u.x, m02 = f.x;
         f32 m10 = r.y, m11 = u.y, m12 = f.y;
         f32 m20 = r.z, m21 = u.z, m22 = f.z;
@@ -343,7 +343,7 @@ namespace Smol
         return normalize(q);
     }
 
-    inline Vec4 rotateX(f32 theta){
+    inline Vec4 rotateX(f32 theta) noexcept{
         f32 half = theta * 0.5f;
         return{
             std::sin(half),
@@ -352,7 +352,7 @@ namespace Smol
             std::cos(half)
         };
     }
-    inline Vec4 rotateY(f32 theta){
+    inline Vec4 rotateY(f32 theta) noexcept{
         f32 half = theta * 0.5f;
         return{
             0.0f,
@@ -361,7 +361,7 @@ namespace Smol
             std::cos(half)
         };
     }
-    inline Vec4 rotateZ(f32 theta){
+    inline Vec4 rotateZ(f32 theta) noexcept{
         f32 half = theta * 0.5f;
         return{
             0.0f,
@@ -370,13 +370,13 @@ namespace Smol
             std::cos(half)
         };
     }
-    inline auto yaw(Vec4 quat){
+    inline auto yaw(Vec4 quat) noexcept{
         f32 siny_cosp = 2*(quat.w*quat.y + quat.x*quat.z);
         f32 cosy_cosp = 1 - 2*(quat.y*quat.y + quat.x*quat.x);
         f32 theta = std::atan2(siny_cosp, cosy_cosp);
         return rotateY(theta);
     }
-    inline auto axisAngle(Vec3 axis, f32 radian){
+    inline auto axisAngle(Vec3 axis, f32 radian) noexcept{
         auto half = radian / 2;
         f32 s = std::sin(half);
         return Vec4{
@@ -386,55 +386,55 @@ namespace Smol
             std::cos(half)
         };
     }
-    inline constexpr auto rotate(Vec4 v, Vec4 q){
+    inline constexpr auto rotate(Vec4 v, Vec4 q) noexcept{
         return quat(quat(q, v), conjugate(q));
     }
-    inline constexpr auto rotate(Vec3 v, Vec4 q){
+    inline constexpr auto rotate(Vec3 v, Vec4 q) noexcept{
         Vec4 r = rotate(static_cast<Vec4>(v), q);
         return static_cast<Vec3>(r);
     }
 
-    inline constexpr auto right(Vec4 q){
+    inline constexpr auto right(Vec4 q) noexcept{
         auto e_x = Vec4{1.0f, 0.0f, 0.0f, 0.0f};
         auto r = rotate(e_x, q);
         return static_cast<Vec3>(r);
     }
-    inline constexpr auto groundRight(Vec4 quat){
+    inline constexpr auto groundRight(Vec4 quat) noexcept{
         auto f = right(quat);
         return f - dot(f, unitY())*unitY();
     }
-    inline constexpr auto up(Vec4 q){
+    inline constexpr auto up(Vec4 q) noexcept{
         auto e_y = Vec4{0.0f, 1.0f, 0.0f, 0.0f};
         auto r = rotate(e_y, q);
         return static_cast<Vec3>(r);
     }
-    inline constexpr auto forward(Vec4 q){
+    inline constexpr auto forward(Vec4 q) noexcept{
         auto e_z = Vec4{0.0f, 0.0f, 1.0f, 0.0f};
         auto r = rotate(e_z, q);
         return static_cast<Vec3>(r);
     }
-    inline constexpr auto groundForward(Vec4 quat){
+    inline constexpr auto groundForward(Vec4 quat) noexcept{
         auto f = forward(quat);
         return f - dot(f, unitY())*unitY();
     }
 
-    inline constexpr auto operator==(Vec4 lhs, Vec4 rhs){
+    inline constexpr auto operator==(Vec4 lhs, Vec4 rhs) noexcept{
         return lhs.x==rhs.x && lhs.y==rhs.y &&
                lhs.z==rhs.z && lhs.w==rhs.w;
     }
 
     // expected multiplication form
-    inline constexpr Vec4 operator*(const Mat4& lhs, const Vec4& rhs){
+    inline constexpr Vec4 operator*(const Mat4& lhs, const Vec4& rhs) noexcept{
         return lhs[0]*rhs.x + lhs[1]*rhs.y + lhs[2]*rhs.z + lhs[3]*rhs.w;
     }
 
-    inline constexpr auto operator*(const Mat4& lhs, const Mat4& rhs){
+    inline constexpr auto operator*(const Mat4& lhs, const Mat4& rhs) noexcept{
         return Mat4{lhs*rhs[0], lhs*rhs[1], lhs*rhs[2], lhs*rhs[3]};
     }
 
     inline auto perspective(
         f32 fovY, f32 aspect, f32 nearZ, f32 farZ
-    ){
+    ) noexcept{
         auto tanHalfFovY = std::tan(0.5f * fovY);
         auto dz = nearZ - farZ;
 
@@ -451,7 +451,7 @@ namespace Smol
         };
     }
 
-    inline constexpr auto orthographic(f32 w, f32 h, f32 nearZ, f32 farZ){
+    inline constexpr auto orthographic(f32 w, f32 h, f32 nearZ, f32 farZ) noexcept{
         auto e22 = 1/(farZ-nearZ);
         auto e23 = -nearZ*e22;
 
@@ -464,7 +464,7 @@ namespace Smol
         };
     }
 
-    inline auto lookAt(Vec3 eye, Vec3 target, Vec3 up){
+    inline auto lookAt(Vec3 eye, Vec3 target, Vec3 up) noexcept{
         auto f = normalize(target - eye);
         auto r = normalize(cross(f, up));
         auto u = cross(r, f);
@@ -477,7 +477,7 @@ namespace Smol
         };
     }
 
-    inline auto rotateXMat(f32 theta){
+    inline auto rotateXMat(f32 theta) noexcept{
         f32 c = std::cos(theta);
         f32 s = std::sin(theta);
         // column-major
@@ -489,7 +489,7 @@ namespace Smol
         };
     }
 
-    inline auto rotateYMat(f32 theta){
+    inline auto rotateYMat(f32 theta) noexcept{
         f32 c = std::cos(theta);
         f32 s = std::sin(theta);
         // column-major
@@ -501,7 +501,7 @@ namespace Smol
         };
     }
 
-    inline auto rotateZMat(f32 theta){
+    inline auto rotateZMat(f32 theta) noexcept{
         f32 c = std::cos(theta);
         f32 s = std::sin(theta);
         // column-major
@@ -513,7 +513,7 @@ namespace Smol
         };
     }
 
-    inline constexpr auto translateMat(Vec3 t){
+    inline constexpr auto translateMat(Vec3 t) noexcept{
         // column-major
         return Mat4{
             Vec4{1.0f, 0.0f, 0.0f, 0.0f},
@@ -523,7 +523,7 @@ namespace Smol
         };
     }
 
-    inline constexpr auto rotateMat(Vec4 q){
+    inline constexpr auto rotateMat(Vec4 q) noexcept{
         f32 xx = q.x * q.x, yy = q.y * q.y, zz = q.z * q.z;
         f32 xy = q.x * q.y, xz = q.x * q.z, yz = q.y * q.z;
         f32 wx = q.w * q.x, wy = q.w * q.y, wz = q.w * q.z;
@@ -536,7 +536,7 @@ namespace Smol
         };
     }
 
-    inline constexpr auto scaleMat(Vec3 s){
+    inline constexpr auto scaleMat(Vec3 s) noexcept{
         return Mat4{
             Vec4{ s.x, 0.0f, 0.0f, 0.0f},
             Vec4{0.0f,  s.y, 0.0f, 0.0f},
@@ -545,7 +545,7 @@ namespace Smol
         };
     }
 
-    inline constexpr auto model_mat(Vec3 pos, Vec4 q, Vec3 scale){
+    inline constexpr auto model_mat(Vec3 pos, Vec4 q, Vec3 scale) noexcept{
         auto t = translateMat(pos);
         auto r = rotateMat(q);
         auto s = scaleMat(scale);
@@ -553,7 +553,7 @@ namespace Smol
         return t*r*s;
     }
 
-    inline constexpr auto view_mat(Vec3 pos, Vec4 q){
+    inline constexpr auto view_mat(Vec3 pos, Vec4 q) noexcept{
         auto inv = conjugate(q);
 
         auto r =    rotateMat( inv);
@@ -566,16 +566,14 @@ namespace Smol
         f32 m1, f32 M1,
         f32 m2, f32 M2,
         f32 epsilon = 0
-    ){
+    ) noexcept{
         SMOL_ASSERT(epsilon >= 0);
         if(m1 > m2){
             std::swap(m1, m2);
             std::swap(M1, M2);
         }
 
-        if(M1 < m2 - epsilon)
-            return false;
-        return true;
+        return M1 >= m2 - epsilon;
     }
 
     inline constexpr f64 toRadian(f64 degree) noexcept{
