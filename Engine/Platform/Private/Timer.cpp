@@ -1,0 +1,51 @@
+#include "Timer.hpp"
+#include <chrono>
+
+namespace Smol
+{
+    Timer::Timer() noexcept
+        : lastPoint(Clock::now()){}
+
+    void Timer::NewFrame() noexcept{
+        [[unlikely]] if(paused) return;
+
+        ++frameNumber;
+        auto now = Clock::now();
+
+        deltaTime = now - lastPoint;
+        elapsedTime += deltaTime;
+
+        lastPoint = now;
+    }
+
+    void Timer::Reset() noexcept{
+        lastPoint = Clock::now();
+        frameNumber = 0;
+        deltaTime = elapsedTime = Duration(0);
+    }
+
+    f64 Timer::GetDeltaTime() const noexcept{
+        using namespace std::chrono;
+
+        auto sec = duration<f64>(deltaTime);
+        return sec.count();
+    }
+
+    f64 Timer::GetElapsedTime() const noexcept{
+        using namespace std::chrono;
+
+        auto sec = duration<f64>(elapsedTime);
+        return sec.count();
+    }
+
+    f64 Timer::GetFPS() const noexcept{
+        using namespace std::chrono;
+
+        auto sec = duration<f64>(elapsedTime).count();
+        // Avoid Div by 0
+        if(sec <= 0.0)
+            return 0.0;
+
+        return frameNumber / sec;
+    }
+}

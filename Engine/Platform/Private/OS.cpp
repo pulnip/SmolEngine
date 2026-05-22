@@ -13,6 +13,7 @@
 #include "OS.hpp"
 #include "RHISwapchain.hpp"
 #include "RuntimeConfig.hpp"
+#include "Timer.hpp"
 
 namespace Smol
 {
@@ -27,6 +28,8 @@ namespace Smol
         RHISwapchainRAII swapchain = nullptr;
         u32 width = 0, height = 0;
 
+        // Non-stop timer
+        Timer sysTimer;
         FramePacer framePacer;
         CommandListPool cmdListPool;
 
@@ -141,7 +144,11 @@ namespace Smol
         if(!mainLoop.Initialize())
             return;
 
+        sysTimer.Reset();
+
         while(true){
+            sysTimer.NewFrame();
+
             [[unlikely]] if(!ProcessEvents())
                 break;
 
