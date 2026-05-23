@@ -58,13 +58,15 @@ function(smol_declare_module NAME)
 endfunction()
 
 function(smol_declare_private_interface NAME)
-    add_library(Smol${NAME}_Private INTERFACE)
+    add_library(Smol${NAME}Private INTERFACE)
 
-    target_include_directories(Smol${NAME}_Private INTERFACE
+    target_include_directories(Smol${NAME}Private INTERFACE
         "${CMAKE_CURRENT_SOURCE_DIR}/Private"
     )
 
-    target_link_libraries(Smol${NAME}_Private INTERFACE Smol::${NAME})
+    target_link_libraries(Smol${NAME}Private INTERFACE Smol::${NAME})
+
+    add_library(Smol::${NAME}::Private ALIAS Smol${NAME}Private)
 endfunction()
 
 function(smol_declare_interface NAME)
