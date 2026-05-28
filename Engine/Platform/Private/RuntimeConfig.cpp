@@ -1,35 +1,54 @@
 #include "RuntimeConfig.hpp"
+#include "DOM.hpp"
 
 namespace Smol
 {
+    static WindowConfig windowConfigFrom(const DOM::Value& root){
+        auto title = root.get<Str>("runtime.window.title")
+            .value_or("DefaultWindow");
+        auto width = root.get<u32>("runtime.window.width")
+            .value_or(800);
+        auto height = root.get<u32>("runtime.window.height")
+            .value_or(600);
+
+        // Window Options
+        auto fullscreen = root.get<bool>("runtime.window.fullscreen")
+            .value_or(false);
+        auto resizable = root.get<bool>("runtime.window.resizable")
+            .value_or(false);
+        auto borderless = root.get<bool>("runtime.window.borderless")
+            .value_or(false);
+        auto always_on_top = root.get<bool>("runtime.window.always_on_top")
+            .value_or(false);
+
+        return WindowConfig{
+            .title = title,
+            .width = width, .height = height,
+
+            .fullscreen = fullscreen,
+            .resizable = resizable,
+            .borderless = borderless,
+            .always_on_top = always_on_top
+        };
+    }
+
     RuntimeConfig TomlTraits<RuntimeConfig>::from(
         const DOM::Value& root
     ){
         RuntimeConfig config;
 
-        config.name = root.get<Str>("metadata.name")
+        auto name = root.get<Str>("runtime.app_name")
             .value_or("AnonymousApp");
-        config.version = root.get<Str>("metadata.version")
+        auto version = root.get<Str>("runtime.app_version")
             .value_or("v0.0.1");
-        config.identifier = root.get<Str>("metadata.identifier")
+        auto identifier = root.get<Str>("runtime.app_identifier")
             .value_or("AnonymousIdentifier");
 
-        auto& window = config.window;
-        window.title = root.get<Str>("window.title")
-            .value_or("DefaultWindow");
-        window.width = root.get<u32>("window.width")
-            .value_or(800);
-        window.height = root.get<u32>("window.height")
-            .value_or(600);
-        window.fullscreen = root.get<bool>("window.fullscreen")
-            .value_or(false);
-        window.resizable = root.get<bool>("window.resizable")
-            .value_or(false);
-        window.borderless = root.get<bool>("window.borderless")
-            .value_or(false);
-        window.always_on_top = root.get<bool>("window.always_on_top")
-            .value_or(false);
-
-        return config;
+        return RuntimeConfig{
+            .name = name,
+            .version = version,
+            .identifier = identifier,
+            .window = windowConfigFrom(root)
+        };
     }
 }

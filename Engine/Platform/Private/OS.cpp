@@ -45,7 +45,7 @@ namespace Smol
     private:
         bool ProcessEvents();
 
-        SDL_Window* createWindow(const RuntimeConfig::WindowConfig&);
+        SDL_Window* createWindow(const WindowConfig&);
 
         void BeginFrame(RHIDevice&);
         void EndFrame(RHIDevice&);
@@ -180,7 +180,7 @@ namespace Smol
         return keepRunning;
     }
 
-    SDL_Window* OS::Impl::createWindow(const RuntimeConfig::WindowConfig& config){
+    SDL_Window* OS::Impl::createWindow(const WindowConfig& config){
         width = config.width;
         height = config.height;
 
