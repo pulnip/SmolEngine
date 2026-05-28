@@ -6,3 +6,8 @@ build/
 
 # macOS Finder
 .DS_Store
+
+# Visual Studio
+.vs/
+x64/
+*.vcxproj.user
