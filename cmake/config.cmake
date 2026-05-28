@@ -26,6 +26,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     add_compile_options(
         /EHsc
+        /MP
+        /Zc:preprocessor
     )
     add_compile_definitions(
         NOMINMAX

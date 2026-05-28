@@ -45,6 +45,44 @@
             }
         },
         {
+            "name": "Windows-msvc",
+            "hidden": true,
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "generator": "Visual Studio 17 2022",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/windows-msvc.cmake"
+        },
+        {
+            "name": "Windows-msvc-x64",
+            "displayName": "msvc-x64",
+            "inherits": "Windows-msvc",
+            "architecture": {
+                "value": "x64",
+                "strategy": "set"
+            },
+            "toolset": {
+                "value": "host=x64",
+                "strategy": "set"
+            }
+        },
+        {
+            "name": "Windows-msvc-x86",
+            "displayName": "msvc-x86",
+            "inherits": "Windows-msvc",
+            "architecture": {
+                "value": "Win32",
+                "strategy": "set"
+            },
+            "toolset": {
+                "value": "host=x64",
+                "strategy": "set"
+            }
+        },
+        {
             "name": "macOS-brew-llvm",
             "displayName": "brew-llvm",
             "inherits": "base",
@@ -60,38 +98,74 @@
     "buildPresets": [
         {
             "name": "Windows-llvm-x64-Debug",
-            "displayName": "x64-Debug",
+            "displayName": "Debug",
             "configurePreset": "Windows-llvm-x64",
             "configuration": "Debug"
         },
         {
             "name": "Windows-llvm-x64-RelWithDebInfo",
-            "displayName": "x64-RelWithDebInfo",
+            "displayName": "RelWithDebInfo",
             "configurePreset": "Windows-llvm-x64",
             "configuration": "RelWithDebInfo"
         },
         {
             "name": "Windows-llvm-x64-Release",
-            "displayName": "x64-Release",
+            "displayName": "Release",
             "configurePreset": "Windows-llvm-x64",
             "configuration": "Release"
         },
         {
             "name": "Windows-llvm-x86-Debug",
-            "displayName": "x86-Debug",
+            "displayName": "Debug",
             "configurePreset": "Windows-llvm-x86",
             "configuration": "Debug"
         },
         {
             "name": "Windows-llvm-x86-RelWithDebInfo",
-            "displayName": "x86-RelWithDebInfo",
+            "displayName": "RelWithDebInfo",
             "configurePreset": "Windows-llvm-x86",
             "configuration": "RelWithDebInfo"
         },
         {
             "name": "Windows-llvm-x86-Release",
-            "displayName": "x86-Release",
+            "displayName": "Release",
             "configurePreset": "Windows-llvm-x86",
+            "configuration": "Release"
+        },
+        {
+            "name": "Windows-msvc-x64-Debug",
+            "displayName": "Debug",
+            "configurePreset": "Windows-msvc-x64",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Windows-msvc-x64-RelWithDebInfo",
+            "displayName": "RelWithDebInfo",
+            "configurePreset": "Windows-msvc-x64",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Windows-msvc-x64-Release",
+            "displayName": "Release",
+            "configurePreset": "Windows-msvc-x64",
+            "configuration": "Release"
+        },
+        {
+            "name": "Windows-msvc-x86-Debug",
+            "displayName": "Debug",
+            "configurePreset": "Windows-msvc-x86",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Windows-msvc-x86-RelWithDebInfo",
+            "displayName": "RelWithDebInfo",
+            "configurePreset": "Windows-msvc-x86",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Windows-msvc-x86-Release",
+            "displayName": "Release",
+            "configurePreset": "Windows-msvc-x86",
             "configuration": "Release"
         },
         {
