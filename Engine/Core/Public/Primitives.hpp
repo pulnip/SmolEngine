@@ -48,6 +48,13 @@ namespace Smol
 
         constexpr operator Vec3() const noexcept;
         constexpr operator Vec4() const noexcept;
+
+        constexpr Vec2 yx() const noexcept{
+            return {
+                .x = y,
+                .y = x
+            };
+        }
     };
 #ifdef __cpp_lib_is_implicit_lifetime
     static_assert(std::is_implicit_lifetime_v<Vec2>);
@@ -75,6 +82,45 @@ namespace Smol
             return {x, y};
         }
         constexpr operator Vec4() const noexcept;
+
+        constexpr Vec3 xyz() const noexcept{
+            return *this;
+        }
+        constexpr Vec3 xzy() const noexcept{
+            return {
+                .x = x,
+                .y = z,
+                .z = y
+            };
+        }
+        constexpr Vec3 yxz() const noexcept{
+            return {
+                .x = y,
+                .y = x,
+                .z = z
+            };
+        }
+        constexpr Vec3 yzx() const noexcept{
+            return {
+                .x = y,
+                .y = z,
+                .z = x
+            };
+        }
+        constexpr Vec3 zxy() const noexcept{
+            return {
+                .x = z,
+                .y = x,
+                .z = y
+            };
+        }
+        constexpr Vec3 zyx() const noexcept{
+            return {
+                .x = z,
+                .y = y,
+                .z = x
+            };
+        }
     };
 #ifdef __cpp_lib_is_implicit_lifetime
     static_assert(std::is_implicit_lifetime_v<Vec3>);

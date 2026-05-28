@@ -1,0 +1,41 @@
+[[actions]]
+name = "Move"
+type = "Axis2D"
+
+[[actions]]
+name = "Jump"
+type = "Digital"
+
+# Gameplay Context
+[context]
+name = "Gameplay"
+
+[[context.mappings]]
+key = "W"
+action = "Move"
+modifiers = [
+    {type = "Swizzle", order = "YXZ"}
+]
+[[context.mappings]]
+key = "A"
+action = "Move"
+modifiers = [
+    {type = "Negate"}
+]
+[[context.mappings]]
+key = "S"
+action = "Move"
+modifiers = [
+    {type = "Swizzle", order = "YXZ"},
+    {type = "Negate"}
+]
+[[context.mappings]]
+key = "D"
+action = "Move"
+
+[[context.mappings]]
+key = "Space"
+action = "Jump"
+triggers = [
+    {type = "Pressed"}
+]

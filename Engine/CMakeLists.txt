@@ -11,5 +11,6 @@ elseif(RENDER_BACKEND STREQUAL "Metal")
 endif()
 add_subdirectory(Serialization)
 
+add_subdirectory(Input)
 add_subdirectory(Render)
 add_subdirectory(Scene)
