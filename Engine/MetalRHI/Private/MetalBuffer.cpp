@@ -1,5 +1,3 @@
-#pragma once
-
 #include <cstring>
 #include <Metal/Metal.hpp>
 #include <TargetConditionals.h>
