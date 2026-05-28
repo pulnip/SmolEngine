@@ -2,16 +2,52 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
 
+# Compiler Config
+add_library(SmolProjectInterface INTERFACE)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    if(CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
+        # clang-cl config
+        # use Exception Handling for stack unwinding
+        add_compile_options(
+            /EHsc
+        )
+        add_compile_definitions(
+            NOMINMAX
+            VC_EXTRALEAN
+            WIN32_LEAN_AND_MEAN
+        )
+        target_compile_options(SmolProjectInterface
+        INTERFACE
+            /utf-8
+        )
+    else()
+        # pure Clang or AppleClang config here
+    endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    add_compile_options(
+        /EHsc
+    )
+    add_compile_definitions(
+        NOMINMAX
+        VC_EXTRALEAN
+        WIN32_LEAN_AND_MEAN
+    )
+    target_compile_options(SmolProjectInterface
+    INTERFACE
+        /utf-8
+    )
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(SmolProjectInterface
+    INTERFACE
+        -finput-charset=UTF-8
+    )
+endif()
+
 # OS config
 if(WIN32)
     set(RENDER_BACKEND "DX11" CACHE STRING "Rendering backend")
     if(RENDER_BACKEND STREQUAL "Metal")
         message(FATAL_ERROR "Metal is not supported on Windows.")
-    endif()
-
-    if(MSVC)
-        add_compile_options(/EHsc)
-        add_compile_definitions(NOMINMAX)
     endif()
 elseif(APPLE)
     set(RENDER_BACKEND "Metal" CACHE STRING "Rendering backend")
