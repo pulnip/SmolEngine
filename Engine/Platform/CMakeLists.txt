@@ -10,3 +10,11 @@ PRIVATE
     imgui
     Smol::Log
 )
+
+if(SMOL_ENABLE_TEST)
+    smol_declare_test(Platform
+        DIRECTORY Test
+        DEPENDS Smol::Platform
+        LABELS "unit"
+    )
+endif()
