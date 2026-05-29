@@ -10,5 +10,8 @@ namespace Smol
         SMOL_DECLARE_INTERFACE(InputModifier)
 
         virtual InputValue Modify(InputValue v) noexcept = 0;
+        inline InputValue operator()(InputValue v) noexcept{
+            return Modify(v);
+        }
     };
 }
