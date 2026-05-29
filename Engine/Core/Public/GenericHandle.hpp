@@ -1,6 +1,7 @@
 #pragma once
 
 #include <limits>
+#include "HashUtil.hpp"
 #include "Primitives.hpp"
 #include "Semantics.hpp"
 
@@ -39,3 +40,15 @@ namespace Smol
         }
     };
 }
+
+template<typename T>
+struct std::hash<Smol::GenericHandle<T>>{
+    std::size_t operator()(const Smol::GenericHandle<T>& handle) const noexcept{
+        using namespace Smol;
+
+        return Smol::hashAll(
+            handle.GetIndex(),
+            handle.GetGeneration()
+        );
+    }
+};

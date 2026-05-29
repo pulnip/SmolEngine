@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstddef>
+#include "Primitives.hpp"
 
 namespace Smol
 {
@@ -22,7 +22,7 @@ namespace Smol
         // Sentinel
         Unknown
     };
-    constexpr auto NUM_KEY = static_cast<size_t>(KeyCode::Unknown);
+    constexpr auto NUM_KEY = static_cast<usize>(KeyCode::Unknown);
 
     enum class KeyState{
         None     = 0b00,
