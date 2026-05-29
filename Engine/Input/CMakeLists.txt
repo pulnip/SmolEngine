@@ -3,6 +3,7 @@ smol_declare_module(Input)
 target_link_libraries(SmolInput
 PUBLIC
     Smol::Core
+    Smol::Platform
     Smol::Serialization
 PRIVATE
     Smol::Log
