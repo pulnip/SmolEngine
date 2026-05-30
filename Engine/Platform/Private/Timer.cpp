@@ -7,7 +7,7 @@ namespace Smol
         : lastPoint(Clock::now()){}
 
     void Timer::NewFrame() noexcept{
-        [[unlikely]] if(paused) return;
+        if(paused) [[unlikely]] return;
 
         ++frameNumber;
         auto now = Clock::now();

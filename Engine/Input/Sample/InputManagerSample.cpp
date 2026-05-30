@@ -63,7 +63,7 @@ int main(int, char*[]){
     TestActor actor;
 
     while(true){
-        [[unlikely]] if(!window.ProcessEvents())
+        if(!window.ProcessEvents()) [[unlikely]]
             break;
         manager.NewFrame();
     }

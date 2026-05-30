@@ -135,14 +135,14 @@ namespace Smol
         while(true){
             sysTimer.NewFrame();
 
-            [[unlikely]] if(!window.ProcessEvents())
+            if(!window.ProcessEvents()) [[unlikely]]
                 break;
 
-            [[unlikely]] if(!mainLoop.Update())
+            if(!mainLoop.Update()) [[unlikely]]
                 break;
 
             BeginFrame(device);
-            [[unlikely]] if(!mainLoop.Render(cmdListPool))
+            if(!mainLoop.Render(cmdListPool)) [[unlikely]]
                 break;
             EndFrame(device);
         }

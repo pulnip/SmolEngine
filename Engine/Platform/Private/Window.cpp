@@ -91,7 +91,7 @@ namespace Smol
         while(SDL_PollEvent(&event)){
             // ImGui_ImplSDL3_ProcessEvent(&event);
             switch(event.type){
-            case SDL_EVENT_QUIT:
+            case SDL_EVENT_QUIT: [[unlikely]]
                 keepRunning = false;
                 break;
             case SDL_EVENT_KEY_DOWN:
@@ -100,6 +100,9 @@ namespace Smol
                 inputProvider.OnPlatformEvent(event);
                 break;
             }
+
+            if(!keepRunning) [[unlikely]]
+                break;
         }
 
         return keepRunning;

@@ -32,7 +32,7 @@ namespace Smol
         // Begin a new frame
         // Waits for N-2 frame to ensure GPU is done with it
         void BeginFrame(){
-            [[unlikely]] if(currentFenceValue < RHI_FRAMES_IN_FLIGHT)
+            if(currentFenceValue < RHI_FRAMES_IN_FLIGHT) [[unlikely]]
                 return;
 
             auto waitValue = currentFenceValue - RHI_FRAMES_IN_FLIGHT;
@@ -48,7 +48,7 @@ namespace Smol
 
         // Wait for all frames to complete
         void WaitForAll(){
-            [[unlikely]] if(currentFenceValue == 0)
+            if(currentFenceValue == 0) [[unlikely]]
                 return;
 
             fence->WaitCPU(currentFenceValue);
