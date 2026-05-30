@@ -4,6 +4,7 @@
 #include <Metal/MTLDevice.hpp>
 #include <Metal/MTLTexture.hpp>
 #include <QuartzCore/CAMetalDrawable.hpp>
+#include <SDL3/SDL_metal.h>
 #include "Primitives.hpp"
 #include "RHIAPI.hpp"
 #include "RHIDefinitions.hpp"
@@ -13,6 +14,8 @@ namespace Smol
 {
     class MetalSwapchain final: public RHISwapchain{
     private:
+        SDL_MetalView view;
+        // Cache MetalLayer
         CA::MetalLayer* metalLayer = nullptr;
         CA::MetalDrawable* currentDrawable = nullptr;
 

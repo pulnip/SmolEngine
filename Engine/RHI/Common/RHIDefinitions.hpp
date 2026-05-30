@@ -439,7 +439,7 @@ namespace Smol
     constexpr u32 RHI_FRAMES_IN_FLIGHT = 3;
 
     struct RHISwapchainCreateDesc{
-        void* windowHandle = nullptr; // Platform-specific window handle
+        void* sdlWindow = nullptr;
         RHITextureCreateDesc bufferDesc;
         u32 bufferCount = RHI_FRAMES_IN_FLIGHT; // Triple buffering
         bool vsync = true;                           // VSync enabled by default

@@ -12,19 +12,6 @@ PRIVATE
     Smol::Log
 )
 
-if(RENDER_BACKEND STREQUAL "DX11")
-    target_compile_definitions(SmolRHI
-    PUBLIC
-        SMOL_DXRHI
-        SMOL_DX11RHI
-    )
-elseif(RENDER_BACKEND STREQUAL "Metal")
-    target_compile_definitions(SmolRHI
-    PUBLIC
-        SMOL_METALRHI
-    )
-endif()
-
 # if(SMOL_ENABLE_TEST)
 #     add_subdirectory(Sample)
 

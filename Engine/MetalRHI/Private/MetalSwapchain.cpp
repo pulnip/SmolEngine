@@ -11,11 +11,12 @@ namespace Smol
         MTL::Device& device,
         const RHISwapchainCreateDesc& desc
     )
-        : width(desc.bufferDesc.width)
+        : view(SDL_Metal_CreateView(static_cast<SDL_Window*>(desc.sdlWindow)))
+        , metalLayer(static_cast<CA::MetalLayer*>(SDL_Metal_GetLayer(view)))
+        , width(desc.bufferDesc.width)
         , height(desc.bufferDesc.height)
         , format(desc.bufferDesc.format)
     {
-        metalLayer = static_cast<CA::MetalLayer*>(desc.windowHandle);
         SMOL_ASSERT(metalLayer != nullptr);
 
         metalLayer->setDevice(&device);

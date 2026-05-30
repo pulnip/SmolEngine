@@ -1,9 +1,5 @@
-#include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
-#include <SDL3/SDL_video.h>
-#if defined(SMOL_METALRHI)
-    #include <SDL3/SDL_metal.h>
-#endif
+#include <SDL3/SDL_error.h>
 #include "CommandListPool.hpp"
 #include "FramePacer.hpp"
 #include "MainLoop.hpp"
@@ -42,9 +38,6 @@ namespace Smol
     private:
         SDLInitializer initializer;
         Window window;
-    #if defined(SMOL_METALRHI)
-        SDL_MetalView view;
-    #endif
         RHISwapchainRAII swapchain = nullptr;
         u32 width = 0, height = 0;
 
@@ -86,27 +79,14 @@ namespace Smol
         , framePacer(device)
         , cmdListPool(device)
     {
-    #if defined(SMOL_METALRHI)
-        view = SDL_Metal_CreateView(window);
-    #endif
-
         RHITextureCreateDesc backBufferDesc{
             .width = config.window.width,
             .height = config.window.height,
             .format = RHIPixelFormat::RGBA8_UNORM
         };
 
-        auto sdlWindow = static_cast<SDL_Window*>(window.GetWindow());
         swapchain = device.CreateSwapchain(RHISwapchainCreateDesc{
-        #if defined(SMOL_DX11RHI)
-            .windowHandle = SDL_GetPointerProperty(
-                SDL_GetWindowProperties(sdlWindow),
-                SDL_PROP_WINDOW_WIN32_HWND_POINTER,
-                nullptr
-            ),
-        #elif defined(SMOL_METALRHI)
-            .windowHandle = SDL_Metal_GetLayer(view),
-        #endif
+            .sdlWindow = window.GetWindow(),
             .bufferDesc = backBufferDesc,
             // triple buffering
             .bufferCount = 3,

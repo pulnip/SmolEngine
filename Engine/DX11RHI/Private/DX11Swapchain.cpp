@@ -1,4 +1,5 @@
 #include <d3d11.h>
+#include <SDL3/SDL_video.h>
 #include "DX11Definitions.hpp"
 #include "DX11Util.hpp"
 #include "DX11Swapchain.hpp"
@@ -10,8 +11,9 @@ namespace Smol
         Factory& factory,
         const RHISwapchainCreateDesc& desc
     )
-        :device(device)
-        ,vsync(desc.vsync), allowTearing(desc.allowTearing)
+        : device(device)
+        , vsync(desc.vsync)
+        , allowTearing(desc.allowTearing)
         , width(desc.bufferDesc.width)
         , height(desc.bufferDesc.height)
         , format(desc.bufferDesc.format)
@@ -32,9 +34,15 @@ namespace Smol
                 DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : UINT(0)
         };
 
+        auto sdlWindow = static_cast<SDL_Window*>(desc.sdlWindow);
+        auto hWnd = SDL_GetPointerProperty(
+            SDL_GetWindowProperties(sdlWindow),
+            SDL_PROP_WINDOW_WIN32_HWND_POINTER,
+            nullptr
+        );
         factory.CreateSwapChainForHwnd(
             &device,
-            static_cast<HWND>(desc.windowHandle),
+            static_cast<HWND>(hWnd),
             &swapChainDesc,
             nullptr,
             nullptr,

@@ -17,5 +17,6 @@ PRIVATE
     dxgi.lib
     d3dcompiler.lib
     dxguid.lib
+    SDL3::SDL3
     Smol::Log
 )
