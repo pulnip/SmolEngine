@@ -15,7 +15,7 @@ namespace Smol
     enum TriggerEvent{
         Started = 0,
         Triggered = 1,
-        Completed = 2
+        Finished = 2
     };
 
     class InputProvider;

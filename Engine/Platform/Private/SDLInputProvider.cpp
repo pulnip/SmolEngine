@@ -187,6 +187,9 @@ namespace Smol
         case SDL_EVENT_KEY_DOWN:
             [[fallthrough]];
         case SDL_EVENT_KEY_UP: {
+            if(event.key.repeat)
+                break;
+
             auto keyCode = convert(event.key.scancode);
             if(keyCode == KeyCode::Unknown)
                 break;

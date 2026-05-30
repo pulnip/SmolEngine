@@ -21,8 +21,11 @@ static InputManager& GetInputManager(){
     static InputManager singleton(
         InputConfig{
             .mappings = {
-            {"Move", KeyCode::W},
-            {"Jump", KeyCode::Space}
+                {"Move", KeyCode::W},
+                {"Move", KeyCode::A},
+                {"Move", KeyCode::S},
+                {"Move", KeyCode::D},
+                {"Jump", KeyCode::Space}
             }
         },
         GetWindow().GetInputProvider()
@@ -33,28 +36,67 @@ static InputManager& GetInputManager(){
 
 struct TestActor{
 private:
-    InputAction moveAction;
-    InputAction jumpAction;
+    InputAction moveActionStarted;
+    InputAction moveActionTriggered;
+    InputAction moveActionFinished;
+
+    InputAction jumpActionStarted;
+    InputAction jumpActionTriggered;
+    InputAction jumpActionFinished;
 
 public:
     TestActor(){
-        moveAction = GetInputManager().BindAction(
-            "Move", TriggerEvent::Triggered,
-            this, &TestActor::OnMove
+        moveActionStarted = GetInputManager().BindAction(
+            "Move", TriggerEvent::Started,
+            this, &TestActor::OnMoveStarted
         );
-        jumpAction = GetInputManager().BindAction(
+        moveActionTriggered = GetInputManager().BindAction(
+            "Move", TriggerEvent::Triggered,
+            this, &TestActor::OnMoveTriggered
+        );
+        moveActionFinished = GetInputManager().BindAction(
+            "Move", TriggerEvent::Finished,
+            this, &TestActor::OnMoveFinished
+        );
+
+        jumpActionStarted = GetInputManager().BindAction(
+            "Jump", TriggerEvent::Started,
+            this, &TestActor::OnJumpStarted
+        );
+        jumpActionTriggered = GetInputManager().BindAction(
             "Jump", TriggerEvent::Triggered,
-            this, &TestActor::OnJump
+            this, &TestActor::OnJumpTriggered
+        );
+        jumpActionFinished = GetInputManager().BindAction(
+            "Jump", TriggerEvent::Finished,
+            this, &TestActor::OnJumpFinished
         );
     }
     ~TestActor() = default;
 
-    void OnMove(){
-        std::cout << "Move!" << std::endl;
+    void OnMoveStarted(){
+        // immediate flush for debugging
+        std::cout << "Move Started!" << std::endl;
     }
 
-    void OnJump(){
-        std::cout << "Jump!" << std::endl;
+    void OnMoveTriggered(){
+        std::cout << "Move Triggered!" << std::endl;
+    }
+
+    void OnMoveFinished(){
+        std::cout << "Move Finished!" << std::endl;
+    }
+
+    void OnJumpStarted(){
+        std::cout << "Jump Started!" << std::endl;
+    }
+
+    void OnJumpTriggered(){
+        std::cout << "Jump Triggered!" << std::endl;
+    }
+
+    void OnJumpFinished(){
+        std::cout << "Jump Finished!" << std::endl;
     }
 };
 
