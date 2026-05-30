@@ -19,4 +19,5 @@ if(SMOL_ENABLE_TEST)
             Smol::Serialization
         LABELS "unit"
     )
+    add_subdirectory(Sample)
 endif()

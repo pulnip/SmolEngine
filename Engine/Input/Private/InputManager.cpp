@@ -7,7 +7,7 @@ namespace Smol
 {
     InputManager::InputManager(
         const InputConfig& config,
-        InputProvider* provider
+        const InputProvider* provider
     )
         : provider(std::move(provider))
         , mappings(config.mappings)

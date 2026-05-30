@@ -1,13 +1,13 @@
 #pragma once
 
 #include "CoreFWD.hpp"
-#include "Primitives.hpp"
 #include "RHIFWD.hpp"
 #include "Semantics.hpp"
 
 namespace Smol
 {
     class MainLoop;
+    class InputProvider;
 
     struct RuntimeConfig;
 
@@ -27,8 +27,7 @@ namespace Smol
 
         inline static OS* Get(){ return singleton; }
 
-        u32 GetWidth() const;
-        u32 GetHeight() const;
+        const InputProvider* GetInputProvider() const noexcept;
     };
 
     // direct access to ptr is unsafe, but handy helper

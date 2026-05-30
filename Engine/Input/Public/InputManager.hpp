@@ -27,7 +27,7 @@ namespace Smol
 
     private:
         // Dependency Injection from OS
-        InputProvider* provider = nullptr;
+        const InputProvider* provider = nullptr;
 
         StringHashMap<KeyCode> mappings;
 
@@ -43,7 +43,7 @@ namespace Smol
 
         InputManager(
             const InputConfig&,
-            InputProvider*
+            const InputProvider*
         );
 
         void NewFrame();

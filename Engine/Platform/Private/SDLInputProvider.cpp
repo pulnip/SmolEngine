@@ -171,6 +171,9 @@ namespace Smol
             else
                 ReleaseKey(keyCode);
         } break;
+        default:
+            // Input Provider should handle specific case
+            std::unreachable();
         }
     }
 }
