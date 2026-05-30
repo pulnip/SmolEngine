@@ -1,4 +1,5 @@
 #include <iostream>
+#include <SDL3/SDL_timer.h>
 #include "InputManager.hpp"
 #include "Window.hpp"
 #include "RuntimeConfig.hpp"
@@ -65,6 +66,9 @@ int main(int, char*[]){
     while(true){
         if(!window.ProcessEvents()) [[unlikely]]
             break;
+
         manager.NewFrame();
+        // Without Delay, Loop too tight!
+        SDL_Delay(5);
     }
 }
