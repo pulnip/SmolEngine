@@ -133,11 +133,11 @@ function(smol_declare_test NAME)
     )
 
     add_test(
-        NAME Smol${NAME}-Test
+        NAME Smol${NAME}Test
         COMMAND $<TARGET_FILE:Smol${NAME}Test>
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     )
-    set_tests_properties(Smol${NAME}-Test
+    set_tests_properties(Smol${NAME}Test
     PROPERTIES
         LABELS "${ARG_LABELS}"
     )
