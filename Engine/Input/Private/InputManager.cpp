@@ -1,6 +1,7 @@
 #include "Assert.hpp"
 #include <utility>
 #include "InputManager.hpp"
+#include "InputProvider.hpp"
 
 namespace Smol
 {
@@ -41,10 +42,10 @@ namespace Smol
         }
     }
 
-    InputManager::Handle InputManager::bindAction(
+    InputAction InputManager::bindAction(
         StrView str,
         TriggerEvent event,
-        ActionCallback&& callback
+        Callback&& callback
     ){
         auto handle = callbacks.emplace(std::move(callback));
 
@@ -52,7 +53,7 @@ namespace Smol
         actionMap[Str(str)].push_back(std::move(action));
         handleToAction[handle] = str;
 
-        return handle;
+        return InputAction(handle, this);
     }
 
     void InputManager::UnbindAction(Handle handle){

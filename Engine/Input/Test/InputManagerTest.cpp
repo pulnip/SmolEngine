@@ -32,20 +32,20 @@ protected:
 static u32 actionCallCounter = 0;
 
 struct TestActor{
-    GenericHandle<ActionCallback> handle;
+private:
+    InputAction action;
 
+public:
     TestActor(){
-        handle = GetInputManager().BindAction(
-            "Action", TriggerEvent::Started, this, &TestActor::OnAction
+        action = GetInputManager().BindAction(
+            "Action", TriggerEvent::Started,
+            this, &TestActor::OnAction
         );
     }
+    ~TestActor() = default;
 
     void OnAction(){
         ++actionCallCounter;
-    }
-
-    ~TestActor(){
-        GetInputManager().UnbindAction(handle);
     }
 };
 
