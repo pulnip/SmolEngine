@@ -1,17 +1,20 @@
 #pragma once
 
 #include <format>
-#include "Logger.hpp"
+#include "LogDefinitions.hpp"
 
 namespace Smol
 {
+    namespace detail
+    {
+        void Log(LogMessage&&);
+    }
+
     template<typename... Args>
     void Log(LogLevel level, CStr category,
         std::source_location location,
         std::format_string<Args...> fmt, Args&&... args
     ) noexcept{
-        static auto& logger = Logger::Get();
-
         LogMessage msg{
             .level = level,
             .category = category,
@@ -21,7 +24,7 @@ namespace Smol
             .time_point = std::chrono::system_clock::now()
         };
 
-        logger.Log(std::move(msg));
+        detail::Log(std::move(msg));
     }
 }
 
