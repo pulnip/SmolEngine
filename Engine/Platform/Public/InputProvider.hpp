@@ -7,20 +7,45 @@
 namespace Smol
 {
     class InputProvider{
-    protected:
-        std::bitset<NUM_KEY> currentKeys;
-        std::bitset<NUM_KEY> previousKeys;
+    private:
+        std::bitset<NUM_KEY> pressedState;
+        std::bitset<NUM_KEY> releasedState;
 
     public:
         SMOL_DECLARE_INTERFACE(InputProvider)
 
-        virtual void Poll() = 0;
+        // Call After All Event Process Done
+        virtual bool IsKeyDown(KeyCode) const noexcept = 0;
 
-        // only check current state
-        bool IsKeyDown(KeyCode keyCode) const noexcept;
-        // combination of previous state and current state
-        KeyState GetKeyState(KeyCode) const noexcept;
-        // reset keystate to default
-        void Reset() noexcept;
+        // true if Rising Edge Exist
+        bool IsKeyPressed(KeyCode keyCode) const noexcept{
+            auto ordKey = static_cast<usize>(keyCode);
+
+            return pressedState.test(ordKey);
+        }
+        // true if Falling Edge Exist
+        bool IsKeyReleased(KeyCode keyCode) const noexcept{
+            auto ordKey = static_cast<usize>(keyCode);
+
+            return releasedState.test(ordKey);
+        }
+
+    protected:
+        void ConsumeEdge() noexcept{
+            pressedState.reset();
+            releasedState.reset();
+        }
+
+        void PressKey(KeyCode keyCode) noexcept{
+            auto ordKey = static_cast<usize>(keyCode);
+
+            pressedState.set(ordKey);
+        }
+
+        void ReleaseKey(KeyCode keyCode) noexcept{
+            auto ordKey = static_cast<usize>(keyCode);
+
+            releasedState.set(ordKey);
+        }
     };
 }

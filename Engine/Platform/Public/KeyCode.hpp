@@ -23,13 +23,4 @@ namespace Smol
         Unknown
     };
     constexpr auto NUM_KEY = static_cast<usize>(KeyCode::Unknown);
-
-    enum class KeyState{
-        None     = 0b00,
-        Pressed  = 0b01,
-        Released = 0b10,
-        Held     = 0b11,
-        // Sentinel
-        Unknown
-    };
 }

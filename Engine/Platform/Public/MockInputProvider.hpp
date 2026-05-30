@@ -1,22 +1,47 @@
 #pragma once
 
+#include <bitset>
 #include "InputProvider.hpp"
+#include "KeyCode.hpp"
 
 namespace Smol
 {
     class MockInputProvider final: public InputProvider{
     private:
-        std::bitset<NUM_KEY> transitionKeys;
+        std::bitset<NUM_KEY> heldState;
+        std::bitset<NUM_KEY> pressedState;
+        std::bitset<NUM_KEY> releasedState;
 
     public:
         MockInputProvider() = default;
         ~MockInputProvider() = default;
 
-        void Poll() override;
-        void Reset();
+        bool IsKeyDown(KeyCode keyCode) const noexcept override{
+            auto ordKey = static_cast<usize>(keyCode);
+
+            return heldState.test(ordKey);
+        }
+
+        void NewFrame() noexcept{
+            InputProvider::ConsumeEdge();
+        }
+        void Reset() noexcept{
+            InputProvider::ConsumeEdge();
+            heldState.reset();
+        }
 
         // simulate keyboard
-        void PressKey(KeyCode);
-        void ReleaseKey(KeyCode);
+        void PressKey(KeyCode keyCode) noexcept{
+            InputProvider::PressKey(keyCode);
+            auto ordKey = static_cast<usize>(keyCode);
+
+            heldState.set(ordKey, true);
+        }
+        void ReleaseKey(KeyCode keyCode) noexcept{
+            InputProvider::ReleaseKey(keyCode);
+            auto ordKey = static_cast<usize>(keyCode);
+
+            heldState.set(ordKey, false);
+        }
     };
 }
