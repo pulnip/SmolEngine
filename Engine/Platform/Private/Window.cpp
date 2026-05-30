@@ -33,26 +33,33 @@ namespace Smol
     Window::Window(const WindowConfig& config)
         : impl(std::make_unique<Impl>(config)) {}
 
-    inline SDL_Window* createWindow(const WindowConfig& config){
-        SDL_WindowFlags flags =
+    Window::Impl::Impl(const WindowConfig& config)
+        : inputProvider()
+        , width(config.width), height(config.height)
+    {
+        SDL_InitFlags initFlags = SDL_INIT_VIDEO;
+        if(!SDL_InitSubSystem(initFlags)){
+            throw std::runtime_error(std::format(
+                "Couldn't initialize SDL: {}",
+                SDL_GetError()
+            ));
+        }
+
+        SDL_WindowFlags windowFlags =
             (config.fullscreen    ? SDL_WINDOW_FULLSCREEN    : 0) |
             (config.resizable     ? SDL_WINDOW_RESIZABLE     : 0) |
             (config.borderless    ? SDL_WINDOW_BORDERLESS    : 0) |
             (config.always_on_top ? SDL_WINDOW_ALWAYS_ON_TOP : 0);
-
-        return SDL_CreateWindow(
+        window = SDL_CreateWindow(
             config.title.c_str(),
             config.width,
             config.height,
-            flags
+            windowFlags
         );
-    }
 
-    Window::Impl::Impl(const WindowConfig& config)
-        : window(createWindow(config))
-        , width(config.width), height(config.height)
-    {
         if(window == nullptr){
+            SDL_QuitSubSystem(initFlags);
+
             throw std::runtime_error(std::format(
                 "Couldn't create Window: {}",
                 SDL_GetError()
@@ -66,6 +73,8 @@ namespace Smol
         if(window != nullptr){
             SDL_DestroyWindow(window);
             window = nullptr;
+
+            SDL_QuitSubSystem(SDL_INIT_VIDEO);
         }
     }
 

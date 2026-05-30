@@ -11,6 +11,7 @@ namespace Smol
 
     public:
         SDLInputProvider();
+        ~SDLInputProvider();
 
         bool IsKeyDown(KeyCode) const noexcept override;
 

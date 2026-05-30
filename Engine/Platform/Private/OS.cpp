@@ -36,14 +36,6 @@ namespace Smol
                 SDL_GetError()
             ));
         }
-
-        SDL_InitFlags flags = SDL_INIT_EVENTS | SDL_INIT_VIDEO;
-        if(!SDL_Init(flags)){
-            throw std::runtime_error(std::format(
-                "Couldn't initialize SDL: {}",
-                SDL_GetError()
-            ));
-        }
     }
 
     class OS::Impl{

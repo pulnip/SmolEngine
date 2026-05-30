@@ -1,7 +1,8 @@
 #include <utility>
-#include "KeyCode.hpp"
-#include "SDL3/SDL_events.h"
+#include <SDL3/SDL_events.h>
+#include <SDL3/SDL_init.h>
 #include <SDL3/SDL_keyboard.h>
+#include "KeyCode.hpp"
 #include "SDLInputProvider.hpp"
 
 namespace Smol
@@ -147,9 +148,33 @@ namespace Smol
         }
     }
 
-    SDLInputProvider::SDLInputProvider()
-        : heldState(SDL_GetKeyboardState(nullptr))
-    {}
+    SDLInputProvider::SDLInputProvider(){
+        SDL_InitFlags flags = SDL_INIT_EVENTS;
+        if(!SDL_InitSubSystem(flags)){
+            throw std::runtime_error(std::format(
+                "Couldn't initialize SDL: {}",
+                SDL_GetError()
+            ));
+        }
+
+        heldState = SDL_GetKeyboardState(nullptr);
+        if(heldState == nullptr){
+            SDL_QuitSubSystem(flags);
+
+            throw std::runtime_error(std::format(
+                "Couldn't get keyboard state: {}",
+                SDL_GetError()
+            ));
+        }
+    }
+
+    SDLInputProvider::~SDLInputProvider(){
+        if(heldState != nullptr){
+            heldState = nullptr;
+
+            SDL_QuitSubSystem(SDL_INIT_EVENTS);
+        }
+    }
 
     bool SDLInputProvider::IsKeyDown(KeyCode keyCode) const noexcept{
         auto sdlCode = convert(keyCode);
