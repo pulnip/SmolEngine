@@ -18,14 +18,25 @@ static Window& GetWindow(){
     return singleton;
 }
 static InputManager& GetInputManager(){
+    using enum KeyCode;
+
     static InputManager singleton(
         InputConfig{
             .mappings = {
-                {"Move", KeyCode::W},
-                {"Move", KeyCode::A},
-                {"Move", KeyCode::S},
-                {"Move", KeyCode::D},
-                {"Jump", KeyCode::Space}
+                {
+                    "Move",
+                    ActionInfo{
+                        .mappings = {W, A, S, D},
+                        .count = 0
+                    }
+                },
+                {
+                    "Jump",
+                    ActionInfo{
+                        .mappings = {Space},
+                        .count = 0
+                    }
+                }
             }
         },
         GetWindow().GetInputProvider()

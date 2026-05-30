@@ -1,10 +1,15 @@
-#include "Assert.hpp"
 #include <utility>
+#include "Assert.hpp"
+#include "HashUtil.hpp"
 #include "InputManager.hpp"
 #include "InputProvider.hpp"
 
 namespace Smol
 {
+    usize InputManager::ActionKeyHash::operator()(const ActionKey& key) const{
+        return hashAll(key.actionName, key.event);
+    }
+
     InputManager::InputManager(
         const InputConfig& config,
         const InputProvider* provider
@@ -14,32 +19,80 @@ namespace Smol
     {}
 
     void InputManager::NewFrame(){
-        for(const auto& [name, actions]: actionMap){
-            auto it = mappings.find(name);
-            if(it == mappings.end())
-                continue;
+        handleActionStarted();
+        handleActionTriggered();
+        // Notice! key could be Pressed and Released on Same frame.
+        handleActionFinished();
+    }
 
-            for(const auto& [event, handle]: actions){
-                using enum TriggerEvent;
+    void InputManager::handleActionStarted(){
+        for(auto& [action, info]: mappings){
+            const auto isReadyToStart = info.count == 0;
+            bool anyKeyPressed = false;
 
-                switch(event){
-                case Started:
-                    if(provider->IsKeyPressed(it->second))
-                        callbacks.get(handle)();
-                    break;
-                case Triggered:
-                    if(provider->IsKeyDown(it->second))
-                        callbacks.get(handle)();
-                    break;
-                case Completed:
-                    if(provider->IsKeyReleased(it->second))
-                        callbacks.get(handle)();
-                    break;
-                default:
-                    std::unreachable();
+            for(const auto& key: info.mappings){
+                if(provider->IsKeyPressed(key)){
+                    anyKeyPressed = true;
+                    ++info.count;
                 }
             }
+
+            const auto isActionStarted = isReadyToStart && anyKeyPressed;
+            if(isActionStarted) [[unlikely]]
+                fireAction(ActionKey{
+                    .actionName = action,
+                    .event = TriggerEvent::Started
+                });
         }
+    }
+
+    void InputManager::handleActionTriggered(){
+        for(const auto& [action, info]: mappings){
+            bool anyKeyHeld = false;
+
+            for(const auto& key: info.mappings){
+                if(provider->IsKeyDown(key))
+                    anyKeyHeld = true;
+            }
+
+            if(anyKeyHeld)
+                fireAction(ActionKey{
+                    .actionName = action,
+                    .event = TriggerEvent::Triggered
+                });
+        }
+    }
+
+    void InputManager::handleActionFinished(){
+        for(auto& [action, info]: mappings){
+            bool anyKeyReleased = false;
+
+            for(const auto& key: info.mappings){
+                if(provider->IsKeyReleased(key)){
+                    anyKeyReleased = true;
+                    --info.count;
+                }
+            }
+
+            const auto isActionFinished = info.count == 0 && anyKeyReleased;
+            if(isActionFinished)
+                fireAction(ActionKey{
+                    .actionName = action,
+                    .event = TriggerEvent::Finished
+                });
+        }
+    }
+
+    void InputManager::UnbindAction(Handle handle){
+        callbacks.remove(handle);
+
+        auto it = handleToAction.find(handle);
+        SMOL_ASSERT(it != handleToAction.end());
+
+        const ActionKey& actionKey = it->second;
+        std::vector<Handle>& v = actionMap[actionKey];
+        std::erase(v, handle);
+        handleToAction.erase(it);
     }
 
     InputAction InputManager::bindAction(
@@ -49,20 +102,25 @@ namespace Smol
     ){
         auto handle = callbacks.emplace(std::move(callback));
 
-        auto action = std::make_tuple(event, handle);
-        actionMap[Str(str)].push_back(std::move(action));
-        handleToAction[handle] = str;
+        ActionKey key{
+            .actionName = Str(str),
+            .event = event
+        };
+        actionMap[key].push_back(handle);
+        handleToAction[handle] = std::move(key);
 
         return InputAction(handle, this);
     }
 
-    void InputManager::UnbindAction(Handle handle){
-        callbacks.remove(handle);
+    void InputManager::fireAction(const ActionKey& key){
+        auto it = actionMap.find(key);
+        // Binded funtion not exist
+        if(it == actionMap.end())
+            return;
 
-        auto it = handleToAction.find(handle);
-        SMOL_ASSERT(it != handleToAction.end());
-
-        // std::erase(actionMap[it->second], handle);
-        handleToAction.erase(it);
+        const auto& handles = it->second;
+        // fire action
+        for(const auto& handle: handles)
+            callbacks.get(handle)();
     }
 }

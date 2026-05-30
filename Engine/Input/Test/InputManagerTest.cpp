@@ -11,10 +11,17 @@ static MockInputProvider& GetInputProvider(){
     return provider;
 }
 static InputManager& GetInputManager(){
+    using enum KeyCode;
+
     static InputManager inputManager(
         InputConfig{
             .mappings = {
-                {"Action", KeyCode::A}
+                {
+                    "Action",
+                    ActionInfo{
+                        .mappings = {A}
+                    }
+                }
             }
         },
         &GetInputProvider()

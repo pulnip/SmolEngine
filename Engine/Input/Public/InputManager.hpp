@@ -1,13 +1,10 @@
 #pragma once
 
-#include <tuple>
 #include <unordered_map>
 #include <vector>
 #include "InputAction.hpp"
 #include "InputConfig.hpp"
-#include "KeyCode.hpp"
 #include "Semantics.hpp"
-#include "StringUtil.hpp"
 #include "SlotMap.hpp"
 
 namespace Smol
@@ -20,6 +17,7 @@ namespace Smol
 
     class InputProvider;
 
+    // Input Manager for Single Context
     class InputManager final{
     public:
         using Callback = InputAction::Callback;
@@ -29,12 +27,24 @@ namespace Smol
         // Dependency Injection from OS
         const InputProvider* provider = nullptr;
 
-        StringHashMap<KeyCode> mappings;
+        ActionMappings mappings;
 
         SlotMap<Callback> callbacks;
-        StringHashMap<std::vector<std::tuple<TriggerEvent, Handle>>> actionMap;
+        // Action Name with Trigger Event
+        struct ActionKey{
+            ActionName actionName;
+            TriggerEvent event;
+
+            friend bool operator==(const ActionKey& lhs, const ActionKey& rhs){
+                return lhs.actionName == rhs.actionName && lhs.event == rhs.event;
+            }
+        };
+        struct ActionKeyHash{
+            usize operator()(const ActionKey& key) const;
+        };
+        std::unordered_map<ActionKey, std::vector<Handle>, ActionKeyHash> actionMap;
         // for easy remove
-        std::unordered_map<Handle, Str> handleToAction;
+        std::unordered_map<Handle, ActionKey> handleToAction;
 
     public:
         InputManager() = default;
@@ -61,7 +71,13 @@ namespace Smol
         void UnbindAction(Handle);
 
     private:
+        void handleActionStarted();
+        void handleActionTriggered();
+        void handleActionFinished();
+
         [[nodiscard]]
         InputAction bindAction(StrView action, TriggerEvent, Callback&&);
+
+        void fireAction(const ActionKey&);
     };
 }
