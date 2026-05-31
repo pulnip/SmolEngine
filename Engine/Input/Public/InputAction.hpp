@@ -2,6 +2,7 @@
 
 #include <functional>
 #include "GenericHandle.hpp"
+#include "InputValue.hpp"
 #include "Semantics.hpp"
 
 namespace Smol
@@ -11,7 +12,7 @@ namespace Smol
     // RAII for ActionHandle
     class InputAction final{
     public:
-        using Callback = std::function<void()>;
+        using Callback = std::function<void(InputValue)>;
         using Handle = GenericHandle<Callback>;
 
     private:

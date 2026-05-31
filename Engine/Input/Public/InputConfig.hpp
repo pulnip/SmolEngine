@@ -1,16 +1,22 @@
 #pragma once
 
 #include <vector>
+#include "InputModifier.hpp"
 #include "KeyCode.hpp"
 #include "Primitives.hpp"
 
 namespace Smol
 {
     using ActionName = Str;
-    using KeyMappings = std::vector<KeyCode>;
+    struct KeyBinding{
+        // fire condition
+        KeyCode keyCode;
+        std::vector<InputModifier> modifiers;
+    };
+    using KeyBindings = std::vector<KeyBinding>;
     struct ActionInfo{
         ActionName name;
-        KeyMappings mappings;
+        KeyBindings mappings;
         // Counting for Action with Multiple Key mapping
         u32 count = 0;
     };

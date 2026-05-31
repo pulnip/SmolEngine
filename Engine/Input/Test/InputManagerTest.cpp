@@ -7,24 +7,27 @@
 using namespace Smol;
 
 static MockInputProvider& GetInputProvider(){
-    static MockInputProvider provider;
-    return provider;
+    static MockInputProvider singleton;
+
+    return singleton;
 }
 static InputManager& GetInputManager(){
     using enum KeyCode;
 
-    static InputManager inputManager(
-        InputConfig{
-            .mappings = {
-                ActionInfo{
-                    .name = "Action",
-                    .mappings = {A}
+    static InputManager singleton(InputConfig{
+        .mappings = {
+            ActionInfo{
+                .name = "Action",
+                .mappings = {
+                    KeyBinding{
+                        .keyCode = A
+                    },
                 }
             }
-        },
-        &GetInputProvider()
-    );
-    return inputManager;
+        }
+    }, &GetInputProvider());
+
+    return singleton;
 }
 
 class InputManagerTest: public ::testing::Test{
@@ -49,7 +52,7 @@ public:
     }
     ~TestActor() = default;
 
-    void OnAction(){
+    void OnAction(InputValue){
         ++actionCallCounter;
     }
 };

@@ -62,11 +62,13 @@ namespace Smol
         template<typename T>
         [[nodiscard]]
         auto BindAction(StrView action, TriggerEvent event,
-            T* actor, void(T::*func)()
+            T* actor, void(T::*func)(InputValue)
         ){
-            return bindAction(action, event, [actor, func](){
-                (actor->*func)();
-            });
+            return bindAction(action, event,
+                [actor, func](InputValue v){
+                    (actor->*func)(v);
+                }
+            );
         }
         void UnbindAction(Handle);
 
@@ -78,6 +80,6 @@ namespace Smol
         [[nodiscard]]
         InputAction bindAction(StrView action, TriggerEvent, Callback&&);
 
-        void fireAction(const ActionKey&);
+        void fireAction(const ActionKey&, InputValue);
     };
 }

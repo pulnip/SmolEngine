@@ -11,7 +11,7 @@ TEST(InputModifierTest, SwizzleModifier){
     InputValue value(1, 2, 3);
     auto modified = Apply(modifier, value);
 
-    auto vec = modified.Get<Vec3>();
+    auto vec = modified.GetAxis3D();
     EXPECT_EQ(vec.x, 2.0f);
     EXPECT_EQ(vec.y, 1.0f);
     EXPECT_EQ(vec.z, 3.0f);
@@ -33,7 +33,7 @@ TEST(InputModifierTest, SwizzleModifierFromTOML){
     InputValue value(1, 2, 3);
     auto modified = Apply(modifier, value);
 
-    auto vec = modified.Get<Vec3>();
+    auto vec = modified.GetAxis3D();
     EXPECT_EQ(vec.x, 2.0f);
     EXPECT_EQ(vec.y, 1.0f);
     EXPECT_EQ(vec.z, 3.0f);
@@ -45,7 +45,7 @@ TEST(InputModifierTest, NegateModifier){
     InputValue value(1, 2, 3);
     auto modified = Apply(modifier, value);
 
-    auto vec = modified.Get<Vec3>();
+    auto vec = modified.GetAxis3D();
     EXPECT_EQ(vec.x, -1.0f);
     EXPECT_EQ(vec.y, -2.0f);
     EXPECT_EQ(vec.z, -3.0f);
@@ -66,7 +66,7 @@ TEST(InputModifierTest, NegateModifierFromTOML){
     InputValue value(1, 2, 3);
     auto modified = Apply(modifier, value);
 
-    auto vec = modified.Get<Vec3>();
+    auto vec = modified.GetAxis3D();
     EXPECT_EQ(vec.x, -1.0f);
     EXPECT_EQ(vec.y, -2.0f);
     EXPECT_EQ(vec.z, -3.0f);

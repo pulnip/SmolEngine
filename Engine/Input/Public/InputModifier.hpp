@@ -47,7 +47,7 @@ namespace Smol
             : negateX(negateX), negateY(negateY), negateZ(negateZ){}
 
         inline InputValue Modify(InputValue v) const noexcept{
-            auto raw = v.Get<Vec3>();
+            auto raw = v.GetAxis3D();
 
             return InputValue(
                 negateX ? -raw.x : raw.x,
@@ -85,7 +85,7 @@ namespace Smol
         InputValue Modify(InputValue v) const noexcept{
             using enum SwizzleOrder;
 
-            auto raw = v.Get<Vec3>();
+            auto raw = v.GetAxis3D();
 
             switch(order){
             case XYZ:

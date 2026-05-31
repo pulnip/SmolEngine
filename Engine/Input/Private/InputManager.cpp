@@ -1,3 +1,4 @@
+#include <span>
 #include <utility>
 #include "Assert.hpp"
 #include "HashUtil.hpp"
@@ -25,15 +26,28 @@ namespace Smol
         handleActionFinished();
     }
 
+    inline InputValue Apply(std::span<const InputModifier> modifiers){
+        auto value = InputValue(unitX());
+
+        for(auto& modifier: modifiers)
+            value = Apply(modifier, value);
+
+        return value;
+    }
+
     void InputManager::handleActionStarted(){
         for(auto& action: mappings){
             const auto isReadyToStart = action.count == 0;
             bool anyKeyPressed = false;
+            auto value = InputValue(zeros());
 
-            for(const auto& key: action.mappings){
-                if(provider->IsKeyPressed(key)){
+            for(const auto& binding: action.mappings){
+                if(provider->IsKeyPressed(binding.keyCode)){
                     anyKeyPressed = true;
                     ++action.count;
+
+                    // Additive Blending
+                    value += Apply(binding.modifiers);
                 }
             }
 
@@ -42,35 +56,42 @@ namespace Smol
                 fireAction(ActionKey{
                     .actionName = action.name,
                     .event = TriggerEvent::Started
-                });
+                }, value);
         }
     }
 
     void InputManager::handleActionTriggered(){
         for(const auto& action: mappings){
             bool anyKeyHeld = false;
+            auto value = InputValue(zeros());
 
-            for(const auto& key: action.mappings){
-                if(provider->IsKeyDown(key))
+            for(const auto& binding: action.mappings){
+                if(provider->IsKeyDown(binding.keyCode)){
                     anyKeyHeld = true;
+
+                    value += Apply(binding.modifiers);
+                }
             }
 
             if(anyKeyHeld)
                 fireAction(ActionKey{
                     .actionName = action.name,
                     .event = TriggerEvent::Triggered
-                });
+                }, value);
         }
     }
 
     void InputManager::handleActionFinished(){
         for(auto& action: mappings){
             bool anyKeyReleased = false;
+            auto value = InputValue(zeros());
 
-            for(const auto& key: action.mappings){
-                if(provider->IsKeyReleased(key)){
+            for(const auto& binding: action.mappings){
+                if(provider->IsKeyReleased(binding.keyCode)){
                     anyKeyReleased = true;
                     --action.count;
+
+                    value += Apply(binding.modifiers);
                 }
             }
 
@@ -79,7 +100,7 @@ namespace Smol
                 fireAction(ActionKey{
                     .actionName = action.name,
                     .event = TriggerEvent::Finished
-                });
+                }, value);
         }
     }
 
@@ -112,7 +133,7 @@ namespace Smol
         return InputAction(handle, this);
     }
 
-    void InputManager::fireAction(const ActionKey& key){
+    void InputManager::fireAction(const ActionKey& key, InputValue value){
         auto it = actionMap.find(key);
         // Binded funtion not exist
         if(it == actionMap.end())
@@ -121,6 +142,6 @@ namespace Smol
         const auto& handles = it->second;
         // fire action
         for(const auto& handle: handles)
-            callbacks.get(handle)();
+            callbacks.get(handle)(value);
     }
 }

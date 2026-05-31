@@ -1,42 +1,75 @@
 #include <iostream>
 #include <SDL3/SDL_timer.h>
+#include "InputConfig.hpp"
 #include "InputManager.hpp"
+#include "InputModifier.hpp"
 #include "Window.hpp"
 #include "RuntimeConfig.hpp"
 
 using namespace Smol;
 
 static Window& GetWindow(){
-    static Window singleton(
-        WindowConfig{
-            .title = "InputManagerSample",
-            .width = 400,
-            .height = 400
-        }
-    );
+    static Window singleton(WindowConfig{
+        .title = "InputManagerSample",
+        .width = 400,
+        .height = 400
+    });
 
     return singleton;
 }
 static InputManager& GetInputManager(){
     using enum KeyCode;
+    using enum SwizzleOrder;
 
-    static InputManager singleton(
-        InputConfig{
-            .mappings = {
-                ActionInfo{
-                    .name = "Move",
-                    .mappings = {W, A, S, D},
-                    .count = 0
+    static InputManager singleton(InputConfig{
+        .mappings = {
+            ActionInfo{
+                .name = "Move",
+                .mappings = {
+                    KeyBinding{
+                        .keyCode = W,
+                        .modifiers = {
+                            SwizzleModifier(ZYX)
+                        }
+                    },
+                    KeyBinding{
+                        .keyCode = A,
+                        .modifiers = {
+                            NegateModifier(
+                                true,
+                                false,
+                                false
+                            )
+                        }
+                    },
+                    KeyBinding{
+                        .keyCode = S,
+                        .modifiers = {
+                            SwizzleModifier(ZYX),
+                            NegateModifier(
+                                false,
+                                false,
+                                true
+                            ),
+                        }
+                    },
+                    KeyBinding{
+                        .keyCode = D
+                    }
                 },
-                ActionInfo{
-                    .name = "Jump",
-                    .mappings = {Space},
-                    .count = 0
-                }
+                .count = 0
+            },
+            ActionInfo{
+                .name = "Jump",
+                .mappings = {
+                    KeyBinding{
+                        .keyCode = Space
+                    },
+                },
+                .count = 0
             }
-        },
-        GetWindow().GetInputProvider()
-    );
+        }
+    }, GetWindow().GetInputProvider());
 
     return singleton;
 }
@@ -81,28 +114,40 @@ public:
     }
     ~TestActor() = default;
 
-    void OnMoveStarted(){
+    void OnMoveStarted(InputValue v){
+        auto dir = v.GetAxis3D();
+
         // immediate flush for debugging
-        std::cout << "Move Started!" << std::endl;
+        std::cout << "Start Move to " <<
+            dir.x << ", " << dir.y << ", " << dir.z
+        << std::endl;
     }
 
-    void OnMoveTriggered(){
-        std::cout << "Move Triggered!" << std::endl;
+    void OnMoveTriggered(InputValue v){
+        auto dir = v.GetAxis3D();
+
+        std::cout << "Trigger Move to " <<
+            dir.x << ", " << dir.y << ", " << dir.z
+        << std::endl;
     }
 
-    void OnMoveFinished(){
-        std::cout << "Move Finished!" << std::endl;
+    void OnMoveFinished(InputValue v){
+        auto dir = v.GetAxis3D();
+
+        std::cout << "Finish Move to " <<
+            dir.x << ", " << dir.y << ", " << dir.z
+        << std::endl;
     }
 
-    void OnJumpStarted(){
+    void OnJumpStarted(InputValue v){
         std::cout << "Jump Started!" << std::endl;
     }
 
-    void OnJumpTriggered(){
+    void OnJumpTriggered(InputValue v){
         std::cout << "Jump Triggered!" << std::endl;
     }
 
-    void OnJumpFinished(){
+    void OnJumpFinished(InputValue v){
         std::cout << "Jump Finished!" << std::endl;
     }
 };
