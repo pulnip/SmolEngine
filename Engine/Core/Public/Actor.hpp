@@ -37,7 +37,9 @@ namespace Smol
         std::vector<ActorRAII> children;
 
     public:
-        SMOL_DECLARE_INTERFACE(Actor)
+        Actor() = default;
+        virtual ~Actor() = default;
+        SMOL_DECLARE_MOVE_ONLY(Actor)
 
         template<typename T, class... Args>
             requires (!IsBuiltinComponent<T>())

@@ -6,6 +6,8 @@ namespace Smol
 {
     class Object{
     public:
-        SMOL_DECLARE_INTERFACE(Object)
+        Object() = default;
+        virtual ~Object() = default;
+        SMOL_DECLARE_MOVE_ONLY(Object)
     };
 }
