@@ -16,57 +16,6 @@ namespace Smol
 #endif
     static_assert(std::is_standard_layout_v<Mat4>);
 
-    inline constexpr Vec2 operator+(Vec2 lhs, Vec2 rhs) noexcept{
-        return {lhs.x+rhs.x, lhs.y+rhs.y};
-    }
-    inline constexpr Vec2& operator+=(Vec2& lhs, Vec2 rhs) noexcept{
-        lhs.x += rhs.x;
-        lhs.y += rhs.y;
-        return lhs;
-    }
-    inline constexpr Vec2 operator-(Vec2 v) noexcept{
-        return {-v.x, -v.y};
-    }
-    inline constexpr Vec2 operator-(Vec2 lhs, Vec2 rhs) noexcept{
-        return {lhs.x-rhs.x, lhs.y-rhs.y};
-    }
-    inline constexpr Vec2& operator-=(Vec2& lhs, Vec2 rhs) noexcept{
-        lhs.x -= rhs.x;
-        lhs.y -= rhs.y;
-        return lhs;
-    }
-    inline constexpr Vec2 operator*(Vec2 lhs, Vec2 rhs) noexcept{
-        return {lhs.x * rhs.x, lhs.y * rhs.y};
-    }
-    inline constexpr Vec2& operator*=(Vec2& lhs, Vec2 rhs) noexcept{
-        lhs.x *= rhs.x;
-        lhs.y *= rhs.y;
-        return lhs;
-    }
-    inline constexpr Vec2 operator*(f32 f, Vec2 v) noexcept{
-        return {f * v.x, f * v.y};
-    }
-    inline constexpr Vec2 operator*(Vec2 v, f32 f) noexcept{
-        return f * v;
-    }
-    inline constexpr Vec2& operator*=(Vec2& v, f32 f) noexcept{
-        v.x *= f;
-        v.y *= f;
-        return v;
-    }
-    inline constexpr Vec2 operator/(Vec2 v, f32 f) noexcept{
-        return {v.x/f, v.y/f};
-    }
-    inline constexpr Vec2& operator/=(Vec2& v, f32 f) noexcept{
-        v.x /= f;
-        v.y /= f;
-        return v;
-    }
-
-    inline constexpr bool operator==(Vec2 lhs, Vec2 rhs) noexcept{
-        return lhs.x==rhs.x && lhs.y==rhs.y;
-    }
-
     inline constexpr f32 dot(Vec2 lhs, Vec2 rhs) noexcept{
         return lhs.x*rhs.x + lhs.y*rhs.y;
     }
@@ -81,99 +30,6 @@ namespace Smol
     }
     inline constexpr f32 cross(Vec2 lhs, Vec2 rhs) noexcept{
         return lhs.x*rhs.y - lhs.y*rhs.x;
-    }
-
-    inline constexpr Vec3 zeros() noexcept{
-        return {0.0f, 0.0f, 0.0f};
-    }
-    inline constexpr Vec3 ones() noexcept{
-        return {1.0f, 1.0f, 1.0f};
-    }
-    inline constexpr Vec3 unitX() noexcept{
-        return {1.0f, 0.0f, 0.0f};
-    }
-    inline constexpr Vec3 unitY() noexcept{
-        return {0.0f, 1.0f, 0.0f};
-    }
-    inline constexpr Vec3 unitZ() noexcept{
-        return {0.0f, 0.0f, 1.0f};
-    }
-
-    inline constexpr Mat4 unitMat() noexcept{
-        return {
-            Vec4{1.0f, 0.0f, 0.0f, 0.0f},
-            Vec4{0.0f, 1.0f, 0.0f, 0.0f},
-            Vec4{0.0f, 0.0f, 1.0f, 0.0f},
-            Vec4{0.0f, 0.0f, 0.0f, 1.0f}
-        };
-    }
-
-    inline constexpr Vec3 operator+(Vec3 lhs, Vec3 rhs) noexcept{
-        return {lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z};
-    }
-    inline constexpr Vec3& operator+=(Vec3& lhs, Vec3 rhs) noexcept{
-        lhs.x += rhs.x;
-        lhs.y += rhs.y;
-        lhs.z += rhs.z;
-        return lhs;
-    }
-    inline constexpr Vec3 operator-(Vec3 v) noexcept{
-        return {-v.x, -v.y, -v.z};
-    }
-    inline constexpr Vec3 operator-(Vec3 lhs, Vec3 rhs) noexcept{
-        return {lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z};
-    }
-    inline constexpr Vec3& operator-=(Vec3& lhs, Vec3 rhs) noexcept{
-        lhs.x -= rhs.x;
-        lhs.y -= rhs.y;
-        lhs.z -= rhs.z;
-        return lhs;
-    }
-    inline constexpr Vec3 operator*(Vec3 lhs, Vec3 rhs) noexcept{
-        return {
-            lhs.x * rhs.x,
-            lhs.y * rhs.y,
-            lhs.z * rhs.z
-        };
-    }
-    inline constexpr Vec3& operator*=(Vec3& lhs, Vec3 rhs) noexcept{
-        lhs.x *= rhs.x;
-        lhs.y *= rhs.y;
-        lhs.z *= rhs.z;
-        return lhs;
-    }
-    inline constexpr Vec3 operator*(f32 f, Vec3 v) noexcept{
-        return {
-            f * v.x,
-            f * v.y,
-            f * v.z
-        };
-    }
-    inline constexpr Vec3 operator*(Vec3 v, f32 f) noexcept{
-        return f * v;
-    }
-    inline constexpr Vec3& operator*=(Vec3& v, f32 f) noexcept{
-        v.x *= f;
-        v.y *= f;
-        v.z *= f;
-        return v;
-    }
-    inline constexpr Vec3 operator/(Vec3 v, f32 f) noexcept{
-        return {
-            v.x/f,
-            v.y/f,
-            v.z/f
-        };
-    }
-    inline constexpr Vec3& operator/=(Vec3& v, f32 f) noexcept{
-        v.x /= f;
-        v.y /= f;
-        v.z /= f;
-        return v;
-    }
-
-    inline constexpr bool operator==(Vec3 lhs, Vec3 rhs) noexcept{
-        return lhs.x==rhs.x && lhs.y==rhs.y && lhs.z==rhs.z;
     }
 
     inline constexpr f32 dot(Vec3 lhs, Vec3 rhs) noexcept{
@@ -196,93 +52,10 @@ namespace Smol
         };
     }
 
-    inline constexpr Vec4 unitQuat() noexcept{
-        return {0.0f, 0.0f, 0.0f, 1.0f};
-    }
-    inline constexpr Mat4 transpose(const Mat4 mat) noexcept{
-        return Mat4{
-            Vec4{mat[0][0], mat[1][0], mat[2][0], mat[3][0]},
-            Vec4{mat[0][1], mat[1][1], mat[2][1], mat[3][1]},
-            Vec4{mat[0][2], mat[1][2], mat[2][2], mat[3][2]},
-            Vec4{mat[0][3], mat[1][3], mat[2][3], mat[3][3]}
-        };
-    }
-
     inline constexpr Vec4 conjugate(Vec4 q) noexcept{
         return {-q.x, -q.y, -q.z, q.w};
     }
 
-    inline constexpr Vec4 operator+(Vec4 lhs, Vec4 rhs) noexcept{
-        return {lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z, lhs.w+rhs.w};
-    }
-    inline constexpr Vec4& operator+=(Vec4& lhs, Vec4 rhs) noexcept{
-        lhs.x += rhs.x;
-        lhs.y += rhs.y;
-        lhs.z += rhs.z;
-        lhs.w += rhs.w;
-        return lhs;
-    }
-    inline constexpr Vec4 operator-(Vec4 v) noexcept{
-        return {-v.x, -v.y, -v.z, -v.w};
-    }
-    inline constexpr Vec4 operator-(Vec4 lhs, Vec4 rhs) noexcept{
-        return {lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z, lhs.w-rhs.w};
-    }
-    inline constexpr Vec4& operator-=(Vec4& lhs, Vec4 rhs) noexcept{
-        lhs.x -= rhs.x;
-        lhs.y -= rhs.y;
-        lhs.z -= rhs.z;
-        lhs.w -= rhs.w;
-        return lhs;
-    }
-    inline constexpr Vec4 operator*(Vec4 lhs, Vec4 rhs) noexcept{
-        return {
-            lhs.x * rhs.x,
-            lhs.y * rhs.y,
-            lhs.z * rhs.z,
-            lhs.w * rhs.w
-        };
-    }
-    inline constexpr Vec4& operator*=(Vec4& lhs, Vec4 rhs) noexcept{
-        lhs.x *= rhs.x;
-        lhs.y *= rhs.y;
-        lhs.z *= rhs.z;
-        lhs.w *= rhs.w;
-        return lhs;
-    }
-    inline constexpr Vec4 operator*(f32 f, Vec4 v) noexcept{
-        return {
-            f * v.x,
-            f * v.y,
-            f * v.z,
-            f * v.w
-        };
-    }
-    inline constexpr Vec4 operator*(Vec4 v, f32 f) noexcept{
-        return f * v;
-    }
-    inline constexpr Vec4& operator*=(Vec4& v, f32 f) noexcept{
-        v.x *= f;
-        v.y *= f;
-        v.z *= f;
-        v.w *= f;
-        return v;
-    }
-    inline constexpr Vec4 operator/(Vec4 v, f32 f) noexcept{
-        return {
-            v.x / f,
-            v.y / f,
-            v.z / f,
-            v.w / f,
-        };
-    }
-    inline constexpr Vec4& operator/=(Vec4& v, f32 f) noexcept{
-        v.x /= f;
-        v.y /= f;
-        v.z /= f;
-        v.w /= f;
-        return v;
-    }
     inline constexpr f32 dot(Vec4 lhs, Vec4 rhs) noexcept{
         return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z + lhs.w*rhs.w;
     }
@@ -418,9 +191,22 @@ namespace Smol
         return f - dot(f, unitY())*unitY();
     }
 
-    inline constexpr auto operator==(Vec4 lhs, Vec4 rhs) noexcept{
-        return lhs.x==rhs.x && lhs.y==rhs.y &&
-               lhs.z==rhs.z && lhs.w==rhs.w;
+    inline constexpr Mat4 unitMat() noexcept{
+        return {
+            Vec4{1.0f, 0.0f, 0.0f, 0.0f},
+            Vec4{0.0f, 1.0f, 0.0f, 0.0f},
+            Vec4{0.0f, 0.0f, 1.0f, 0.0f},
+            Vec4{0.0f, 0.0f, 0.0f, 1.0f}
+        };
+    }
+
+    inline constexpr Mat4 transpose(const Mat4 mat) noexcept{
+        return Mat4{
+            Vec4{mat[0][0], mat[1][0], mat[2][0], mat[3][0]},
+            Vec4{mat[0][1], mat[1][1], mat[2][1], mat[3][1]},
+            Vec4{mat[0][2], mat[1][2], mat[2][2], mat[3][2]},
+            Vec4{mat[0][3], mat[1][3], mat[2][3], mat[3][3]}
+        };
     }
 
     // expected multiplication form
