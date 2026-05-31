@@ -16,11 +16,9 @@ static InputManager& GetInputManager(){
     static InputManager inputManager(
         InputConfig{
             .mappings = {
-                {
-                    "Action",
-                    ActionInfo{
-                        .mappings = {A}
-                    }
+                ActionInfo{
+                    .name = "Action",
+                    .mappings = {A}
                 }
             }
         },

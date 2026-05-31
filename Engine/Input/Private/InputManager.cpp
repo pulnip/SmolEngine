@@ -26,58 +26,58 @@ namespace Smol
     }
 
     void InputManager::handleActionStarted(){
-        for(auto& [action, info]: mappings){
-            const auto isReadyToStart = info.count == 0;
+        for(auto& action: mappings){
+            const auto isReadyToStart = action.count == 0;
             bool anyKeyPressed = false;
 
-            for(const auto& key: info.mappings){
+            for(const auto& key: action.mappings){
                 if(provider->IsKeyPressed(key)){
                     anyKeyPressed = true;
-                    ++info.count;
+                    ++action.count;
                 }
             }
 
             const auto isActionStarted = isReadyToStart && anyKeyPressed;
             if(isActionStarted) [[unlikely]]
                 fireAction(ActionKey{
-                    .actionName = action,
+                    .actionName = action.name,
                     .event = TriggerEvent::Started
                 });
         }
     }
 
     void InputManager::handleActionTriggered(){
-        for(const auto& [action, info]: mappings){
+        for(const auto& action: mappings){
             bool anyKeyHeld = false;
 
-            for(const auto& key: info.mappings){
+            for(const auto& key: action.mappings){
                 if(provider->IsKeyDown(key))
                     anyKeyHeld = true;
             }
 
             if(anyKeyHeld)
                 fireAction(ActionKey{
-                    .actionName = action,
+                    .actionName = action.name,
                     .event = TriggerEvent::Triggered
                 });
         }
     }
 
     void InputManager::handleActionFinished(){
-        for(auto& [action, info]: mappings){
+        for(auto& action: mappings){
             bool anyKeyReleased = false;
 
-            for(const auto& key: info.mappings){
+            for(const auto& key: action.mappings){
                 if(provider->IsKeyReleased(key)){
                     anyKeyReleased = true;
-                    --info.count;
+                    --action.count;
                 }
             }
 
-            const auto isActionFinished = info.count == 0 && anyKeyReleased;
+            const auto isActionFinished = action.count == 0 && anyKeyReleased;
             if(isActionFinished)
                 fireAction(ActionKey{
-                    .actionName = action,
+                    .actionName = action.name,
                     .event = TriggerEvent::Finished
                 });
         }

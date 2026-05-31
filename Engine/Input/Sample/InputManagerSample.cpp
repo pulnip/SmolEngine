@@ -23,19 +23,15 @@ static InputManager& GetInputManager(){
     static InputManager singleton(
         InputConfig{
             .mappings = {
-                {
-                    "Move",
-                    ActionInfo{
-                        .mappings = {W, A, S, D},
-                        .count = 0
-                    }
+                ActionInfo{
+                    .name = "Move",
+                    .mappings = {W, A, S, D},
+                    .count = 0
                 },
-                {
-                    "Jump",
-                    ActionInfo{
-                        .mappings = {Space},
-                        .count = 0
-                    }
+                ActionInfo{
+                    .name = "Jump",
+                    .mappings = {Space},
+                    .count = 0
                 }
             }
         },
