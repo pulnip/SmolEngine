@@ -17,6 +17,7 @@ PRIVATE
 target_link_libraries(SmolApp
 PRIVATE
     Smol::Core
+    Smol::Input
     Smol::Platform
     Smol::Render
     Smol::Scene
