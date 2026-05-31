@@ -14,7 +14,23 @@ namespace Smol
         auto negateZ = v.get<bool>("negate_z")
             .value_or(true);
 
+        auto anyNegate = negateX || negateY || negateZ;
+        if(!anyNegate) [[unlikely]]
+            LOG_WARN("No Negate in NegateModifier");
+
         return NegateModifier(negateX, negateY, negateZ);
+    }
+
+    inline auto createScaleModifier(const DOM::Value& v){
+        if(auto factor = v.get<f32>("factor")){
+            return ScaleModifier(*factor);
+        }
+        else if(auto factor = v.get<Vec3>("factor")){
+            return ScaleModifier(*factor);
+        }
+
+        LOG_WARN("key \"factor\" not found in DOM::Value");
+        return ScaleModifier();
     }
 
     inline SwizzleOrder toSwizzleOrder(StrView str){
@@ -39,11 +55,12 @@ namespace Smol
     }
 
     inline auto createSwizzleModifier(const DOM::Value& v){
-        auto str = v.get<Str>("order")
-            .value_or("XYZ");
-        auto order = toSwizzleOrder(str);
+        if(auto order = v.get<Str>("order")){
+            return SwizzleModifier(toSwizzleOrder(*order));
+        }
 
-        return SwizzleModifier(order);
+        LOG_WARN("key \"order\" not found in DOM::Value");
+        return SwizzleModifier();
     }
 
     InputModifier CreateInputModifier(const DOM::Value& v){
@@ -55,6 +72,9 @@ namespace Smol
 
         if(*type == "Negate"){
             return createNegateModifier(v);
+        }
+        else if(*type == "Scale"){
+            return createScaleModifier(v);
         }
         else if(*type == "Swizzle"){
             return createSwizzleModifier(v);

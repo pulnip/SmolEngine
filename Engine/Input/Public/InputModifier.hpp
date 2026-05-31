@@ -26,10 +26,10 @@ namespace Smol
         ~NoModifier() = default;
         SMOL_DECLARE_TRANSFERABLE(NoModifier)
 
-        inline InputValue Modify(InputValue v) const noexcept{
+        InputValue Modify(InputValue v) const noexcept{
             return v;
         }
-        inline InputValue operator()(InputValue v) const noexcept{
+        InputValue operator()(InputValue v) const noexcept{
             return Modify(v);
         }
     };
@@ -46,7 +46,7 @@ namespace Smol
         NegateModifier(bool negateX, bool negateY, bool negateZ)
             : negateX(negateX), negateY(negateY), negateZ(negateZ){}
 
-        inline InputValue Modify(InputValue v) const noexcept{
+        InputValue Modify(InputValue v) const noexcept{
             auto raw = v.GetAxis3D();
 
             return InputValue(
@@ -55,7 +55,7 @@ namespace Smol
                 negateZ ? -raw.z : raw.z
             );
         }
-        inline InputValue operator()(InputValue v) const noexcept{
+        InputValue operator()(InputValue v) const noexcept{
             return Modify(v);
         }
     };
@@ -69,6 +69,33 @@ namespace Smol
         ZXY = 4,
         ZYX = 5
     };
+
+    class ScaleModifier final{
+    private:
+        Vec3 factor = ones();
+
+    public:
+        ScaleModifier() = default;
+        ~ScaleModifier() = default;
+        SMOL_DECLARE_TRANSFERABLE(ScaleModifier)
+
+        ScaleModifier(f32 factor)
+            : factor(Vec3(factor, factor, factor)) {}
+        ScaleModifier(f32 xFactor, f32 yFactor, f32 zFactor)
+            : factor(xFactor, yFactor, zFactor) {}
+        ScaleModifier(Vec3 factor)
+            : factor(factor) {}
+
+        InputValue Modify(InputValue v) const noexcept{
+            auto raw = v.GetAxis3D();
+
+            return factor * raw;
+        }
+        InputValue operator()(InputValue v) const noexcept{
+            return Modify(v);
+        }
+    };
+    static_assert(detail::InputModifier<ScaleModifier>);
 
     class SwizzleModifier final{
     private:
@@ -111,7 +138,7 @@ namespace Smol
 
             return raw;
         }
-        inline InputValue operator()(InputValue v) const noexcept{
+        InputValue operator()(InputValue v) const noexcept{
             return Modify(v);
         }
     };
@@ -120,6 +147,7 @@ namespace Smol
     using InputModifier = std::variant<
         NoModifier,
         NegateModifier,
+        ScaleModifier,
         SwizzleModifier
     >;
     InputModifier CreateInputModifier(const DOM::Value&);

@@ -66,7 +66,9 @@ namespace Smol
             bool is_table() const noexcept{ return std::holds_alternative<TableRAII>(value); }
 
             std::optional<bool> asBool() const noexcept;
+            // expect like 1, and 1.0 cannot be Integer
             std::optional<i64> asInt() const noexcept;
+            // expect like 1.0, also 1 can be Float
             std::optional<f64> asFloat() const noexcept;
             const Str* asString() const noexcept;
             const Array* asArray() const noexcept;
