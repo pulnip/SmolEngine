@@ -18,3 +18,5 @@ endif()
 add_subdirectory(Input)
 add_subdirectory(Render)
 add_subdirectory(Scene)
+# 3-1) Gameplay Layer
+add_subdirectory(Gameplay)
