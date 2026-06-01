@@ -4,7 +4,7 @@
 #include "Semantics.hpp"
 
 class SimpleObject final: public Smol::Object{
-    SMOL_OBJECT_BODY(SimpleObject)
+    SMOL_OBJECT_BODY(SimpleObject, Smol::Object)
 
 public:
     SimpleObject() = default;
@@ -16,10 +16,14 @@ SMOL_OBJECT(SimpleObject)
 SMOL_OBJECT_END(SimpleObject)
 
 TEST(Reflection, SimpleObject){
-    ASSERT_TRUE(_SimpleObjectRegistered);
+    ASSERT_TRUE(IsRegisteredSimpleObject);
 
-    auto object = Smol::CreateObject("SimpleObject");
+    Smol::Str objectName = "SimpleObject";
+    auto object = Smol::CreateObject(objectName);
     ASSERT_TRUE(object != nullptr);
+    EXPECT_TRUE(object->GetClassName() == objectName);
+    EXPECT_TRUE(object->IsA("Object"));
+    EXPECT_TRUE(object->IsA(objectName));
 
     auto simpleObject = dynamic_cast<SimpleObject*>(object.get());
     EXPECT_TRUE(simpleObject != nullptr);

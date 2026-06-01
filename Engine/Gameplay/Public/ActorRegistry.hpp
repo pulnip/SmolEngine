@@ -8,8 +8,8 @@ namespace Smol
     ActorRAII CreateActor(StrView name);
 }
 
-#define SMOL_CLASS_BODY(Type) \
-    SMOL_OBJECT_BODY(Type)
+#define SMOL_ACTOR_BODY(Type, Parent) \
+    SMOL_OBJECT_BODY(Type, Parent)
 
 #define SMOL_ACTOR(Type) \
     SMOL_OBJECT(Type) \

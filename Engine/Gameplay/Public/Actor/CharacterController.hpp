@@ -11,7 +11,7 @@ namespace Smol
 
     // Notice! Lifetime of CharacterController should be longer than Possessed Actor
     class CharacterController: public Actor{
-        SMOL_CLASS_BODY(CharacterController)
+        SMOL_ACTOR_BODY(CharacterController, Actor)
 
     private:
         InputComponent* inputComponent = nullptr;

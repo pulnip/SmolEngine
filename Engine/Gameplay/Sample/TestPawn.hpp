@@ -7,7 +7,7 @@
 namespace Smol
 {
     class TestPawn: public Pawn{
-        SMOL_CLASS_BODY(TestPawn)
+        SMOL_ACTOR_BODY(TestPawn, Pawn)
 
     public:
         TestPawn() = default;

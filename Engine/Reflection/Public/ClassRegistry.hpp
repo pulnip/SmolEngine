@@ -143,8 +143,20 @@ namespace Smol
     ObjectRAII CreateObject(StrView name);
 }
 
-#define SMOL_OBJECT_BODY(Type) \
+#define SMOL_OBJECT_BODY(Type, Parent) \
 public: \
+    static constexpr ::Smol::CStr StaticClassName(){ \
+        return #Type; \
+    } \
+    virtual ::Smol::CStr GetClassName() const override{ \
+        return StaticClassName(); \
+    } \
+    using Super = Parent; \
+    virtual bool IsA(::Smol::StrView name) const override{ \
+        if(name == StaticClassName()) \
+            return true; \
+        return Super::IsA(name); \
+    } \
     static auto _SmolReflectImpl(); \
 private:
 
@@ -158,5 +170,5 @@ auto Type::_SmolReflectImpl(){ \
         .Build(); \
 } \
 namespace{ \
-    const auto _##Type##Registered = Type::_SmolReflectImpl(); \
+    const auto IsRegistered##Type = Type::_SmolReflectImpl(); \
 }

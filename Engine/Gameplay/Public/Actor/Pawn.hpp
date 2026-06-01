@@ -9,7 +9,7 @@ namespace Smol
     class CharacterController;
 
     class Pawn: public Actor{
-        SMOL_CLASS_BODY(Pawn)
+        SMOL_ACTOR_BODY(Pawn, Actor)
 
     public:
         Pawn() = default;
