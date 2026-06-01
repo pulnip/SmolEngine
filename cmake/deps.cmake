@@ -46,28 +46,29 @@ if(NOT SDL3_FOUND)
 endif()
 
 # stb - header-only image loading library
-find_package(stb QUIET)
-if(NOT stb_FOUND)
-    FetchContent_Declare(
-        stb
-        GIT_REPOSITORY "https://github.com/nothings/stb.git"
-        GIT_TAG "31c1ad37456438565541f4919958214b6e762fb4"
-        GIT_SHALLOW TRUE
-    )
-    FetchContent_MakeAvailable(stb)
-endif()
+FetchContent_Declare(
+    stb
+    GIT_REPOSITORY "https://github.com/nothings/stb.git"
+    GIT_TAG "31c1ad37456438565541f4919958214b6e762fb4"
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(stb)
+
+add_library(stb INTERFACE)
+
+target_include_directories(stb
+SYSTEM INTERFACE
+    "${stb_SOURCE_DIR}"
+)
 
 # tomlplusplus - TOML parser library
-find_package(tomlplusplus QUIET)
-if(NOT tomlplusplus_FOUND)
-    FetchContent_Declare(
-        tomlplusplus
-        GIT_REPOSITORY "https://github.com/marzer/tomlplusplus.git"
-        GIT_TAG "v3.4.0"
-        GIT_SHALLOW TRUE
-    )
-    FetchContent_MakeAvailable(tomlplusplus)
-endif()
+FetchContent_Declare(
+    tomlplusplus
+    GIT_REPOSITORY "https://github.com/marzer/tomlplusplus.git"
+    GIT_TAG "v3.4.0"
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(tomlplusplus)
 
 # Metal-cpp
 if(RENDER_BACKEND STREQUAL "Metal")

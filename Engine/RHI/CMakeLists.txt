@@ -12,12 +12,6 @@ PRIVATE
     Smol::Log
 )
 
-# if(SMOL_ENABLE_TEST)
-#     add_subdirectory(Sample)
-
-#     smol_declare_test(RHI
-#         DIRECTORY Test
-#         DEPENDS ${RENDER_BACKEND_TARGET}
-#         LABELS "unit"
-#     )
-# endif()
+if(SMOL_ENABLE_TEST)
+    add_subdirectory(Sample)
+endif()
