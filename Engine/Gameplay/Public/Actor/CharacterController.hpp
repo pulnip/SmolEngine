@@ -6,12 +6,34 @@
 
 namespace Smol
 {
+    class InputComponent;
+    class InputManager;
+
+    // Notice! Lifetime of CharacterController should be longer than Possessed Actor
     class CharacterController: public Actor{
         SMOL_CLASS_BODY(CharacterController)
 
+    private:
+        InputComponent* inputComponent = nullptr;
+
     public:
-        CharacterController();
+        CharacterController() = default;
         virtual ~CharacterController() = default;
-        SMOL_DECLARE_MOVE_ONLY(CharacterController)
+        CharacterController(CharacterController&& other)
+            : inputComponent(other.inputComponent)
+        {
+            other.inputComponent = nullptr;
+        }
+        CharacterController& operator=(CharacterController&& other){
+            inputComponent = other.inputComponent;
+            other.inputComponent = nullptr;
+
+            return *this;
+        }
+        SMOL_DECLARE_NON_COPYABLE(CharacterController)
+
+        void Init(ServiceLocator&) override;
+
+        InputComponent& GetInputComponent() const noexcept{ return *inputComponent; }
     };
 }
