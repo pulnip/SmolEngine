@@ -1,0 +1,11 @@
+[metadata]
+version = 0
+name = "Example"
+type = "scene"
+
+[[actors]]
+type = "CharacterController"
+
+[[actors]]
+type = "ExampleActor"
+possessed_by = "CharacterController"

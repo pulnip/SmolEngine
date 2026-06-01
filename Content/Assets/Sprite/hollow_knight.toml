@@ -1,6 +1,0 @@
-# meta file for hollow_knight.png
-TargetFile = "hollow_knight.png" # for validation
-[Grid]
-Columns = 16
-Rows = 16
-[[Animations]]

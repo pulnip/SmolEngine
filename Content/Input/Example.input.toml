@@ -1,3 +1,8 @@
+[metadata]
+version = 0
+name = "Example"
+type = "input"
+
 [[actions]]
 name = "Move"
 type = "Axis2D"

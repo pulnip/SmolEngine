@@ -5,7 +5,7 @@
 
 using namespace Smol;
 
-constexpr CStr APP_CONFIG_PATH = "Config/DefaultApp.toml";
+constexpr CStr APP_CONFIG_PATH = "Config/Default.app.toml";
 
 i32 main(i32, CStr[]){
     auto config = loadTomlFile<AppConfig>(APP_CONFIG_PATH);

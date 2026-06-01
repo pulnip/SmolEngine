@@ -1,6 +1,7 @@
 [metadata]
 version = 0
-name = "DefaultApp"
+name = "Default"
+type = "app"
 
 [runtime]
 app_name = "SmolApp"

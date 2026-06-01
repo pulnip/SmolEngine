@@ -1,0 +1,12 @@
+[metadata]
+version = 0
+# meta file for hollow_knight.png
+name = "hollow_knight.png" # for validation
+type = "sprite"
+
+[grid]
+columns = 16
+rows = 16
+
+[[animations]]
+name = "Idle"
