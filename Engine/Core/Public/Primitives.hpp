@@ -395,4 +395,10 @@ namespace Smol
         return lhs.x==rhs.x && lhs.y==rhs.y &&
                lhs.z==rhs.z && lhs.w==rhs.w;
     }
+
+    struct Transform{
+        Vec3 position;
+        Vec4 rotation;
+        Vec3 scale;
+    };
 }

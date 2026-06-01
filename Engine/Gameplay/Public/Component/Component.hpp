@@ -34,12 +34,6 @@ namespace Smol
         TypeID GetTypeID() const override final{ return &typeIDStorage; }
     };
 
-    struct Transform{
-        Vec3 position;
-        Vec4 rotation;
-        Vec3 scale;
-    };
-
     template<typename T>
     consteval u32 GetComponentTypeIndex(){
         if constexpr(std::is_same_v<T, InputComponent>) return 0;
