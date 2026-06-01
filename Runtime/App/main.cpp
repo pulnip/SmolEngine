@@ -7,12 +7,12 @@ using namespace Smol;
 
 constexpr CStr APP_CONFIG_PATH = "Config/DefaultApp.toml";
 
-int main(int, char*[]){
+i32 main(i32, CStr[]){
     auto config = loadTomlFile<AppConfig>(APP_CONFIG_PATH);
 
     auto device = Smol::CreateDevice();
     OS os(config.runtime, *device);
-    AppMainLoop mainLoop(config, *device);
+    AppMainLoop mainLoop(config, os, *device);
 
     os.Run(mainLoop, *device);
 
