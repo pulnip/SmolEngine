@@ -29,4 +29,10 @@ namespace Smol
         InputAction(Handle handle, InputManager* manager)
             : handle(handle), manager(manager){}
     };
+
+    enum TriggerEvent{
+        Started = 0,
+        Triggered = 1,
+        Finished = 2
+    };
 }

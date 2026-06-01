@@ -116,7 +116,7 @@ namespace Smol
         handleToAction.erase(it);
     }
 
-    InputAction InputManager::bindAction(
+    InputAction InputManager::BindAction(
         StrView str,
         TriggerEvent event,
         Callback&& callback

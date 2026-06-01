@@ -88,28 +88,28 @@ public:
     TestActor(){
         moveActionStarted = GetInputManager().BindAction(
             "Move", TriggerEvent::Started,
-            this, &TestActor::OnMoveStarted
+            [&](InputValue v){ OnMoveStarted(v); }
         );
         moveActionTriggered = GetInputManager().BindAction(
             "Move", TriggerEvent::Triggered,
-            this, &TestActor::OnMoveTriggered
+            [&](InputValue v){ OnMoveTriggered(v); }
         );
         moveActionFinished = GetInputManager().BindAction(
             "Move", TriggerEvent::Finished,
-            this, &TestActor::OnMoveFinished
+            [&](InputValue v){ OnMoveFinished(v); }
         );
 
         jumpActionStarted = GetInputManager().BindAction(
             "Jump", TriggerEvent::Started,
-            this, &TestActor::OnJumpStarted
+            [&](InputValue v){ OnJumpStarted(v); }
         );
         jumpActionTriggered = GetInputManager().BindAction(
             "Jump", TriggerEvent::Triggered,
-            this, &TestActor::OnJumpTriggered
+            [&](InputValue v){ OnJumpTriggered(v); }
         );
         jumpActionFinished = GetInputManager().BindAction(
             "Jump", TriggerEvent::Finished,
-            this, &TestActor::OnJumpFinished
+            [&](InputValue v){ OnJumpFinished(v); }
         );
     }
     ~TestActor() = default;

@@ -47,7 +47,7 @@ public:
     TestActor(){
         action = GetInputManager().BindAction(
             "Action", TriggerEvent::Started,
-            this, &TestActor::OnAction
+            [&](InputValue v){ OnAction(v); }
         );
     }
     ~TestActor() = default;

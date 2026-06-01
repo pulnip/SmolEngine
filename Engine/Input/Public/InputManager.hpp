@@ -9,12 +9,6 @@
 
 namespace Smol
 {
-    enum TriggerEvent{
-        Started = 0,
-        Triggered = 1,
-        Finished = 2
-    };
-
     class InputProvider;
 
     // Input Manager for Single Context
@@ -59,26 +53,14 @@ namespace Smol
         void NewFrame();
 
         // Notice! Not Guarantee the order in Single frame
-        template<typename T>
         [[nodiscard]]
-        auto BindAction(StrView action, TriggerEvent event,
-            T* actor, void(T::*func)(InputValue)
-        ){
-            return bindAction(action, event,
-                [actor, func](InputValue v){
-                    (actor->*func)(v);
-                }
-            );
-        }
+        InputAction BindAction(StrView action, TriggerEvent, Callback&&);
         void UnbindAction(Handle);
 
     private:
         void handleActionStarted();
         void handleActionTriggered();
         void handleActionFinished();
-
-        [[nodiscard]]
-        InputAction bindAction(StrView action, TriggerEvent, Callback&&);
 
         void fireAction(const ActionKey&, InputValue);
     };
