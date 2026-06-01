@@ -1,6 +1,4 @@
 #include <iostream>
-#include "CharacterController.hpp"
-#include "InputComponent.hpp"
 #include "TestPawn.hpp"
 
 namespace Smol
@@ -9,30 +7,30 @@ namespace Smol
     SMOL_ACTOR_END(TestPawn)
 
     void TestPawn::PossessedBy(CharacterController& controller){
-        auto& input = controller.GetInputComponent();
+        Super::PossessedBy(controller);
 
-        input.BindAction(
+        BindAction(
             "Move", TriggerEvent::Started,
             this, &TestPawn::OnMoveStarted
         );
-        input.BindAction(
+        BindAction(
             "Move", TriggerEvent::Triggered,
             this, &TestPawn::OnMoveTriggered
         );
-        input.BindAction(
+        BindAction(
             "Move", TriggerEvent::Finished,
             this, &TestPawn::OnMoveFinished
         );
 
-        input.BindAction(
+        BindAction(
             "Jump", TriggerEvent::Started,
             this, &TestPawn::OnJumpStarted
         );
-        input.BindAction(
+        BindAction(
             "Jump", TriggerEvent::Triggered,
             this, &TestPawn::OnJumpTriggered
         );
-        input.BindAction(
+        BindAction(
             "Jump", TriggerEvent::Finished,
             this, &TestPawn::OnJumpFinished
         );

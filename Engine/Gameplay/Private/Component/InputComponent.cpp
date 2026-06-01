@@ -6,9 +6,10 @@ namespace Smol
     InputComponent::InputComponent(InputManager& manager)
         : manager(manager) {}
 
-    void InputComponent::bindAction(
+    void InputComponent::BindAction(
         StrView action,
         TriggerEvent event,
+        Pawn* pawn,
         InputAction::Callback&& callback
     ){
         auto handle = manager.BindAction(
@@ -16,6 +17,10 @@ namespace Smol
             event,
             std::move(callback)
         );
-        actions.emplace_back(std::move(handle));
+        actions[pawn].emplace_back(std::move(handle));
+    }
+
+    void InputComponent::UnbindAction(Pawn* pawn){
+        actions.erase(pawn);
     }
 }

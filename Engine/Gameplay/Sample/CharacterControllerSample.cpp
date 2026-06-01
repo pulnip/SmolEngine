@@ -91,9 +91,8 @@ int main(int, char*[]){
     SMOL_ASSERT(pawn != nullptr);
     pawn->Init(locator);
 
-    // dynamic_cast for Reflection test
-    auto pawnPtr = static_cast<Pawn*>(pawn.get());
     auto controllerPtr = static_cast<CharacterController*>(controller.get());
+    auto pawnPtr = static_cast<Pawn*>(pawn.get());
     pawnPtr->PossessedBy(*controllerPtr);
 
     while(true){

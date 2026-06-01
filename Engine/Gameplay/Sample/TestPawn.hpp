@@ -17,6 +17,7 @@ namespace Smol
         void PossessedBy(CharacterController&) override;
 
     private:
+
         void OnMoveStarted(InputValue);
         void OnMoveTriggered(InputValue);
         void OnMoveFinished(InputValue);
