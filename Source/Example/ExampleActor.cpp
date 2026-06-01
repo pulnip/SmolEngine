@@ -1,6 +1,5 @@
 #include "ExampleActor.hpp"
 #include "ExampleComponent.hpp"
-#include "ActorFactory.hpp"
 #include <print>
 
 SMOL_ACTOR(SimpleActor)

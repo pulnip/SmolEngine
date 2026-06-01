@@ -1,5 +1,6 @@
 #include <SDL3/SDL_timer.h>
-#include "ActorFactory.hpp"
+#include "ActorRegistry.hpp"
+#include "Assert.hpp"
 #include "CharacterController.hpp"
 #include "InputConfig.hpp"
 #include "InputManager.hpp"
@@ -84,10 +85,13 @@ int main(int, char*[]){
         .inputManager = manager
     };
     auto controller = CreateActor("CharacterController");
+    SMOL_ASSERT(controller != nullptr);
     controller->Init(locator);
     auto pawn = CreateActor("TestPawn");
+    SMOL_ASSERT(pawn != nullptr);
     pawn->Init(locator);
 
+    // dynamic_cast for Reflection test
     auto pawnPtr = static_cast<Pawn*>(pawn.get());
     auto controllerPtr = static_cast<CharacterController*>(controller.get());
     pawnPtr->PossessedBy(*controllerPtr);

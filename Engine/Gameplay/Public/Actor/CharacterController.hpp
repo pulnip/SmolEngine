@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Actor.hpp"
-#include "ActorFactory.hpp"
+#include "ActorRegistry.hpp"
 #include "Semantics.hpp"
 
 namespace Smol

@@ -63,4 +63,100 @@ namespace Smol
     };
 
     void ApplyProperties(const ClassDesc&, void* object, const DOM::Value&);
+
+    template<typename T>
+        requires std::is_base_of_v<Object, T>
+    class ClassBuilder;
+
+    template<typename T>
+        requires std::is_base_of_v<Object, T>
+    ClassBuilder<T> Reflect();
+
+    template<typename T>
+        requires std::is_base_of_v<Object, T>
+    class ClassBuilder{
+        ClassDesc& desc;
+        PropertyDesc* lastProp = nullptr;
+
+    public:
+        ClassBuilder& SetName(CStr name){
+            desc.name = name;
+
+            return *this;
+        }
+
+        template<typename Parent>
+        ClassBuilder& Inherits(){
+            desc.parent = &ClassRegistry::Get().DescFor<Parent>();
+
+            return *this;
+        }
+
+        ClassBuilder& SetFactory(std::function<RAII<T>()> f){
+            desc.factory = [f = std::move(f)]() -> RAII<Object> {
+                return f();
+            };
+
+            return *this;
+        }
+
+        template<typename Member>
+        ClassBuilder& SetProperty(CStr name, Member T::* member){
+            lastProp = &desc.AddProperty(name, member);
+
+            return *this;
+        }
+
+        ClassBuilder& SetTooltip(CStr tooltip){
+            if(lastProp != nullptr){
+                lastProp->meta.tooltip = tooltip;
+            }
+
+            return *this;
+        }
+
+        bool Build(){
+            auto& registry = ClassRegistry::Get();
+            return registry.Register(desc);
+        }
+
+    private:
+        friend ClassBuilder Reflect<T>();
+
+        ClassBuilder()
+            : desc(ClassRegistry::Get().DescFor<T>())
+        {
+            if constexpr (std::is_default_constructible_v<T>){
+                desc.factory = []() -> ObjectRAII {
+                    return std::make_unique<T>();
+                };
+            }
+        }
+    };
+
+    template<typename T>
+        requires std::is_base_of_v<Object, T>
+    ClassBuilder<T> Reflect(){
+        return ClassBuilder<T>();
+    }
+
+    ObjectRAII CreateObject(StrView name);
+}
+
+#define SMOL_OBJECT_BODY(Type) \
+public: \
+    static auto _SmolReflectImpl(); \
+private:
+
+#define SMOL_OBJECT(Type) \
+auto Type::_SmolReflectImpl(){ \
+    return ::Smol::Reflect<Type>() \
+        .SetName(#Type) \
+        .Inherits<::Smol::Object>()
+
+#define SMOL_OBJECT_END(Type) \
+        .Build(); \
+} \
+namespace{ \
+    const auto _##Type##Registered = Type::_SmolReflectImpl(); \
 }

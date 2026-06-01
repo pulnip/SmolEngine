@@ -47,4 +47,8 @@ namespace Smol
             prop.typeInfo.deserialize(member, *node);
         }
     }
+
+    ObjectRAII CreateObject(StrView name){
+        return ClassRegistry::Create(name);
+    }
 }

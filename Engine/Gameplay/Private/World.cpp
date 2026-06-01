@@ -1,6 +1,6 @@
 #include "Actor.hpp"
 #include "World.hpp"
-#include "ActorFactory.hpp"
+#include "ActorRegistry.hpp"
 
 namespace Smol
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ActorFactory.hpp"
+#include "ActorRegistry.hpp"
 
 class SimpleActor: public Smol::Actor{
     SMOL_CLASS_BODY(SimpleActor)

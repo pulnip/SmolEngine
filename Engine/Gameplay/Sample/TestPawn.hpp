@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ActorFactory.hpp"
+#include "ActorRegistry.hpp"
 #include "InputValue.hpp"
 #include "Pawn.hpp"
 
