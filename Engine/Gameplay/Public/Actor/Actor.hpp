@@ -10,24 +10,6 @@
 
 namespace Smol
 {
-    struct Transform{
-        Vec3 position;
-        Vec4 rotation;
-        Vec3 scale;
-    };
-
-    template<typename T>
-    consteval u32 GetComponentTypeIndex(){
-        if constexpr(std::is_same_v<T, RigidBody>) return 0;
-        return NUM_BUILTIN_COMPONENTS;
-    }
-
-    template<typename T>
-    consteval bool IsBuiltinComponent(){
-        if constexpr(std::is_same_v<T, RigidBody>) return true;
-        return false;
-    }
-
     class Actor: public Object{
     private:
         Transform transform;

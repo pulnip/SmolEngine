@@ -1,5 +1,5 @@
 #include "Actor.hpp"
-#include "Component.hpp"
+#include "Rigidbody.hpp"
 
 namespace Smol
 {

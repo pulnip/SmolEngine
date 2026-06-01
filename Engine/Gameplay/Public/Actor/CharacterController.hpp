@@ -10,7 +10,7 @@ namespace Smol
         SMOL_CLASS_BODY(CharacterController)
 
     public:
-        CharacterController() = default;
+        CharacterController();
         virtual ~CharacterController() = default;
         SMOL_DECLARE_MOVE_ONLY(CharacterController)
     };

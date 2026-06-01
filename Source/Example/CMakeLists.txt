@@ -22,7 +22,6 @@ PUBLIC
 
 target_link_libraries(ExampleLib
 PUBLIC
-    Smol::Core
-    Smol::Reflection
+    Smol::Gameplay
 PRIVATE
 )
