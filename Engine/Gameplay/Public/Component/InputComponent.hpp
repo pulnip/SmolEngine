@@ -8,19 +8,19 @@
 
 namespace Smol
 {
-    class InputManager;
+    class IInputManager;
     class Pawn;
 
     class InputComponent: public TypedComponent<InputComponent>{
     private:
-        InputManager& manager;
+        IInputManager& manager;
         std::unordered_map<Pawn*, std::vector<InputAction>> actions;
 
     public:
         virtual ~InputComponent() = default;
         SMOL_DECLARE_PINNED(InputComponent)
 
-        InputComponent(InputManager& manager);
+        InputComponent(IInputManager& manager);
 
         void BindAction(StrView action, TriggerEvent, Pawn*, InputAction::Callback&&);
         void UnbindAction(Pawn* pawn);

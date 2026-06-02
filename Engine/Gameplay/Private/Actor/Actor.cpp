@@ -5,7 +5,7 @@
 namespace Smol
 {
     template<>
-    InputComponent* Actor::AddComponent<InputComponent>(InputManager& manager){
+    InputComponent* Actor::AddComponent<InputComponent>(IInputManager& manager){
         constexpr auto index = GetComponentTypeIndex<InputComponent>();
         auto c = std::make_unique<InputComponent>(manager);
         builtinComponents[index] = std::move(c);

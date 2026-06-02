@@ -1,9 +1,9 @@
 #include "InputComponent.hpp"
-#include "InputManager.hpp"
+#include "IInputManager.hpp"
 
 namespace Smol
 {
-    InputComponent::InputComponent(InputManager& manager)
+    InputComponent::InputComponent(IInputManager& manager)
         : manager(manager) {}
 
     void InputComponent::BindAction(

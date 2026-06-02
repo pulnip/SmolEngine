@@ -7,7 +7,7 @@
 
 namespace Smol
 {
-    class InputManager;
+    class IInputManager;
 
     // RAII for ActionHandle
     class InputAction final{
@@ -17,7 +17,7 @@ namespace Smol
 
     private:
         Handle handle = Handle::InvalidHandle();
-        InputManager* manager = nullptr;
+        IInputManager* manager = nullptr;
 
     public:
         InputAction() noexcept = default;
@@ -26,7 +26,7 @@ namespace Smol
         InputAction(InputAction&& other) noexcept;
         InputAction& operator=(InputAction&&);
 
-        InputAction(Handle handle, InputManager* manager)
+        InputAction(Handle handle, IInputManager* manager)
             : handle(handle), manager(manager){}
     };
 

@@ -4,6 +4,7 @@
 #include <vector>
 #include "InputAction.hpp"
 #include "InputConfig.hpp"
+#include "IInputManager.hpp"
 #include "Semantics.hpp"
 #include "SlotMap.hpp"
 
@@ -12,7 +13,7 @@ namespace Smol
     class InputProvider;
 
     // Input Manager for Single Context
-    class InputManager final{
+    class InputManager final: public IInputManager{
     public:
         using Callback = InputAction::Callback;
         using Handle = InputAction::Handle;
@@ -54,8 +55,8 @@ namespace Smol
 
         // Notice! Not Guarantee the order in Single frame
         [[nodiscard]]
-        InputAction BindAction(StrView action, TriggerEvent, Callback&&);
-        void UnbindAction(Handle);
+        InputAction BindAction(StrView action, TriggerEvent, Callback&&) override;
+        void UnbindAction(Handle) override;
 
     private:
         void handleActionStarted();

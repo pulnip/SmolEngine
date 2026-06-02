@@ -7,7 +7,7 @@
 namespace Smol
 {
     class InputComponent;
-    class InputManager;
+    class IInputManager;
 
     // Notice! Lifetime of CharacterController should be longer than Possessed Actor
     class CharacterController: public Actor{
@@ -32,7 +32,10 @@ namespace Smol
         }
         SMOL_DECLARE_NON_COPYABLE(CharacterController)
 
-        void Init(ServiceLocator&) override;
+        // explicitly type test
+        CharacterController(IInputManager&);
+        // Called from Deserialization
+        CharacterController(SpawnContext*);
 
         InputComponent& GetInputComponent() const noexcept{ return *inputComponent; }
     };
