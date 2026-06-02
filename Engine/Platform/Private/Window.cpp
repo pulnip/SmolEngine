@@ -11,7 +11,6 @@ namespace Smol
     class Window::Impl{
     private:
         SDL_Window* window = nullptr;
-        u32 width = 0, height = 0;
 
         SDLInputProvider inputProvider;
 
@@ -22,8 +21,24 @@ namespace Smol
         bool ProcessEvents();
 
         SDL_Window* GetWindow() const noexcept{ return window; }
-        u32 GetWidth() const noexcept{ return width; }
-        u32 GetHeight() const noexcept{ return height; }
+        u32 GetWidth() const noexcept{
+            int width = 0;
+            SDL_GetWindowSize(window, &width, nullptr);
+            return static_cast<u32>(width);
+        }
+        u32 GetHeight() const noexcept{
+            int height = 0;
+            SDL_GetWindowSize(window, nullptr, &height);
+            return static_cast<u32>(height);
+        }
+        Size2D GetSize() const noexcept{
+            int width = 0, height = 0;
+            SDL_GetWindowSize(window, &width, &height);
+            return{
+                .x = static_cast<u32>(width),
+                .y = static_cast<u32>(height)
+            };
+        }
 
         const SDLInputProvider* GetInputProvider() noexcept{
             return &inputProvider;
@@ -35,7 +50,6 @@ namespace Smol
 
     Window::Impl::Impl(const WindowConfig& config)
         : inputProvider()
-        , width(config.width), height(config.height)
     {
         SDL_InitFlags initFlags = SDL_INIT_VIDEO;
         if(!SDL_InitSubSystem(initFlags)){
@@ -111,6 +125,7 @@ namespace Smol
     void* Window::GetWindow() const noexcept{ return impl->GetWindow(); }
     u32 Window::GetWidth() const noexcept{ return impl->GetWidth(); }
     u32 Window::GetHeight() const noexcept{ return impl->GetHeight(); }
+    Size2D Window::GetSize() const noexcept{ return impl->GetSize(); }
 
     const InputProvider* Window::GetInputProvider() const noexcept{
         return impl->GetInputProvider();

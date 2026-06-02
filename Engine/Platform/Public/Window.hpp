@@ -24,6 +24,7 @@ namespace Smol
         void* GetWindow() const noexcept;
         u32 GetWidth() const noexcept;
         u32 GetHeight() const noexcept;
+        Size2D GetSize() const noexcept;
 
         const InputProvider* GetInputProvider() const noexcept;
     };

@@ -396,6 +396,10 @@ namespace Smol
                lhs.z==rhs.z && lhs.w==rhs.w;
     }
 
+    struct Size2D{
+        u32 x = 0, y = 0;
+    };
+
     struct Transform{
         Vec3 position;
         Vec4 rotation;
