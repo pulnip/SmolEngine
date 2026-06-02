@@ -6,7 +6,9 @@ SMOL_ACTOR(SimpleActor)
 SMOL_ACTOR_END(SimpleActor)
 
 SMOL_ACTOR(ComplexActor)
-    .SetFactory([](){ return std::make_unique<ComplexActor>(42); })
+    .SetFactory([](Smol::SpawnContext&){
+        return std::make_unique<ComplexActor>(42);
+    })
 SMOL_ACTOR_END(ComplexActor)
 
 SimpleActor::SimpleActor(){

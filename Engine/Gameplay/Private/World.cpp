@@ -1,14 +1,17 @@
 #include "Actor.hpp"
 #include "World.hpp"
 #include "ActorRegistry.hpp"
+#include "SpawnContext.hpp"
 
 namespace Smol
 {
     World::World(StrView scenePath){
-        auto a = CreateActor("SimpleActor");
+        SpawnContext spawnContext{};
+
+        auto a = CreateActor("SimpleActor", spawnContext);
         a->AddComponent<Smol::RigidBody>();
 
-        auto o = CreateActor("ComplexActor");
+        auto o = CreateActor("ComplexActor", spawnContext);
 
         actors.emplace_back(std::move(a));
         actors.emplace_back(std::move(o));

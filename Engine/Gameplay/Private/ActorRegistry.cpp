@@ -13,8 +13,8 @@ namespace Smol
         return nullptr;
     }
 
-    ActorRAII CreateActor(StrView name){
-        auto object = CreateObject(name);
+    ActorRAII CreateActor(StrView name, SpawnContext& context){
+        auto object = CreateObject(name, context);
         return unique_cast<Object, Actor>(object);
     }
 }

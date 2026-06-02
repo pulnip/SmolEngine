@@ -12,10 +12,17 @@
 
 namespace Smol
 {
+    struct SpawnContext;
+
+    template<typename T>
+    concept SpawnConstructible = requires(::Smol::SpawnContext ctx){
+        { T(ctx) };
+    };
+
     struct ClassDesc{
         Str name;
         const ClassDesc* parent = nullptr;
-        std::function<ObjectRAII()> factory;
+        std::function<ObjectRAII(SpawnContext&)> factory;
         StringHashMap<PropertyDesc> properties;
 
         template<typename Class, typename Member>
@@ -39,7 +46,7 @@ namespace Smol
         StringHashMap<ClassDesc*> classByName;
 
     public:
-        static ObjectRAII Create(StrView name);
+        static ObjectRAII Create(StrView name, SpawnContext&);
 
     private:
         template<typename T>
@@ -92,9 +99,9 @@ namespace Smol
             return *this;
         }
 
-        ClassBuilder& SetFactory(std::function<RAII<T>()> f){
-            desc.factory = [f = std::move(f)]() -> RAII<Object> {
-                return f();
+        ClassBuilder& SetFactory(std::function<RAII<T>(SpawnContext&)>&& f){
+            desc.factory = [f = std::move(f)](SpawnContext& context) -> RAII<Object> {
+                return f(context);
             };
 
             return *this;
@@ -126,8 +133,13 @@ namespace Smol
         ClassBuilder()
             : desc(ClassRegistry::Get().DescFor<T>())
         {
-            if constexpr (std::is_default_constructible_v<T>){
-                desc.factory = []() -> ObjectRAII {
+            if constexpr (SpawnConstructible<T>){
+                desc.factory = [](SpawnContext& context) -> ObjectRAII {
+                    return std::make_unique<T>(context);
+                };
+            }
+            else if constexpr (std::is_default_constructible_v<T>){
+                desc.factory = [](SpawnContext&) -> ObjectRAII {
                     return std::make_unique<T>();
                 };
             }
@@ -140,7 +152,7 @@ namespace Smol
         return ClassBuilder<T>();
     }
 
-    ObjectRAII CreateObject(StrView name);
+    ObjectRAII CreateObject(StrView name, SpawnContext& context);
 }
 
 #define SMOL_OBJECT_BODY(Type, Parent) \

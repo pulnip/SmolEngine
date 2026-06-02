@@ -7,6 +7,7 @@
 #include "InputModifier.hpp"
 #include "Pawn.hpp"
 #include "RuntimeConfig.hpp"
+#include "SpawnContext.hpp"
 #include "Window.hpp"
 
 using namespace Smol;
@@ -79,17 +80,15 @@ static InputManager& GetInputManager(){
 
 int main(int, char*[]){
     auto& window = GetWindow();
-    auto& manager = GetInputManager();
+    auto& inputManager = GetInputManager();
 
-    ServiceLocator locator{
-        .inputManager = manager
+    SpawnContext spawnContext{
+        .inputManager = inputManager
     };
-    auto controller = CreateActor("CharacterController");
+    auto controller = CreateActor("CharacterController", spawnContext);
     SMOL_ASSERT(controller != nullptr);
-    controller->Init(locator);
-    auto pawn = CreateActor("TestPawn");
+    auto pawn = CreateActor("TestPawn", spawnContext);
     SMOL_ASSERT(pawn != nullptr);
-    pawn->Init(locator);
 
     auto controllerPtr = static_cast<CharacterController*>(controller.get());
     auto pawnPtr = static_cast<Pawn*>(pawn.get());
@@ -99,7 +98,7 @@ int main(int, char*[]){
         if(!window.ProcessEvents()) [[unlikely]]
             break;
 
-        manager.NewFrame();
+        inputManager.NewFrame();
         // Without Delay, Loop too tight!
         SDL_Delay(5);
     }

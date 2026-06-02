@@ -3,6 +3,11 @@
 #include "Object.hpp"
 #include "Semantics.hpp"
 
+namespace Smol{
+    // SpawnContext for test
+    struct SpawnContext{};
+}
+
 class SimpleObject final: public Smol::Object{
     SMOL_OBJECT_BODY(SimpleObject, Smol::Object)
 
@@ -10,6 +15,8 @@ public:
     SimpleObject() = default;
     ~SimpleObject() = default;
     SMOL_DECLARE_MOVE_ONLY(SimpleObject)
+
+    SimpleObject(Smol::SpawnContext&){}
 };
 
 SMOL_OBJECT(SimpleObject)
@@ -17,9 +24,10 @@ SMOL_OBJECT_END(SimpleObject)
 
 TEST(Reflection, SimpleObject){
     ASSERT_TRUE(IsRegisteredSimpleObject);
+    Smol::SpawnContext spawnContext{};
 
     Smol::Str objectName = "SimpleObject";
-    auto object = Smol::CreateObject(objectName);
+    auto object = Smol::CreateObject(objectName, spawnContext);
     ASSERT_TRUE(object != nullptr);
     EXPECT_TRUE(object->GetClassName() == objectName);
     EXPECT_TRUE(object->IsA("Object"));

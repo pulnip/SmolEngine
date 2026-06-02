@@ -10,11 +10,6 @@
 
 namespace Smol
 {
-    class InputManager;
-    struct ServiceLocator{
-        InputManager& inputManager;
-    };
-
     class Actor: public Object{
     private:
         Transform transform;
@@ -28,7 +23,6 @@ namespace Smol
         virtual ~Actor() = default;
         SMOL_DECLARE_MOVE_ONLY(Actor)
 
-        virtual void Init(ServiceLocator&){}
         virtual void OnUpdate(f32){}
 
         template<typename T, class... Args>

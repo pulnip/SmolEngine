@@ -35,7 +35,7 @@ namespace Smol
         // explicitly type test
         CharacterController(IInputManager&);
         // Called from Deserialization
-        CharacterController(SpawnContext*);
+        CharacterController(SpawnContext&);
 
         InputComponent& GetInputComponent() const noexcept{ return *inputComponent; }
     };

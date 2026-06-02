@@ -5,7 +5,7 @@
 
 namespace Smol
 {
-    ActorRAII CreateActor(StrView name);
+    ActorRAII CreateActor(StrView name, SpawnContext& context);
 }
 
 #define SMOL_ACTOR_BODY(Type, Parent) \
