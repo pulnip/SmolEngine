@@ -9,7 +9,9 @@ target_link_libraries(SmolSerialization
 PUBLIC
     Smol::Core
 PRIVATE
+    stb
     tomlplusplus::tomlplusplus
+    Smol::Log
 )
 
 smol_declare_private_interface(Serialization)
@@ -20,4 +22,6 @@ if(SMOL_ENABLE_TEST)
         DEPENDS Smol::Serialization::Private
         LABELS "unit"
     )
+
+    add_subdirectory(Sample)
 endif()
