@@ -395,9 +395,9 @@ namespace Smol
     DX11GraphicsPipelineState::~DX11GraphicsPipelineState() = default;
 
     void DX11GraphicsPipelineState::Bind(DeviceContext& ctx) const{
+        ctx.IASetPrimitiveTopology(primitiveTopology);
         if(inputLayout != nullptr){
             ctx.IASetInputLayout(inputLayout.Get());
-            ctx.IASetPrimitiveTopology(primitiveTopology);
         }
 
         ctx.VSSetShader(

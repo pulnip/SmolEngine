@@ -10,9 +10,11 @@ function(smol_rhi_sample NAME)
         Smol::Log
         ${ARG_DEPENDS}
     )
+
+    smol_rhi_macro(${NAME}Sample)
 endfunction()
 
 smol_rhi_sample(Texture
     SOURCES TextureSample.cpp
-    DEPENDS stb
+    DEPENDS Smol::Serialization
 )
