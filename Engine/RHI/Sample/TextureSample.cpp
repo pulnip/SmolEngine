@@ -28,9 +28,19 @@ int main(void){
         },
     #if defined(SMOL_DXRHI)
         .fragmentShaderPath = "Engine/Shader/Sprite.pixel.hlsl",
-        .fragmentShaderEntryPoint = "ps_main"
+        .fragmentShaderEntryPoint = "ps_main",
     #elif defined(SMOL_METALRHI)
     #endif
+        .blend = RHIBlendState{
+            .independentBlendEnable = false,
+            .renderTargets = {
+                RHIRenderTargetBlendState{
+                    .blendEnable = true,
+                    .srcBlend = RHIBlend::SrcAlpha,
+                    .dstBlend = RHIBlend::InvSrcAlpha
+                }
+            }
+        }
     });
 
     WindowConfig windowConfig{
@@ -62,6 +72,7 @@ int main(void){
     });
     auto sampler = device->CreateSampler(LINEAR_WRAP_SAMPLER);
 
+    RHIClearColor clearColor{.v = {0.5f, 0.5f, 0.5f, 1.0f}};
     auto cmdList = device->CreateCommandList();
 
     while(true){
@@ -69,7 +80,12 @@ int main(void){
             break;
 
         cmdList->Begin();
-        cmdList->BeginRenderPass(*swapchain);
+        cmdList->BeginRenderPass(*swapchain,
+            clearColor,
+            nullptr,
+            {},
+            RHILoadAction::Clear
+        );
 
         cmdList->SetPipelineState(*pipeline);
         cmdList->SetViewport(RHIViewport{
