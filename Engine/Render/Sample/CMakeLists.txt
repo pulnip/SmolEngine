@@ -16,3 +16,7 @@ endfunction()
 smol_render_sample(SpriteRenderer
     SOURCES SpriteRendererSample.cpp
 )
+
+smol_render_sample(SpriteRendererAnim
+    SOURCES SpriteRendererAnimSample.cpp
+)
