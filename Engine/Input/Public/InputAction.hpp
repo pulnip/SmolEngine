@@ -24,7 +24,7 @@ namespace Smol
         ~InputAction();
         SMOL_DECLARE_NON_COPYABLE(InputAction)
         InputAction(InputAction&& other) noexcept;
-        InputAction& operator=(InputAction&&);
+        InputAction& operator=(InputAction&&) noexcept;
 
         InputAction(Handle handle, IInputManager* manager)
             : handle(handle), manager(manager){}

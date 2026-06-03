@@ -1,6 +1,5 @@
-#include "Assert.hpp"
 #include "InputAction.hpp"
-#include "InputManager.hpp"
+#include "IInputManager.hpp"
 
 namespace Smol
 {
@@ -11,7 +10,7 @@ namespace Smol
         other.handle = Handle::InvalidHandle();
         other.manager = nullptr;
     }
-    InputAction& InputAction::operator=(InputAction&& other){
+    InputAction& InputAction::operator=(InputAction&& other) noexcept{
         handle = other.handle;
         manager = other.manager;
 
@@ -25,7 +24,6 @@ namespace Smol
         auto isManagerValid = manager != nullptr;
         auto isHandleValid = handle.IsValid();
 
-        SMOL_ASSERT(isManagerValid == isHandleValid);
         if(isManagerValid && isHandleValid){
             manager->UnbindAction(handle);
 
