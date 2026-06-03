@@ -1,0 +1,36 @@
+#pragma once
+
+#include "Component.hpp"
+#include "RHIFWD.hpp"
+#include "Semantics.hpp"
+#include "SpriteProxy.hpp"
+
+namespace Smol
+{
+    class SpriteRenderer;
+
+    class SpriteComponent: public TypedComponent<SpriteComponent>{
+    private:
+        SpriteProxy proxy;
+        // TODO. use Resource Handle later
+        RHITextureRAII sprite;
+
+        u32 frameCount = 1;
+
+        // if someone called setter of member variable below,
+        // synced = false
+        bool synced = true;
+        u32 iframe = 0;
+
+    public:
+        SpriteComponent();
+        virtual ~SpriteComponent();
+        SMOL_DECLARE_PINNED(SpriteComponent)
+
+        SpriteComponent(RHITextureRAII&&, SpriteRenderer&);
+
+        void SyncToRenderer();
+
+        void NextFrame() noexcept;
+    };
+}

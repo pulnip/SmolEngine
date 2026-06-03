@@ -49,6 +49,7 @@ PUBLIC
     Smol::Core
     Smol::Reflection
     Smol::Input
+    Smol::Render
 PRIVATE
     Smol::Log
 )

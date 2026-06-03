@@ -27,6 +27,8 @@ namespace Smol
 
         virtual void OnUpdate(f32){}
 
+        virtual void SyncRenderState(){}
+
         template<typename T, class... Args>
             requires (!IsBuiltinComponent<T>())
         T* AddComponent(Args&&... args){

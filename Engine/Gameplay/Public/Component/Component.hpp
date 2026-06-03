@@ -38,6 +38,7 @@ namespace Smol
     consteval u32 GetComponentTypeIndex(){
         if constexpr(std::is_same_v<T, InputComponent>) return 0;
         else if constexpr(std::is_same_v<T, RigidBody>) return 1;
+        else if constexpr(std::is_same_v<T, SpriteComponent>) return 2;
         return NUM_BUILTIN_COMPONENTS;
     }
 
@@ -45,6 +46,7 @@ namespace Smol
     consteval bool IsBuiltinComponent(){
         if constexpr(std::is_same_v<T, InputComponent>) return true;
         else if constexpr(std::is_same_v<T, RigidBody>) return true;
+        else if constexpr(std::is_same_v<T, SpriteComponent>) return true;
         return false;
     }
 }

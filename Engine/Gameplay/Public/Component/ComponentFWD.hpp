@@ -10,5 +10,6 @@ namespace Smol
 
     class InputComponent;
     class RigidBody;
-    constexpr u32 NUM_BUILTIN_COMPONENTS = 2;
+    class SpriteComponent;
+    constexpr u32 NUM_BUILTIN_COMPONENTS = 3;
 }

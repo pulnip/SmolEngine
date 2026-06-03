@@ -1,6 +1,7 @@
 #include "Actor.hpp"
 #include "InputComponent.hpp"
 #include "Rigidbody.hpp"
+#include "SpriteComponent.hpp"
 
 namespace Smol
 {
@@ -32,5 +33,23 @@ namespace Smol
     RigidBody* Actor::GetComponent<RigidBody>(){
         constexpr auto index = GetComponentTypeIndex<RigidBody>();
         return static_cast<RigidBody*>(builtinComponents[index].get());
+    }
+
+    template<>
+    SpriteComponent* Actor::AddComponent<SpriteComponent>(
+        RHITextureRAII&& texture,
+        SpriteRenderer& renderer
+    ){
+        constexpr auto index = GetComponentTypeIndex<SpriteComponent>();
+        auto c = std::make_unique<SpriteComponent>(std::move(texture), renderer);
+        builtinComponents[index] = std::move(c);
+
+        return static_cast<SpriteComponent*>(builtinComponents[index].get());
+    }
+
+    template<>
+    SpriteComponent* Actor::GetComponent<SpriteComponent>(){
+        constexpr auto index = GetComponentTypeIndex<SpriteComponent>();
+        return static_cast<SpriteComponent*>(builtinComponents[index].get());
     }
 }
