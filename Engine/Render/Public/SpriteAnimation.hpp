@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Primitives.hpp"
+#include "RHIFWD.hpp"
 
 namespace Smol
 {
@@ -9,5 +10,7 @@ namespace Smol
         Vec2 uvScale;
         // [cols, rows]
         Vec2 offset;
+
+        RHITexture& texture;
     };
 }

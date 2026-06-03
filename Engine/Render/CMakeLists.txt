@@ -7,4 +7,9 @@ PUBLIC
 PRIVATE
 )
 
+smol_rhi_macro(Render)
 smol_declare_private_interface(Render)
+
+if(SMOL_ENABLE_TEST)
+    add_subdirectory(Sample)
+endif()
