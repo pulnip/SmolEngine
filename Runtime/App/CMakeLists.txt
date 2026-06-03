@@ -21,7 +21,7 @@ PRIVATE
     Smol::Input
     Smol::Platform
     Smol::Render
-    Smol::Scene
+    # Smol::Scene
 )
 
 if(RENDER_BACKEND STREQUAL "DX11")
