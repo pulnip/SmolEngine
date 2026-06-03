@@ -1,16 +1,20 @@
 #pragma once
 
-#include <span>
 #include "Primitives.hpp"
 #include "RHIFWD.hpp"
 #include "Semantics.hpp"
+#include "SlotMap.hpp"
+#include "SpriteProxy.hpp"
 
 namespace Smol
 {
-    struct SpriteRenderItem;
-
     class SpriteRenderer final{
+    public:
+        using Handle = SpriteProxy::Handle;
+
     private:
+        SlotMap<SpriteRenderItem> renderItems;
+
         RHIGraphicsPipelineStateRAII pipeline;
         RHISamplerRAII sampler;
 
@@ -31,6 +35,15 @@ namespace Smol
         ~SpriteRenderer();
         SMOL_DECLARE_MOVE_ONLY(SpriteRenderer)
 
-        void Draw(RHICommandList&, std::span<const SpriteRenderItem>);
+        [[nodiscard]]
+        SpriteProxy BindRenderItem(RHITexture&);
+
+        void Draw(RHICommandList&);
+
+    private:
+        friend class SpriteProxy;
+
+        SpriteRenderItem& GetRenderItem(Handle);
+        void UnbindRenderItem(Handle);
     };
 }

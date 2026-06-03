@@ -4,7 +4,8 @@
 #include "RHIDevice.hpp"
 #include "RHIPipelineState.hpp"
 #include "RHISampler.hpp"
-#include "SpriteAnimation.hpp"
+#include "RHITexture.hpp"
+#include "SpriteProxy.hpp"
 #include "SpriteRenderer.hpp"
 
 namespace Smol
@@ -59,6 +60,25 @@ namespace Smol
 
     SpriteRenderer::~SpriteRenderer() = default;
 
+    SpriteProxy SpriteRenderer::BindRenderItem(RHITexture& texture){
+        auto handle = renderItems.emplace(SpriteRenderItem{
+            // TODO. change later
+            .uvScale = {1.0f/16, 1.0f/16},
+            .offset = {.x = 0, .y = 0},
+            .texture = texture,
+        });
+
+        return SpriteProxy(handle, *this);
+    }
+
+    SpriteRenderItem& SpriteRenderer::GetRenderItem(Handle handle){
+        return renderItems.get(handle);
+    }
+
+    void SpriteRenderer::UnbindRenderItem(Handle handle){
+        renderItems.remove(handle);
+    }
+
     struct SpriteConstants{
         Vec2 uvScale;
         Vec2 offset;
@@ -70,10 +90,7 @@ namespace Smol
         };
     }
 
-    void SpriteRenderer::Draw(
-        RHICommandList& cmdList,
-        std::span<const SpriteRenderItem> items
-    ){
+    void SpriteRenderer::Draw(RHICommandList& cmdList){
         using enum RHIShaderStage;
 
         cmdList.SetPipelineState(*pipeline);
@@ -83,7 +100,7 @@ namespace Smol
             RHIShaderStage::FragmentShader
         );
 
-        for(auto& item: items){
+        for(auto& item: renderItems){
             auto c = pack(item);
             cmdList.SetBytes(
                 &c,
@@ -100,6 +117,5 @@ namespace Smol
             );
             cmdList.Draw(4);
         }
-
     }
 }

@@ -6,7 +6,6 @@
 #include "RHISwapchain.hpp"
 #include "RHITexture.hpp"
 #include "RuntimeConfig.hpp"
-#include "SpriteAnimation.hpp"
 #include "SpriteRenderer.hpp"
 #include "Timer.hpp"
 #include "Window.hpp"
@@ -36,6 +35,8 @@ int main(void){
         .bufferDesc = backBufferDesc
     });
 
+    SpriteRenderer renderer(*device);
+
     // load Texture from Image
     auto image = loadImage(IMAGE_PATH);
     auto texture = device->CreateTexture(RHITextureCreateDesc{
@@ -44,11 +45,11 @@ int main(void){
         .usage = RHITextureUsage::AllowShaderRead,
         .initialData = image.GetBufferPointer()
     });
+    auto proxy = renderer.BindRenderItem(*texture);
+    proxy.GetRenderItem().uvScale = {.x = 1.0f/16, .y = 1.0f/16};
 
     RHIClearColor clearColor{.v = {0.5f, 0.5f, 0.5f, 1.0f}};
     auto cmdList = device->CreateCommandList();
-
-    SpriteRenderer renderer(*device);
 
     Timer timer;
     constexpr f32 framePerSeconds = 0.16f;
@@ -82,18 +83,14 @@ int main(void){
             .minDepth = 0, .maxDepth = 1
         });
 
-        std::array items = {
-            SpriteRenderItem{
-                .uvScale = {.x = 1.0f/16, .y = 1.0f/16},
-                .offset = {
-                    .x = static_cast<f32>(animFrame),
-                    .y = 0
-                },
-                .texture = *texture
-            }
+        // In SpriteComponent
+        auto& item = proxy.GetRenderItem();
+        item.offset = {
+            .x = static_cast<f32>(animFrame),
+            .y = 0
         };
 
-        renderer.Draw(*cmdList, items);
+        renderer.Draw(*cmdList);
 
         cmdList->EndRenderPass();
         cmdList->Close();

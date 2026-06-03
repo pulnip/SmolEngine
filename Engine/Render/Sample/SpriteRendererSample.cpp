@@ -6,7 +6,6 @@
 #include "RHISwapchain.hpp"
 #include "RHITexture.hpp"
 #include "RuntimeConfig.hpp"
-#include "SpriteAnimation.hpp"
 #include "SpriteRenderer.hpp"
 #include "Window.hpp"
 
@@ -35,6 +34,8 @@ int main(void){
         .bufferDesc = backBufferDesc
     });
 
+    SpriteRenderer renderer(*device);
+
     // load Texture from Image
     auto image = loadImage(IMAGE_PATH);
     auto texture = device->CreateTexture(RHITextureCreateDesc{
@@ -50,11 +51,10 @@ int main(void){
             .texture = *texture
         }
     };
+    auto _ = renderer.BindRenderItem(*texture);
 
     RHIClearColor clearColor{.v = {0.5f, 0.5f, 0.5f, 1.0f}};
     auto cmdList = device->CreateCommandList();
-
-    SpriteRenderer renderer(*device);
 
     while(true){
         if(!window.ProcessEvents()) [[unlikely]]
@@ -74,7 +74,7 @@ int main(void){
             .minDepth = 0, .maxDepth = 1
         });
 
-        renderer.Draw(*cmdList, items);
+        renderer.Draw(*cmdList);
 
         cmdList->EndRenderPass();
         cmdList->Close();
