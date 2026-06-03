@@ -46,10 +46,11 @@ namespace Smol
         virtual void SetPipelineState(RHIComputePipelineState&) = 0;
 
         // Vertex and index buffers
+        // stride = sizeof(Vertex)
         virtual void SetVertexBuffer(
             const RHIBuffer&,
             u32 slot,
-            u32 stride, // sizeof(Vertex)
+            u32 stride,
             u32 offset = 0
         ) = 0;
 
@@ -59,7 +60,7 @@ namespace Smol
             u32 offset = 0
         ) = 0;
 
-        // Constant buffers
+        // for Data shared within Multiple Draw Call
         virtual void SetConstantBuffer(
             const RHIBuffer&,
             u32 slot,
@@ -83,6 +84,7 @@ namespace Smol
             RHIShaderStage stage = RHIShaderStage::ComputeShader
         ) = 0;
 
+        // for per-draw data, size should be <= 256B
         virtual void SetBytes(
             const void* bytes,
             u32 slot,

@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <utility>
 #include <d3d11.h>
 #include "Assert.hpp"
@@ -558,18 +559,18 @@ namespace Smol
         );
         SMOL_ASSERT(!inComputePass);
 
-        if(instanceCount > 1)
-            context.DrawInstanced(
-                vertexCount,
-                instanceCount,
-                startVertex,
-                startInstance
-            );
-        else
-            context.Draw(
-                vertexCount,
-                startVertex
-            );
+        // if instanceCount == 1, same as below.
+        // context.Draw(
+        //     vertexCount,
+        //     startVertex
+        // );
+
+        context.DrawInstanced(
+            vertexCount,
+            instanceCount,
+            startVertex,
+            startInstance
+        );
     }
 
     void DX11CommandList::DrawIndexed(
@@ -587,20 +588,20 @@ namespace Smol
         );
         SMOL_ASSERT(!inComputePass);
 
-        if(instanceCount > 1)
-            context.DrawIndexedInstanced(
-                indexCount,
-                instanceCount,
-                startIndex,
-                baseVertex,
-                startInstance
-            );
-        else
-            context.DrawIndexed(
-                indexCount,
-                startIndex,
-                baseVertex
-            );
+        // if instanceCount == 1, same as below.
+        // context.DrawIndexed(
+        //     indexCount,
+        //     startIndex,
+        //     baseVertex
+        // );
+
+        context.DrawIndexedInstanced(
+            indexCount,
+            instanceCount,
+            startIndex,
+            baseVertex,
+            startInstance
+        );
     }
 
     void DX11CommandList::BeginCompute() noexcept{
@@ -699,7 +700,8 @@ namespace Smol
         u32 mipLevel,
         u32 arraySlice
     ){
-        // TODO
+        // TODO.
+        throw std::runtime_error("Unimplemented");
     }
 
     void DX11CommandList::beginRenderPass(
