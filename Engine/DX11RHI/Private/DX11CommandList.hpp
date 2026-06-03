@@ -5,6 +5,7 @@
 #include "RHICommandList.hpp"
 #include "DX11Definitions.hpp"
 #include "DX11PipelineState.hpp"
+#include "DX11Buffer.hpp"
 
 namespace Smol
 {
@@ -22,8 +23,10 @@ namespace Smol
         u32 maxBindedCSSRV = 0;
     #endif
 
+        DX11Buffer inlineBuffer;
+
     public:
-        DX11CommandList(DeviceContext& context);
+        DX11CommandList(Device& device, DeviceContext& context);
         ~DX11CommandList();
 
         void Begin() noexcept RHI_OVERRIDE;

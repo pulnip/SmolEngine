@@ -1,4 +1,3 @@
-#include <stdexcept>
 #include <utility>
 #include <d3d11.h>
 #include "Assert.hpp"
@@ -14,8 +13,17 @@
 
 namespace Smol
 {
-    DX11CommandList::DX11CommandList(DeviceContext& context)
-        : context(context){}
+    DX11CommandList::DX11CommandList(Device& device, DeviceContext& context)
+        : context(context)
+        , inlineBuffer(device, context,
+            RHIBufferCreateDesc{
+                .size = 256,
+                .usage = RHIBufferUsage::ConstantBuffer,
+                .access = RHIMemoryAccess::CPUWrite
+            },
+            "CommandList Inline Buffer"
+        )
+    {}
 
     DX11CommandList::~DX11CommandList() = default;
 
@@ -444,16 +452,34 @@ namespace Smol
         usize size,
         RHIShaderStage stage
     ){
-        using enum RHIShaderStage;
+        SMOL_ASSERT(size <= 256);
 
-        throw std::runtime_error("Unimplemented");
+        inlineBuffer.Upload(bytes, size, 0);
+        auto buf = inlineBuffer.Get();
+
+        using enum RHIShaderStage;
 
         switch(stage){
         case VertexShader:
-            [[fallthrough]];
+            context.VSSetConstantBuffers(
+                slot,
+                1,
+                &buf
+            );
+            break;
         case FragmentShader:
+            context.PSSetConstantBuffers(
+                slot,
+                1,
+                &buf
+            );
             break;
         case ComputeShader:
+            context.CSSetConstantBuffers(
+                slot,
+                1,
+                &buf
+            );
             break;
         default:
             std::unreachable();

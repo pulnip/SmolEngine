@@ -150,7 +150,7 @@ namespace Smol
         }
 
         RHICommandListRAII CreateCommandList(){
-            return std::make_unique<DX11CommandList>(*context.Get());
+            return std::make_unique<DX11CommandList>(*device.Get(), *context.Get());
         }
 
         RHIFenceRAII CreateFence(u64 initialValue){
