@@ -1,24 +1,40 @@
+#include <stdexcept>
 #include "Actor.hpp"
-#include "World.hpp"
 #include "ActorRegistry.hpp"
+#include "LogLocal.hpp"
 #include "SpawnContext.hpp"
+#include "World.hpp"
 
 namespace Smol
 {
+    World::World() = default;
+    World::~World() = default;
+
     World::World(StrView scenePath){
-        SpawnContext spawnContext{};
-
-        auto a = CreateActor("SimpleActor", spawnContext);
-        a->AddComponent<Smol::RigidBody>();
-
-        auto o = CreateActor("ComplexActor", spawnContext);
-
-        actors.emplace_back(std::move(a));
-        actors.emplace_back(std::move(o));
+        // TODO.
+        throw std::runtime_error("Unimplemented");
     }
 
-    World::~World(){
+    World::World(SpawnContext& ctx, std::span<const Str> actorNames){
+        for(const auto& actorName: actorNames){
+            SpawnContext spawnContext{
+                .inputManager = ctx.inputManager
+            };
 
+            auto actor = CreateActor(actorName, spawnContext);
+
+            auto [_, ret] = indexByName.try_emplace(
+                actorName,
+                actors.size()
+            );
+
+            if(!ret){
+                LOG_WARN("Actor {} not exists.", actorName);
+                continue;
+            }
+
+            actors.emplace_back(std::move(actor));
+        }
     }
 
     void World::Update(f32 deltaTime){

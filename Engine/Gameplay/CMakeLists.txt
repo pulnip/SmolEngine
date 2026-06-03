@@ -49,6 +49,8 @@ PUBLIC
     Smol::Core
     Smol::Reflection
     Smol::Input
+PRIVATE
+    Smol::Log
 )
 
 add_library(Smol::Gameplay ALIAS SmolGameplay)
