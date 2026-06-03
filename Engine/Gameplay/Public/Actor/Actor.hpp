@@ -12,11 +12,13 @@ namespace Smol
 {
     class Actor: public Object{
     private:
-        Transform transform;
         std::array<ComponentRAII, NUM_BUILTIN_COMPONENTS> builtinComponents;
         std::unordered_map<Component::TypeID, ComponentRAII> userdefinedComponents;
 
         std::vector<ActorRAII> children;
+
+    protected:
+        Transform transform;
 
     public:
         Actor() = default;
