@@ -17,7 +17,7 @@ PRIVATE
 target_link_libraries(SmolApp
 PRIVATE
     Smol::Core
-    Smol::Gameplay
+    "$<LINK_LIBRARY:WHOLE_ARCHIVE,Smol::Gameplay>"
     Smol::Input
     Smol::Platform
     Smol::Render
