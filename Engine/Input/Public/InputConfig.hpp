@@ -4,6 +4,7 @@
 #include "InputModifier.hpp"
 #include "KeyCode.hpp"
 #include "Primitives.hpp"
+#include "TomlLoader.hpp"
 
 namespace Smol
 {
@@ -24,5 +25,10 @@ namespace Smol
 
     struct InputConfig{
         ActionMappings mappings;
+    };
+
+    template<>
+    struct TomlTraits<InputConfig>{
+        static InputConfig from(const DOM::Value&);
     };
 }

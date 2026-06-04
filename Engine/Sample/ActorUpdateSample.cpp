@@ -1,6 +1,5 @@
 #include "InputConfig.hpp"
 #include "InputManager.hpp"
-#include "InputModifier.hpp"
 #include "RHICommandList.hpp"
 #include "RHIDevice.hpp"
 #include "RHISwapchain.hpp"
@@ -14,6 +13,45 @@
 #include "World.hpp"
 
 using namespace Smol;
+
+constexpr CStr WINDOW_TOML = R"(
+[runtime.window]
+title = "ActorUpdateSample"
+width = 800
+height = 600
+fullscreen = false
+resizable = false
+borderless = false
+always_on_top = false
+)";
+
+constexpr CStr INPUT_TOML = R"(
+[context]
+name = "Gameplay"
+
+[[context.mappings]]
+key = "W"
+action = "Move"
+modifiers = [
+    {type = "Swizzle", order = "YXZ"}
+]
+[[context.mappings]]
+key = "A"
+action = "Move"
+modifiers = [
+    {type = "Negate", negate_x = true}
+]
+[[context.mappings]]
+key = "S"
+action = "Move"
+modifiers = [
+    {type = "Swizzle", order = "YXZ"},
+    {type = "Negate", negate_x = true}
+]
+[[context.mappings]]
+key = "D"
+action = "Move"
+)";
 
 constexpr CStr SCENE_TOML = R"(
 [metadata]
@@ -32,56 +70,13 @@ possessed_by = "PlayerController"
 )";
 
 int main(int, char*[]){
-    WindowConfig windowConfig{
-        .title = "ActorUpdateSample",
-        .width = 800,
-        .height = 600
-    };
+    auto windowConfig = loadToml<WindowConfig>(WINDOW_TOML);
     SDLWindow window(windowConfig);
 
     SDLInputProvider inputProvider;
 
     // Initialize Input Feature
-    InputConfig inputConfig{
-        .mappings = {
-            ActionInfo{
-                .name = "Move",
-                .mappings = {
-                    KeyBinding{
-                        .keyCode = KeyCode::W,
-                        .modifiers = {
-                            SwizzleModifier(YXZ)
-                        }
-                    },
-                    KeyBinding{
-                        .keyCode = KeyCode::A,
-                        .modifiers = {
-                            NegateModifier(
-                                true,
-                                false,
-                                false
-                            )
-                        }
-                    },
-                    KeyBinding{
-                        .keyCode = KeyCode::S,
-                        .modifiers = {
-                            SwizzleModifier(YXZ),
-                            NegateModifier(
-                                false,
-                                false,
-                                true
-                            ),
-                        }
-                    },
-                    KeyBinding{
-                        .keyCode = KeyCode::D
-                    }
-                },
-                .count = 0
-            }
-        }
-    };
+    auto inputConfig = loadToml<InputConfig>(INPUT_TOML);
     InputManager inputManager(
         inputConfig,
         &inputProvider
