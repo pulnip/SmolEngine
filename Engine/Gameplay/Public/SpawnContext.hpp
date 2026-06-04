@@ -7,6 +7,7 @@ namespace Smol
     class IInputManager;
     class RHIDevice;
     class SpriteRenderer;
+    class World;
 
     struct SpawnContext{
         static IInputManager& mockInputManager();
@@ -17,5 +18,7 @@ namespace Smol
         RHIDevice* device = nullptr;
         // TODO. mock renderer?
         SpriteRenderer* spriteRenderer = nullptr;
+        // TODO. mock world?
+        World* world = nullptr;
     };
 }

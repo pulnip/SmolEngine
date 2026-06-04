@@ -1,21 +1,35 @@
-#include "ActorRegistry.hpp"
-#include "Assert.hpp"
 #include "InputConfig.hpp"
 #include "InputManager.hpp"
 #include "InputModifier.hpp"
 #include "RHICommandList.hpp"
 #include "RHIDevice.hpp"
 #include "RHISwapchain.hpp"
-#include "RHITexture.hpp"
 #include "RuntimeConfig.hpp"
+#include "SDLWindow.hpp"
+#include "SDLInputProvider.hpp"
 #include "SpawnContext.hpp"
 #include "SpriteRenderer.hpp"
 #include "Timer.hpp"
-#include "SDLWindow.hpp"
-#include "SDLInputProvider.hpp"
+#include "TomlLoader.hpp"
 #include "World.hpp"
 
 using namespace Smol;
+
+constexpr CStr SCENE_TOML = R"(
+[metadata]
+version = 0
+name = "ActorUpdateSample"
+type = "scene"
+
+[[actors]]
+type = "CharacterController"
+name = "PlayerController"
+
+[[actors]]
+type = "SimplePlayer"
+name = "Player"
+possessed_by = "PlayerController"
+)";
 
 int main(int, char*[]){
     WindowConfig windowConfig{
@@ -89,15 +103,14 @@ int main(int, char*[]){
 
     // Initialize Update Feature
     // TODO. use World class
+    auto dom = parseTomlString(SCENE_TOML);
     SpawnContext context{
+        .dom = dom,
         .inputManager = inputManager,
         .device = device.get(),
         .spriteRenderer = &renderer
     };
-    auto controller = CreateActor("CharacterController", context);
-    SMOL_ASSERT(controller != nullptr);
-    auto player = CreateActor("SimplePlayer", context);
-    SMOL_ASSERT(player != nullptr);
+    World world(context);
 
     auto cmdList = device->CreateCommandList();
     RHIClearColor clearColor{.v = {
@@ -146,11 +159,7 @@ int main(int, char*[]){
         timer.NewFrame();
 
         auto dt = timer.GetDeltaTime();
-        controller->OnUpdate(dt);
-        player->OnUpdate(dt);
-
-        controller->SyncRenderState();
-        player->SyncRenderState();
+        world.Update(dt);
 
         // Render
         cmdList->Begin();

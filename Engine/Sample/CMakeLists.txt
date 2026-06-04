@@ -8,6 +8,8 @@ PRIVATE
 target_link_libraries(SmolEngineSampleLib
 PUBLIC
     "$<LINK_LIBRARY:WHOLE_ARCHIVE,Smol::Gameplay>"
+PRIVATE
+    Smol::Log
 )
 
 function(smol_engine_sample NAME)
