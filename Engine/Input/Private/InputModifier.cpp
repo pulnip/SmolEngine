@@ -7,17 +7,18 @@ namespace{
     auto createNegateModifier(const Smol::DOM::Value& v){
         // negate all for default
         auto negateX = v.get<bool>("negate_x")
-            .value_or(true);
+            .value_or(false);
         auto negateY = v.get<bool>("negate_y")
-            .value_or(true);
+            .value_or(false);
         auto negateZ = v.get<bool>("negate_z")
-            .value_or(true);
+            .value_or(false);
 
         auto anyNegate = negateX || negateY || negateZ;
-        if(!anyNegate) [[unlikely]]
-            LOG_WARN("No Negate in NegateModifier");
 
-        return Smol::NegateModifier(negateX, negateY, negateZ);
+        return anyNegate ?
+            Smol::NegateModifier(negateX, negateY, negateZ) :
+            // negate all for default
+            Smol::NegateModifier(true, true, true);
     }
 
     auto createScaleModifier(const Smol::DOM::Value& v){
