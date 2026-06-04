@@ -1,9 +1,12 @@
 #include "RuntimeConfig.hpp"
 #include "DOM.hpp"
+#include "TomlLoader.hpp"
 
 namespace Smol
 {
-    static WindowConfig windowConfigFrom(const DOM::Value& root){
+    WindowConfig TomlTraits<WindowConfig>::from(
+        const DOM::Value& root
+    ){
         auto title = root.get<Str>("runtime.window.title")
             .value_or("DefaultWindow");
         auto width = root.get<u32>("runtime.window.width")
@@ -35,8 +38,6 @@ namespace Smol
     RuntimeConfig TomlTraits<RuntimeConfig>::from(
         const DOM::Value& root
     ){
-        RuntimeConfig config;
-
         auto name = root.get<Str>("runtime.app_name")
             .value_or("AnonymousApp");
         auto version = root.get<Str>("runtime.app_version")
@@ -48,7 +49,7 @@ namespace Smol
             .name = name,
             .version = version,
             .identifier = identifier,
-            .window = windowConfigFrom(root)
+            .window = TomlTraits<WindowConfig>::from(root)
         };
     }
 }

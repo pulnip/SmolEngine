@@ -16,6 +16,11 @@ namespace Smol
         bool always_on_top = false;
     };
 
+    template<>
+    struct TomlTraits<WindowConfig>{
+        static WindowConfig from(const DOM::Value&);
+    };
+
     struct RuntimeConfig{
         Str name = "AnonymousApp";
         Str version = "v0.0.1";
@@ -26,6 +31,6 @@ namespace Smol
 
     template<>
     struct TomlTraits<RuntimeConfig>{
-        static RuntimeConfig from(const DOM::Value& root);
+        static RuntimeConfig from(const DOM::Value&);
     };
 }
