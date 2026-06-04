@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Assert.hpp"
 #include "RHITexture.hpp"
 #include "SpriteComponent.hpp"
@@ -17,12 +18,21 @@ namespace Smol
         SMOL_ASSERT(proxy.IsValid());
 
         auto& item = proxy.GetRenderItem();
-        // TODO.
-        frameCount = 8;
         item.uvScale = {1.0f/16, 1.0f/16};
     }
 
-    void SpriteComponent::SyncToRenderer(){
+    void SpriteComponent::Update(f32 dt){
+        elapsedTime += std::min(dt, framePerSeconds);
+
+        if(elapsedTime > framePerSeconds){
+            elapsedTime -= framePerSeconds;
+            nextFrame();
+        }
+
+        syncToRenderer();
+    }
+
+    void SpriteComponent::syncToRenderer(){
         if(synced) return;
 
         auto& item = proxy.GetRenderItem();
@@ -31,7 +41,7 @@ namespace Smol
         synced = true;
     }
 
-    void SpriteComponent::NextFrame() noexcept{
+    void SpriteComponent::nextFrame() noexcept{
         iframe = (iframe + 1) % frameCount;
         synced = false;
     }

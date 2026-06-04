@@ -15,7 +15,10 @@ namespace Smol
         // TODO. use Resource Handle later
         RHITextureRAII sprite;
 
-        u32 frameCount = 1;
+        const u32 frameCount = 8;
+        const f32 framePerSeconds = 0.16f;
+
+        f32 elapsedTime = 0.0f;
 
         // if someone called setter of member variable below,
         // synced = false
@@ -29,8 +32,10 @@ namespace Smol
 
         SpriteComponent(RHITextureRAII&&, SpriteRenderer&);
 
-        void SyncToRenderer();
+        void Update(f32) override;
 
-        void NextFrame() noexcept;
+    private:
+        void syncToRenderer();
+        void nextFrame() noexcept;
     };
 }
