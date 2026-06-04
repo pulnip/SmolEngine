@@ -8,6 +8,20 @@
 #include "PathUtil.hpp"
 #include "StringUtil.hpp"
 
+namespace{
+    auto convert(Smol::ImageFormat format){
+        using enum Smol::ImageFormat;
+
+        switch(format){
+        case RGBA:
+            return STBI_rgb_alpha;
+        default:
+            std::unreachable();
+        }
+    }
+
+}
+
 namespace Smol
 {
     u32 toChannels(ImageFormat format) noexcept{
@@ -21,17 +35,6 @@ namespace Smol
         }
     }
 
-    inline auto convert(ImageFormat format){
-        using enum ImageFormat;
-
-        switch(format){
-        case RGBA:
-            return STBI_rgb_alpha;
-        default:
-            std::unreachable();
-        }
-    }
-
     ImageData loadImage(const std::filesystem::path& path, ImageFormat desiredFormat){
         auto bin = readFileAsBinary(path);
 
@@ -39,7 +42,7 @@ namespace Smol
         auto data = stbi_load_from_memory(
             bin.data(), static_cast<int>(bin.size()),
             &width, &height, &channels,
-            convert(desiredFormat)
+            ::convert(desiredFormat)
         );
 
         SMOL_ASSERT(toChannels(desiredFormat) == channels);

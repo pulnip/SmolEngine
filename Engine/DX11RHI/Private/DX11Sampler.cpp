@@ -2,11 +2,11 @@
 #include <d3d11.h>
 #include "DX11Sampler.hpp"
 #include "DX11Util.hpp"
+#include "RHIDefinitions.hpp"
 
-namespace Smol
-{
-    inline auto convertAddressMode(RHIAddressMode mode){
-        using enum RHIAddressMode;
+namespace{
+    auto convertAddressMode(Smol::RHIAddressMode mode){
+        using enum Smol::RHIAddressMode;
 
         switch(mode){
         case Wrap  : return D3D11_TEXTURE_ADDRESS_WRAP;
@@ -18,11 +18,11 @@ namespace Smol
         }
     }
 
-    inline auto convertFilter(
-        RHIFilter min, RHIFilter mag, RHIFilter mip,
+    auto convertFilter(
+        Smol::RHIFilter min, Smol::RHIFilter mag, Smol::RHIFilter mip,
         bool anisotropy, bool comparison
     ){
-        using enum RHIFilter;
+        using enum Smol::RHIFilter;
 
         if(anisotropy)
             return comparison ?
@@ -38,7 +38,10 @@ namespace Smol
 
         return static_cast<D3D11_FILTER>(flags);
     }
+}
 
+namespace Smol
+{
     DX11Sampler::DX11Sampler(
         Device& device,
         const RHISamplerState& desc

@@ -3,14 +3,14 @@
 #include <d3d11.h>
 #include <d3d11shader.h>
 #include <d3dcompiler.h>
+#include "RHIDefinitions.hpp"
 #include "StringUtil.hpp"
 #include "DX11PipelineState.hpp"
 #include "DX11Util.hpp"
 
-namespace Smol
-{
-    inline auto convertFillMode(RHIFillMode mode){
-        using enum RHIFillMode;
+namespace{
+    auto convertFillMode(Smol::RHIFillMode mode){
+        using enum Smol::RHIFillMode;
 
         switch(mode){
         case Solid:     return D3D11_FILL_SOLID;
@@ -20,8 +20,8 @@ namespace Smol
         }
     }
 
-    inline auto convertCullMode(RHICullMode mode){
-        using enum RHICullMode;
+    auto convertCullMode(Smol::RHICullMode mode){
+        using enum Smol::RHICullMode;
 
         switch(mode){
         case CullNone: return D3D11_CULL_NONE;
@@ -32,8 +32,8 @@ namespace Smol
         }
     }
 
-    inline auto convertStencilOp(RHIStencilOp op){
-        using enum RHIStencilOp;
+    auto convertStencilOp(Smol::RHIStencilOp op){
+        using enum Smol::RHIStencilOp;
 
         switch (op){
         case Keep:     return D3D11_STENCIL_OP_KEEP;
@@ -49,7 +49,7 @@ namespace Smol
         }
     }
 
-    inline auto convertStencilOpDesc(const RHIStencilOpDesc& desc) {
+    auto convertStencilOpDesc(const Smol::RHIStencilOpDesc& desc) {
         return D3D11_DEPTH_STENCILOP_DESC{
             .StencilFailOp = convertStencilOp(desc.stencilFailOp),
             .StencilDepthFailOp = convertStencilOp(desc.depthFailOp),
@@ -58,8 +58,8 @@ namespace Smol
         };
     }
 
-    inline auto convertBlendFactor(RHIBlend blend){
-        using enum RHIBlend;
+    auto convertBlendFactor(Smol::RHIBlend blend){
+        using enum Smol::RHIBlend;
 
         switch (blend) {
         case Zero:           return D3D11_BLEND_ZERO;
@@ -80,8 +80,8 @@ namespace Smol
         }
     }
 
-    inline auto convertBlendOp(RHIBlendOp op){
-        using enum RHIBlendOp;
+    auto convertBlendOp(Smol::RHIBlendOp op){
+        using enum Smol::RHIBlendOp;
 
         switch (op) {
         case Add:             return D3D11_BLEND_OP_ADD;
@@ -94,8 +94,8 @@ namespace Smol
         }
     }
 
-    inline auto convert(RHIPrimitiveTopology primitiveTopology){
-        using enum RHIPrimitiveTopology;
+    auto convert(Smol::RHIPrimitiveTopology primitiveTopology){
+        using enum Smol::RHIPrimitiveTopology;
 
         switch(primitiveTopology){
         case PointList:     return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
@@ -109,20 +109,20 @@ namespace Smol
     }
 
     using Blob = ID3DBlob;
-	using BlobRAII = COMRAII<Blob>;
+	using BlobRAII = Smol::COMRAII<Blob>;
 
 	struct CompiledShader{
-		std::vector<u8> bytecode;
+		std::vector<Smol::u8> bytecode;
 
 		CompiledShader(
 			const std::filesystem::path& path,
-			StrView entryPoint,
-			CStr target
+			Smol::StrView entryPoint,
+			Smol::CStr target
 		){
 			auto ext = std::filesystem::path(path).extension().string();
 
 			if(ext == ".cso" || ext == ".dxbc" || ext == ".dxil"){
-				bytecode = readFileAsBinary(path);
+				bytecode = Smol::readFileAsBinary(path);
 			}
 			else if(ext != ".hlsl"){
 				throw std::runtime_error("Unsupported shader file extension: " + ext);
@@ -145,7 +145,7 @@ namespace Smol
 				&shaderBlob,
 				&errorBlob
 			))){
-				Str errorMsg = "HLSL compile failed";
+				Smol::Str errorMsg = "HLSL compile failed";
 				if(errorBlob){
 					errorMsg += ": ";
 					errorMsg += static_cast<const char*>(errorBlob->GetBufferPointer());
@@ -169,19 +169,21 @@ namespace Smol
 		}
 	};
 
-    inline auto extractBindingInfo(ID3D11ShaderReflection& refl){
+    auto extractBindingInfo(ID3D11ShaderReflection& refl){
         D3D11_SHADER_DESC desc;
         refl.GetDesc(&desc);
 
-        RHIShaderBindingInfo info;
+        Smol::RHIShaderBindingInfo info;
 
         for(UINT i=0; i<desc.BoundResources; ++i){
             D3D11_SHADER_INPUT_BIND_DESC bindDesc;
             refl.GetResourceBindingDesc(i, &bindDesc);
 
-            RHISlotBindingInfo slotInfo{
+            using enum Smol::RHIBindingAccess;
+
+            Smol::RHISlotBindingInfo slotInfo{
                 .index = bindDesc.BindPoint,
-                .access = RHIBindingAccess::ReadOnly
+                .access = ReadOnly
             };
 
             switch (bindDesc.Type) {
@@ -189,17 +191,17 @@ namespace Smol
             case D3D_SIT_TBUFFER:     [[fallthrough]];
             case D3D_SIT_STRUCTURED:  [[fallthrough]];
             case D3D_SIT_BYTEADDRESS:
-                slotInfo.access = RHIBindingAccess::ReadOnly;
+                slotInfo.access = ReadOnly;
                 info.bufferInfo.emplace(bindDesc.Name, slotInfo);
                 break;
             case D3D_SIT_UAV_RWTYPED:       [[fallthrough]];
             case D3D_SIT_UAV_RWSTRUCTURED:  [[fallthrough]];
             case D3D_SIT_UAV_RWBYTEADDRESS:
-                slotInfo.access = RHIBindingAccess::ReadWrite;
+                slotInfo.access = ReadWrite;
                 info.bufferInfo.emplace(bindDesc.Name, slotInfo);
                 break;
             case D3D_SIT_TEXTURE:
-                slotInfo.access = RHIBindingAccess::ReadOnly;
+                slotInfo.access = ReadOnly;
                 info.textureInfo.emplace(bindDesc.Name, slotInfo);
                 break;
             case D3D_SIT_SAMPLER:
@@ -213,16 +215,31 @@ namespace Smol
         return info;
     }
 
-    inline RHIGraphicsBindingInfo extractGraphicsBindingInfo(
+    auto extractGraphicsBindingInfo(
         ID3D11ShaderReflection& vsRefl,
         ID3D11ShaderReflection& psRefl
     ){
-        return{
+        return Smol::RHIGraphicsBindingInfo{
             .vsInfo = extractBindingInfo(vsRefl),
             .fsInfo = extractBindingInfo(psRefl)
         };
     }
 
+    auto extractComputeBindingInfo(
+        ID3D11ShaderReflection& refl
+    ){
+        UINT threadX, threadY, threadZ;
+        UINT totalThreads = refl.GetThreadGroupSize(&threadX, &threadY, &threadZ);
+
+        return Smol::RHIComputeBindingInfo{
+            .csInfo = extractBindingInfo(refl),
+            .reflectedSize = Smol::RHISize3D{threadX, threadY, threadZ}
+        };
+    }
+}
+
+namespace Smol
+{
     DX11GraphicsPipelineState::DX11GraphicsPipelineState(
         Device& device,
         const RHIGraphicsPipelineStateDesc& desc,
@@ -427,18 +444,6 @@ namespace Smol
         }
     }
 
-    inline std::tuple<RHIComputeBindingInfo, RHISize3D> extractComputeBindingInfo(
-        ID3D11ShaderReflection& refl
-    ){
-        UINT threadX, threadY, threadZ;
-        UINT totalThreads = refl.GetThreadGroupSize(&threadX, &threadY, &threadZ);
-
-        return{
-            RHIComputeBindingInfo{.csInfo = extractBindingInfo(refl)},
-            RHISize3D{threadX, threadY, threadZ}
-        };
-    }
-
     DX11ComputePipelineState::DX11ComputePipelineState(
         Device& device,
         const RHIComputePipelineStateDesc& desc,
@@ -473,10 +478,10 @@ namespace Smol
             throw std::runtime_error("Failed to reflect compute shader");
         }
 
-        std::tie(bindingInfo, threadGroupSize) = extractComputeBindingInfo(*refl.Get());
+        bindingInfo = extractComputeBindingInfo(*refl.Get());
 
         if(desc.threadGroupSize.has_value())
-            SMOL_ASSERT(*desc.threadGroupSize <= *desc.threadGroupSize, "Unexpected thread group size");
+            SMOL_ASSERT(*desc.threadGroupSize <= bindingInfo.reflectedSize, "Unexpected thread group size");
     }
 
     DX11ComputePipelineState::~DX11ComputePipelineState() = default;

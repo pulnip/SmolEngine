@@ -3,9 +3,8 @@
 #include "LogLocal.hpp"
 #include "StringUtil.hpp"
 
-namespace Smol
-{
-    inline auto createNegateModifier(const DOM::Value& v){
+namespace{
+    auto createNegateModifier(const Smol::DOM::Value& v){
         // negate all for default
         auto negateX = v.get<bool>("negate_x")
             .value_or(true);
@@ -18,10 +17,12 @@ namespace Smol
         if(!anyNegate) [[unlikely]]
             LOG_WARN("No Negate in NegateModifier");
 
-        return NegateModifier(negateX, negateY, negateZ);
+        return Smol::NegateModifier(negateX, negateY, negateZ);
     }
 
-    inline auto createScaleModifier(const DOM::Value& v){
+    auto createScaleModifier(const Smol::DOM::Value& v){
+        using namespace Smol;
+
         if(auto factor = v.get<f32>("factor")){
             return ScaleModifier(*factor);
         }
@@ -33,7 +34,8 @@ namespace Smol
         return ScaleModifier();
     }
 
-    inline SwizzleOrder toSwizzleOrder(StrView str){
+    auto toSwizzleOrder(Smol::StrView str){
+        using namespace Smol;
         using enum SwizzleOrder;
 
         static StringHashMap<SwizzleOrder> map = {
@@ -54,7 +56,9 @@ namespace Smol
         return XYZ;
     }
 
-    inline auto createSwizzleModifier(const DOM::Value& v){
+    auto createSwizzleModifier(const Smol::DOM::Value& v){
+        using namespace Smol;
+
         if(auto order = v.get<Str>("order")){
             return SwizzleModifier(toSwizzleOrder(*order));
         }
@@ -62,7 +66,10 @@ namespace Smol
         LOG_WARN("key \"order\" not found in DOM::Value");
         return SwizzleModifier();
     }
+}
 
+namespace Smol
+{
     InputModifier CreateInputModifier(const DOM::Value& v){
         auto type = v.get<Str>("type");
         if(!type.has_value()){

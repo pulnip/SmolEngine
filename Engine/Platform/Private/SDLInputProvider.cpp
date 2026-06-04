@@ -5,10 +5,9 @@
 #include "KeyCode.hpp"
 #include "SDLInputProvider.hpp"
 
-namespace Smol
-{
-    inline SDL_Scancode convert(KeyCode keyCode){
-        using enum KeyCode;
+namespace{
+    SDL_Scancode convert(Smol::KeyCode keyCode){
+        using enum Smol::KeyCode;
 
         switch(keyCode){
         // Numbers
@@ -78,8 +77,8 @@ namespace Smol
         }
     }
 
-    inline KeyCode convert(SDL_Scancode scancode){
-        using enum KeyCode;
+    inline Smol::KeyCode convert(SDL_Scancode scancode){
+        using enum Smol::KeyCode;
 
         switch(scancode){
         // Numbers
@@ -147,7 +146,10 @@ namespace Smol
             return Unknown;
         }
     }
+}
 
+namespace Smol
+{
     SDLInputProvider::SDLInputProvider(){
         SDL_InitFlags flags = SDL_INIT_EVENTS;
         if(!SDL_InitSubSystem(flags)){

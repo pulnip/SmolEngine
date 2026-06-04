@@ -8,6 +8,20 @@
 #include "SpriteProxy.hpp"
 #include "SpriteRenderer.hpp"
 
+namespace{
+    struct SpriteConstants{
+        Smol::Vec2 uvScale;
+        Smol::Vec2 offset;
+    };
+
+    auto pack(const Smol::SpriteRenderItem& item){
+        return SpriteConstants{
+            .uvScale = item.uvScale,
+            .offset = item.offset
+        };
+    }
+}
+
 namespace Smol
 {
     SpriteRenderer::SpriteRenderer(RHIDevice& device)
@@ -77,17 +91,6 @@ namespace Smol
 
     void SpriteRenderer::UnbindRenderItem(Handle handle){
         renderItems.remove(handle);
-    }
-
-    struct SpriteConstants{
-        Vec2 uvScale;
-        Vec2 offset;
-    };
-    inline SpriteConstants pack(const SpriteRenderItem& item){
-        return SpriteConstants{
-            .uvScale = item.uvScale,
-            .offset = item.offset
-        };
     }
 
     void SpriteRenderer::Draw(RHICommandList& cmdList){

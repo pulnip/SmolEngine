@@ -578,6 +578,7 @@ namespace Smol
 
     struct RHIComputeBindingInfo{
         RHIShaderBindingInfo csInfo;
+        RHISize3D reflectedSize = RHISize3D{1, 1, 1};
     };
 }
 

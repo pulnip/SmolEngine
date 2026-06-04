@@ -5,6 +5,19 @@
 #include "InputManager.hpp"
 #include "InputProvider.hpp"
 
+namespace{
+    auto Apply(std::span<const Smol::InputModifier> modifiers){
+        using namespace Smol;
+
+        auto value = InputValue(unitX());
+
+        for(auto& modifier: modifiers)
+            value = Apply(modifier, value);
+
+        return value;
+    }
+}
+
 namespace Smol
 {
     usize InputManager::ActionKeyHash::operator()(const ActionKey& key) const{
@@ -26,15 +39,6 @@ namespace Smol
         handleActionFinished();
     }
 
-    inline InputValue Apply(std::span<const InputModifier> modifiers){
-        auto value = InputValue(unitX());
-
-        for(auto& modifier: modifiers)
-            value = Apply(modifier, value);
-
-        return value;
-    }
-
     void InputManager::handleActionStarted(){
         for(auto& action: mappings){
             const auto isReadyToStart = action.count == 0;
@@ -47,7 +51,7 @@ namespace Smol
                     ++action.count;
 
                     // Additive Blending
-                    value += Apply(binding.modifiers);
+                    value += ::Apply(binding.modifiers);
                 }
             }
 
@@ -69,7 +73,7 @@ namespace Smol
                 if(provider->IsKeyDown(binding.keyCode)){
                     anyKeyHeld = true;
 
-                    value += Apply(binding.modifiers);
+                    value += ::Apply(binding.modifiers);
                 }
             }
 
@@ -91,7 +95,7 @@ namespace Smol
                     anyKeyReleased = true;
                     --action.count;
 
-                    value += Apply(binding.modifiers);
+                    value += ::Apply(binding.modifiers);
                 }
             }
 
