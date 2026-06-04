@@ -24,4 +24,5 @@ target_link_libraries(ExampleLib
 PUBLIC
     Smol::Gameplay
 PRIVATE
+    Smol::Log
 )

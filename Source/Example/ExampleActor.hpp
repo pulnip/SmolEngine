@@ -1,24 +1,18 @@
 #pragma once
 
 #include "ActorRegistry.hpp"
+#include "Pawn.hpp"
 
-class SimpleActor: public Smol::Actor{
-    SMOL_ACTOR_BODY(SimpleActor, Smol::Actor)
+class ExampleActor: public Smol::Pawn{
+    SMOL_ACTOR_BODY(ExampleActor, Smol::Pawn)
+
+public:
+    void OnUpdate(float) override;
+
+    void PossessedBy(Smol::CharacterController&) override;
 
 private:
-    int hp;
-
-public:
-    SimpleActor();
-
-    void OnUpdate(float) override;
-};
-
-class ComplexActor: public Smol::Actor{
-    SMOL_ACTOR_BODY(ComplexActor, Smol::Actor)
-
-public:
-    ComplexActor(int var){}
-
-    void OnUpdate(float) override{}
+    void OnMoveStarted(Smol::InputValue);
+    void OnMoveTriggered(Smol::InputValue);
+    void OnMoveFinished(Smol::InputValue);
 };
