@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <format>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -406,3 +407,33 @@ namespace Smol
         Vec3 scale;
     };
 }
+
+template<>
+struct std::formatter<Smol::Vec2>: public std::formatter<std::string>{
+    inline auto format(const Smol::Vec2& v, auto& ctx) const{
+        return std::formatter<std::string>::format(
+            std::format("({}, {})", v.x, v.y),
+            ctx
+        );
+    }
+};
+
+template<>
+struct std::formatter<Smol::Vec3>: public std::formatter<std::string>{
+    inline auto format(const Smol::Vec3& v, auto& ctx) const{
+        return std::formatter<std::string>::format(
+            std::format("({}, {}, {})", v.x, v.y, v.z),
+            ctx
+        );
+    }
+};
+
+template<>
+struct std::formatter<Smol::Vec4>: public std::formatter<std::string>{
+    inline auto format(const Smol::Vec4& v, auto& ctx) const{
+        return std::formatter<std::string>::format(
+            std::format("({}, {}, {}, {})", v.x, v.y, v.z, v.w),
+            ctx
+        );
+    }
+};
