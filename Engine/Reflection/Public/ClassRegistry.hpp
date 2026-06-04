@@ -46,7 +46,7 @@ namespace Smol
         StringHashMap<ClassDesc*> classByName;
 
     public:
-        static ObjectRAII Create(StrView name, SpawnContext&);
+        static ObjectRAII Create(StrView type, SpawnContext&);
 
     private:
         template<typename T>
@@ -152,7 +152,7 @@ namespace Smol
         return ClassBuilder<T>();
     }
 
-    ObjectRAII CreateObject(StrView name, SpawnContext& context);
+    ObjectRAII CreateObject(StrView type, SpawnContext& context);
 }
 
 #define SMOL_OBJECT_BODY(Type, Parent) \

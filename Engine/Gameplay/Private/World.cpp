@@ -1,6 +1,6 @@
 #include <stdexcept>
-#include "Actor.hpp"
-#include "ActorRegistry.hpp"
+#include "ActorDeserializer.hpp"
+#include "DOM.hpp"
 #include "LogLocal.hpp"
 #include "SpawnContext.hpp"
 #include "World.hpp"

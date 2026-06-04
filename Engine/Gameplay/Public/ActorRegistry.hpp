@@ -3,11 +3,6 @@
 #include "Actor.hpp"
 #include "ClassRegistry.hpp"
 
-namespace Smol
-{
-    ActorRAII CreateActor(StrView name, SpawnContext& context);
-}
-
 #define SMOL_ACTOR_BODY(Type, Parent) \
     SMOL_OBJECT_BODY(Type, Parent)
 

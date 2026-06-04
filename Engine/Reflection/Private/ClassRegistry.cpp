@@ -4,11 +4,11 @@
 
 namespace Smol
 {
-    ObjectRAII ClassRegistry::Create(StrView name, SpawnContext& context){
+    ObjectRAII ClassRegistry::Create(StrView type, SpawnContext& context){
         static auto& registry = ClassRegistry::Get();
         static const auto& classByName = registry.classByName;
 
-        auto it = classByName.find(name);
+        auto it = classByName.find(type);
         if(it == classByName.end()){
             return nullptr;
         }
@@ -48,7 +48,7 @@ namespace Smol
         }
     }
 
-    ObjectRAII CreateObject(StrView name, SpawnContext& context){
-        return ClassRegistry::Create(name, context);
+    ObjectRAII CreateObject(StrView type, SpawnContext& context){
+        return ClassRegistry::Create(type, context);
     }
 }
