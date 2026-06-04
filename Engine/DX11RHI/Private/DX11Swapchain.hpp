@@ -17,6 +17,7 @@ namespace Smol
         // cache for creating rtv
         Device& device;
 
+        // cache backbuffer size
         u32 width = 0;
         u32 height = 0;
         RHIPixelFormat format = RHIPixelFormat::Unknown;

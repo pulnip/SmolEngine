@@ -73,6 +73,9 @@ namespace Smol
             0, newWidth, newHeight,
             DXGI_FORMAT_UNKNOWN, desc.Flags
         );
+        // cache new size
+        width = newWidth;
+        height = newHeight;
 
         createBackBufferResource();
     }
@@ -82,7 +85,10 @@ namespace Smol
         UINT flags = (!vsync && allowTearing) ?
             DXGI_PRESENT_ALLOW_TEARING : 0;
 
-        swapchain->Present(syncInterval, flags);
+        swapchain->Present(
+            syncInterval,
+            flags
+        );
     }
 
     Texture* DX11Swapchain::GetCurrentTexture() const noexcept{
@@ -94,9 +100,15 @@ namespace Smol
     }
 
     void DX11Swapchain::createBackBufferResource(){
-        swapchain->GetBuffer(0, __uuidof(Texture),
+        swapchain->GetBuffer(
+            0,
+            __uuidof(Texture),
             reinterpret_cast<void**>(backBuffer.GetAddressOf())
         );
-        device.CreateRenderTargetView(backBuffer.Get(), nullptr, &rtv);
+        device.CreateRenderTargetView(
+            backBuffer.Get(),
+            nullptr,
+            &rtv
+        );
     }
 }
