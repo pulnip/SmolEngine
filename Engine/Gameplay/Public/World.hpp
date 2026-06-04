@@ -21,6 +21,8 @@ namespace Smol
 
         std::vector<Handle> pendingDestory;
 
+        bool isShutdown = false;
+
     public:
         World();
         ~World();
@@ -35,6 +37,8 @@ namespace Smol
         void Update(f32 deltaTime);
 
         void MarkDestroy(Handle);
+
+        bool IsShutdown() const noexcept{ return isShutdown; }
 
     private:
         std::vector<Handle> destroyScratch;

@@ -50,6 +50,14 @@ namespace Smol
         this->handle = handle;
     }
 
+    bool Actor::IsWorldShutdown() const noexcept{
+        if(world == nullptr){
+            return false;
+        }
+
+        return world->IsShutdown();
+    }
+
     template<>
     InputComponent* Actor::AddComponent<InputComponent>(IInputManager& manager){
         constexpr auto index = GetComponentTypeIndex<InputComponent>();

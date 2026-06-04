@@ -8,7 +8,9 @@
 namespace Smol
 {
     World::World() = default;
-    World::~World() = default;
+    World::~World(){
+        isShutdown = true;
+    }
 
     World::World(StrView scenePath){
         // TODO.

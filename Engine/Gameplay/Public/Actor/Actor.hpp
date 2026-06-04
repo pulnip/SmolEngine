@@ -82,5 +82,9 @@ namespace Smol
         Handle handle = Handle::InvalidHandle();
 
         void MarkManaged(World*, Handle);
+
+    protected:
+        // for skip
+        bool IsWorldShutdown() const noexcept;
     };
 }

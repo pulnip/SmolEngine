@@ -7,7 +7,9 @@ namespace Smol
     SMOL_ACTOR_END(Pawn)
 
     Pawn::~Pawn(){
-        Unpossess();
+        if(!IsWorldShutdown()){
+            Unpossess();
+        }
     }
 
     void Pawn::PossessedBy(CharacterController& controller){
