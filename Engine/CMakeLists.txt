@@ -20,7 +20,3 @@ add_subdirectory(Render)
 # add_subdirectory(Scene)
 # 3-1) Gameplay Layer
 add_subdirectory(Gameplay)
-
-if(SMOL_ENABLE_TEST)
-    add_subdirectory(Sample)
-endif()

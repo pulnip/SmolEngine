@@ -55,7 +55,3 @@ PRIVATE
 )
 
 add_library(Smol::Gameplay ALIAS SmolGameplay)
-
-if(SMOL_ENABLE_TEST)
-    add_subdirectory(Sample)
-endif()
