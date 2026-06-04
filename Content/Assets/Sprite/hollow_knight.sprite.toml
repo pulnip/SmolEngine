@@ -10,3 +10,12 @@ rows = 16
 
 [[animations]]
 name = "Idle"
+start_row = 0
+tile_count = 1
+frame_duration_ms = 0
+
+[[animations]]
+name = "Walk"
+start_row = 0
+tile_count = 8
+frame_duration_ms = 150

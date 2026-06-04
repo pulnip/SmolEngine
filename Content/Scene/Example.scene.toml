@@ -5,7 +5,14 @@ type = "scene"
 
 [[actors]]
 type = "CharacterController"
+name = "PlayerController"
+[[actors.components]]
+type = "InputComponent"
 
 [[actors]]
 type = "ExampleActor"
+name = "Player"
 possessed_by = "CharacterController"
+[[actors.components]]
+type = "SpriteComponent"
+image_path = "Content/Assets/Sprite/hollow_knight.png"
