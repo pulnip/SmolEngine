@@ -2,8 +2,8 @@
 
 #include "InputManager.hpp"
 #include "MainLoop.hpp"
-#include "Renderer.hpp"
 #include "RHIFWD.hpp"
+#include "SpriteRenderer.hpp"
 #include "World.hpp"
 
 namespace Smol
@@ -15,14 +15,14 @@ namespace Smol
     private:
         InputManager inputManager;
         World world;
-        Renderer renderer;
+        SpriteRenderer spriteRenderer;
 
     public:
         AppMainLoop(const AppConfig&, OS&, RHIDevice&);
 
         bool Initialize() override;
         bool Update() override;
-        bool Render(CommandListPool&) override;
+        bool Render(CommandListPool&, RHISwapchain&) override;
         void Finalize() override;
     };
 }

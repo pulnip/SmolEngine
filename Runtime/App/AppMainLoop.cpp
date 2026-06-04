@@ -4,8 +4,9 @@
 #include "InputConfig.hpp"
 #include "InputModifier.hpp"
 #include "OS.hpp"
+#include "RHICommandList.hpp"
 #include "RHIDevice.hpp"
-#include "Renderer.hpp"
+#include "RHISwapchain.hpp"
 
 namespace Smol
 {
@@ -47,9 +48,9 @@ namespace Smol
                     }
                 }
             }
-        }, os.GetInputProvider())
+        }, &os.GetInputProvider())
         , world("")
-        , renderer(device)
+        , spriteRenderer(device)
     {
 
     }
@@ -65,7 +66,35 @@ namespace Smol
         return true;
     }
 
-    bool AppMainLoop::Render(CommandListPool&){
+    bool AppMainLoop::Render(CommandListPool& pool, RHISwapchain& swapchain){
+        // for single thread model, use single cmdList.
+        auto& cmdList = pool.Acquire();
+        cmdList.Begin();
+
+        // TODO. use integrated Renderer class
+        // Begin RenderPass for backbuffer
+        RHIClearColor backbufferClearColor{.v = {
+            0.5f, 0.5f, 0.5f, 1.0f
+        }};
+        cmdList.BeginRenderPass(swapchain,
+            backbufferClearColor,
+            nullptr,
+            {},
+            RHILoadAction::Clear
+        );
+        cmdList.SetViewport(RHIViewport{
+            .x = 0, .y = 0,
+            // fill all backbuffer
+            .width = static_cast<f32>(swapchain.GetWidth()),
+            .height = static_cast<f32>(swapchain.GetHeight()),
+            .minDepth = 0, .maxDepth = 1
+        });
+        spriteRenderer.Draw(cmdList);
+
+        cmdList.EndRenderPass();
+        // End RenderPass for backbuffer
+
+        cmdList.Close();
         return true;
     }
 
