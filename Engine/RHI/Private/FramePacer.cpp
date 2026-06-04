@@ -1,3 +1,4 @@
+#include "Assert.hpp"
 #include "LogLocal.hpp"
 #include "RHIDevice.hpp"
 #include "RHIFence.hpp"
@@ -19,6 +20,8 @@ namespace Smol
             : device(device)
             , fence(device.CreateFence(0))
         {
+            SMOL_ASSERT(fence != nullptr);
+
             LOG_INFO("Created frame fence manager with {} frames in flight",
                 RHI_FRAMES_IN_FLIGHT
             );
@@ -59,8 +62,8 @@ namespace Smol
         }
 
         // Get fence for current frame
-        RHIFence* GetCurrentFence() const noexcept{
-            return fence.get();
+        RHIFence& GetCurrentFence() const noexcept{
+            return *fence.get();
         }
 
         // Get fence value for current frame
@@ -105,7 +108,7 @@ namespace Smol
             LOG_INFO("Frame pacer idle");
         }
 
-        auto GetCurrentFence(this auto& self) noexcept{
+        auto& GetCurrentFence(this auto& self) noexcept{
             return self.fenceManager.GetCurrentFence();
         }
 
@@ -132,10 +135,10 @@ namespace Smol
         impl->WaitForIdle();
     }
 
-    RHIFence* FramePacer::GetCurrentFence(){
+    RHIFence& FramePacer::GetCurrentFence() noexcept{
         return impl->GetCurrentFence();
     }
-    const RHIFence* FramePacer::GetCurrentFence() const{
+    const RHIFence& FramePacer::GetCurrentFence() const noexcept{
         return impl->GetCurrentFence();
     }
 

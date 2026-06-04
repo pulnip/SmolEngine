@@ -30,8 +30,8 @@ namespace Smol
         void WaitForIdle();
 
         // Get fence for current frame
-        RHIFence* GetCurrentFence();
-        const RHIFence* GetCurrentFence() const;
+        RHIFence& GetCurrentFence() noexcept;
+        const RHIFence& GetCurrentFence() const noexcept;
 
         // Get the fence value to signal for the current frame
         u64 GetNextFenceValue() const;

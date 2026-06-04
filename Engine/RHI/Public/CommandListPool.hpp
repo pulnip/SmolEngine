@@ -22,9 +22,12 @@ namespace Smol
         CommandListPool(RHIDevice&);
         ~CommandListPool();
 
-        RHICommandList* Acquire();
+        RHICommandList& Acquire();
+
+    private:
+        friend class OS;
 
         void BeginFrame();
-        void SubmitFrame(RHISwapchain*, RHIFence*, u64 fenceValue);
+        void SubmitFrame(RHISwapchain*, RHIFence&, u64 fenceValue);
     };
 }
