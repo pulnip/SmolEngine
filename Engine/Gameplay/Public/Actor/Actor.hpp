@@ -5,11 +5,15 @@
 #include <vector>
 #include "ActorFWD.hpp"
 #include "Component.hpp"
-#include "Primitives.hpp"
+#include "GenericHandle.hpp"
 #include "Object.hpp"
+#include "Primitives.hpp"
+#include "Semantics.hpp"
 
 namespace Smol
 {
+    class World;
+
     class Actor: public Object{
     private:
         std::array<ComponentRAII, NUM_BUILTIN_COMPONENTS> builtinComponents;
@@ -23,7 +27,9 @@ namespace Smol
     public:
         Actor() = default;
         virtual ~Actor() = default;
-        SMOL_DECLARE_MOVE_ONLY(Actor)
+        Actor(Actor&&) noexcept;
+        Actor& operator=(Actor&&) noexcept;
+        SMOL_DECLARE_NON_COPYABLE(Actor)
 
         virtual void OnUpdate(f32){}
 
@@ -62,5 +68,19 @@ namespace Smol
         template<typename T>
             requires (IsBuiltinComponent<T>())
         T* GetComponent();
+
+        void Destroy();
+
+    private:
+        friend class World;
+
+        // World ptr and Handle is valid if
+        // 1. Actor is managed by World
+        // 2. And Also Actor not destroyed at World
+        World* world = nullptr;
+        using Handle = GenericHandle<ActorRAII>;
+        Handle handle = Handle::InvalidHandle();
+
+        void MarkManaged(World*, Handle);
     };
 }

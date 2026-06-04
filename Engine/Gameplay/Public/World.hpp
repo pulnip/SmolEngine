@@ -1,10 +1,12 @@
 #pragma once
 
-#include <span>
+#include <unordered_map>
 #include <vector>
 #include "ActorFWD.hpp"
-#include "StringUtil.hpp"
+#include "GenericHandle.hpp"
 #include "Semantics.hpp"
+#include "SlotMap.hpp"
+#include "StringUtil.hpp"
 
 namespace Smol
 {
@@ -12,8 +14,12 @@ namespace Smol
 
     class World final{
     private:
-        std::vector<ActorRAII> actors;
-        StringHashMap<usize> indexByName;
+        using Handle = GenericHandle<ActorRAII>;
+        SlotMap<ActorRAII> actors;
+        StringHashMap<Handle> handleMap;
+        std::unordered_map<Handle, Str> handleToName;
+
+        std::vector<Handle> pendingDestory;
 
     public:
         World();
@@ -22,10 +28,17 @@ namespace Smol
 
         World(StrView scenePath);
         // inject actors from outside
-        World(SpawnContext&, std::span<const Str> actorNames);
+        World(SpawnContext&);
 
         Actor* FindActorByName(StrView name) const;
 
         void Update(f32 deltaTime);
+
+        void MarkDestroy(Handle);
+
+    private:
+        std::vector<Handle> destroyScratch;
+
+        void flushDestroy();
     };
 }

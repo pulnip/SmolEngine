@@ -2,9 +2,54 @@
 #include "InputComponent.hpp"
 #include "Rigidbody.hpp"
 #include "SpriteComponent.hpp"
+#include "World.hpp"
 
 namespace Smol
 {
+    Actor::Actor(Actor&& other) noexcept
+        : builtinComponents(std::move(other.builtinComponents))
+        , userdefinedComponents(std::move(other.userdefinedComponents))
+        , children(std::move(other.children))
+        , transform(std::move(other.transform))
+        , world(other.world)
+        , handle(other.handle)
+    {
+        other.world = nullptr;
+        other.handle = Handle::InvalidHandle();
+    }
+
+    Actor& Actor::operator=(Actor&& other) noexcept{
+        builtinComponents = std::move(other.builtinComponents);
+        userdefinedComponents = std::move(other.userdefinedComponents);
+        children = std::move(other.children);
+        transform = std::move(other.transform);
+        world = other.world;
+        handle = other.handle;
+
+        other.world = nullptr;
+        other.handle = Handle::InvalidHandle();
+
+        return *this;
+    }
+
+    void Actor::Destroy(){
+        if(world == nullptr) [[unlikely]]{
+            return;
+        }
+
+        SMOL_ASSERT(handle.IsValid());
+        world->MarkDestroy(handle);
+
+        // Guarantee Actor is not Destroyed twice
+        world = nullptr;
+        handle = Handle::InvalidHandle();
+    }
+
+    void Actor::MarkManaged(World* world, Handle handle){
+        this->world = world;
+        this->handle = handle;
+    }
+
     template<>
     InputComponent* Actor::AddComponent<InputComponent>(IInputManager& manager){
         constexpr auto index = GetComponentTypeIndex<InputComponent>();
