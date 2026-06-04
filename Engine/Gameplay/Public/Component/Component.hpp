@@ -18,6 +18,8 @@ namespace Smol
         SMOL_DECLARE_MOVE_ONLY(Component)
 
         virtual TypeID GetTypeID() const = 0;
+
+        virtual void Update(f32){}
     };
 
     template<typename Derived>

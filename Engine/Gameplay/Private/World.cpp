@@ -60,10 +60,6 @@ namespace Smol
 
         // lazy destroy
         flushDestroy();
-
-        for(auto& actor: actors){
-            actor->SyncRenderState();
-        }
     }
 
     Actor* World::FindActorByName(StrView name) const{

@@ -32,6 +32,27 @@ namespace Smol
         return *this;
     }
 
+    void Actor::Update(f32 dt){
+        updateComponents(dt);
+
+        OnUpdate(dt);
+    }
+
+    void Actor::updateComponents(f32 dt){
+        for(auto& component: builtinComponents){
+            if(component == nullptr)
+                continue;
+
+            component->Update(dt);
+        }
+
+        for(auto& [_, component]: userdefinedComponents){
+            SMOL_ASSERT(component != nullptr);
+
+            component->Update(dt);
+        }
+    }
+
     void Actor::Destroy(){
         if(world == nullptr) [[unlikely]]{
             return;

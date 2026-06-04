@@ -31,9 +31,8 @@ namespace Smol
         Actor& operator=(Actor&&) noexcept;
         SMOL_DECLARE_NON_COPYABLE(Actor)
 
+        void Update(f32);
         virtual void OnUpdate(f32){}
-
-        virtual void SyncRenderState(){}
 
         template<typename T, class... Args>
             requires (!IsBuiltinComponent<T>())
@@ -70,6 +69,9 @@ namespace Smol
         T* GetComponent();
 
         void Destroy();
+
+    private:
+        void updateComponents(f32);
 
     private:
         friend class World;
