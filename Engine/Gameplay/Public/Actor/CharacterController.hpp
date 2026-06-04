@@ -13,30 +13,9 @@ namespace Smol
     class CharacterController: public Actor{
         SMOL_ACTOR_BODY(CharacterController, Actor)
 
-    private:
-        InputComponent* inputComponent = nullptr;
-
     public:
         CharacterController() = default;
         virtual ~CharacterController() = default;
-        CharacterController(CharacterController&& other)
-            : inputComponent(other.inputComponent)
-        {
-            other.inputComponent = nullptr;
-        }
-        CharacterController& operator=(CharacterController&& other){
-            inputComponent = other.inputComponent;
-            other.inputComponent = nullptr;
-
-            return *this;
-        }
-        SMOL_DECLARE_NON_COPYABLE(CharacterController)
-
-        // explicitly type test
-        CharacterController(IInputManager&);
-        // Called from Deserialization
-        CharacterController(SpawnContext&);
-
-        InputComponent& GetInputComponent() const noexcept{ return *inputComponent; }
+        SMOL_DECLARE_MOVE_ONLY_NOEXCEPT(CharacterController)
     };
 }

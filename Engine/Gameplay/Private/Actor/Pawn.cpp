@@ -13,7 +13,7 @@ namespace Smol
     }
 
     void Pawn::PossessedBy(CharacterController& controller){
-        possessor = &controller.GetInputComponent();
+        possessor = controller.GetComponent<InputComponent>();
     }
 
     void Pawn::Unpossess(){
