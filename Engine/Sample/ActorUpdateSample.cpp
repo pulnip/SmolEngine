@@ -1,4 +1,3 @@
-#include <array>
 #include "ActorRegistry.hpp"
 #include "Assert.hpp"
 #include "InputConfig.hpp"
@@ -12,7 +11,8 @@
 #include "SpawnContext.hpp"
 #include "SpriteRenderer.hpp"
 #include "Timer.hpp"
-#include "Window.hpp"
+#include "SDLWindow.hpp"
+#include "SDLInputProvider.hpp"
 #include "World.hpp"
 
 using namespace Smol;
@@ -23,11 +23,11 @@ int main(int, char*[]){
         .width = 800,
         .height = 600
     };
-    Window window(
-        windowConfig
-    );
+    SDLWindow window(windowConfig);
     auto fWidth = static_cast<f32>(window.GetWidth());
     auto fHeight = static_cast<f32>(window.GetHeight());
+
+    SDLInputProvider inputProvider;
 
     // Initialize Input Feature
     InputConfig inputConfig{
@@ -72,7 +72,7 @@ int main(int, char*[]){
     };
     InputManager inputManager(
         inputConfig,
-        window.GetInputProvider()
+        &inputProvider
     );
 
     // Initialize Render Feature
@@ -108,7 +108,38 @@ int main(int, char*[]){
     Timer timer;
 
     while(true){
-        if(!window.ProcessEvents()) [[unlikely]]
+        bool keepRunning = true;
+        inputProvider.NewFrame();
+
+        SDL_Event event;
+        while(SDL_PollEvent(&event)){
+            switch(event.type){
+            case SDL_EVENT_QUIT: [[unlikely]]
+                keepRunning = false;
+                break;
+            // Keyboard Event
+            case SDL_EVENT_KEY_DOWN:
+                [[fallthrough]];
+            case SDL_EVENT_KEY_UP:
+                inputProvider.OnPlatformEvent(event.key);
+                break;
+            }
+
+            if(!keepRunning) [[unlikely]]
+                break;
+
+            // Window Event
+            if(SDL_EVENT_WINDOW_FIRST <= event.type && event.type <= SDL_EVENT_WINDOW_LAST){
+                if(event.type == SDL_EVENT_WINDOW_RESIZED){
+                    int w = event.window.data1;
+                    int h = event.window.data2;
+                    swapchain->Resize(w, h);
+                }
+                window.OnPlatformEvent(event.window);
+            }
+        }
+
+        if(!keepRunning) [[unlikely]]
             break;
 
         inputManager.NewFrame();

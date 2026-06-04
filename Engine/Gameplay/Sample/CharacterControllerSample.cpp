@@ -7,37 +7,33 @@
 #include "InputModifier.hpp"
 #include "Pawn.hpp"
 #include "RuntimeConfig.hpp"
+#include "SDLInputProvider.hpp"
+#include "SDLWindow.hpp"
 #include "SpawnContext.hpp"
-#include "Window.hpp"
 
 using namespace Smol;
 
-static Window& GetWindow(){
-    static Window singleton(WindowConfig{
+int main(int, char*[]){
+    SDLWindow window(WindowConfig{
         .title = "InputManagerSample",
         .width = 400,
         .height = 400
     });
 
-    return singleton;
-}
-static InputManager& GetInputManager(){
-    using enum KeyCode;
-    using enum SwizzleOrder;
-
-    static InputManager singleton(InputConfig{
+    SDLInputProvider inputProvider;
+    InputManager inputManager(InputConfig{
         .mappings = {
             ActionInfo{
                 .name = "Move",
                 .mappings = {
                     KeyBinding{
-                        .keyCode = W,
+                        .keyCode = KeyCode::W,
                         .modifiers = {
                             SwizzleModifier(ZYX)
                         }
                     },
                     KeyBinding{
-                        .keyCode = A,
+                        .keyCode = KeyCode::A,
                         .modifiers = {
                             NegateModifier(
                                 true,
@@ -47,7 +43,7 @@ static InputManager& GetInputManager(){
                         }
                     },
                     KeyBinding{
-                        .keyCode = S,
+                        .keyCode = KeyCode::S,
                         .modifiers = {
                             SwizzleModifier(ZYX),
                             NegateModifier(
@@ -58,7 +54,7 @@ static InputManager& GetInputManager(){
                         }
                     },
                     KeyBinding{
-                        .keyCode = D
+                        .keyCode = KeyCode::D
                     }
                 },
                 .count = 0
@@ -67,20 +63,13 @@ static InputManager& GetInputManager(){
                 .name = "Jump",
                 .mappings = {
                     KeyBinding{
-                        .keyCode = Space
+                        .keyCode = KeyCode::Space
                     },
                 },
                 .count = 0
             }
         }
-    }, GetWindow().GetInputProvider());
-
-    return singleton;
-}
-
-int main(int, char*[]){
-    auto& window = GetWindow();
-    auto& inputManager = GetInputManager();
+    }, &inputProvider);
 
     SpawnContext spawnContext{
         .inputManager = inputManager
@@ -95,7 +84,34 @@ int main(int, char*[]){
     pawnPtr->PossessedBy(*controllerPtr);
 
     while(true){
-        if(!window.ProcessEvents()) [[unlikely]]
+        bool keepRunning = true;
+
+        inputProvider.NewFrame();
+
+        SDL_Event event;
+        while(SDL_PollEvent(&event)){
+            switch(event.type){
+            case SDL_EVENT_QUIT: [[unlikely]]
+                keepRunning = false;
+                break;
+            // Keyboard Event
+            case SDL_EVENT_KEY_DOWN:
+                [[fallthrough]];
+            case SDL_EVENT_KEY_UP:
+                inputProvider.OnPlatformEvent(event.key);
+                break;
+            }
+
+            if(!keepRunning) [[unlikely]]
+                break;
+
+            // Window Event
+            if(SDL_EVENT_WINDOW_FIRST <= event.type && event.type <= SDL_EVENT_WINDOW_LAST){
+                window.OnPlatformEvent(event.window);
+            }
+        }
+
+        if(!keepRunning) [[unlikely]]
             break;
 
         inputManager.NewFrame();

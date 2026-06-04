@@ -28,5 +28,8 @@ function(smol_engine_sample NAME)
 endfunction()
 
 smol_engine_sample(ActorUpdate
-    SOURCES ActorUpdateSample.cpp
+SOURCES ActorUpdateSample.cpp
+DEPENDS
+    SDL3::SDL3
+    Smol::Platform::Private
 )

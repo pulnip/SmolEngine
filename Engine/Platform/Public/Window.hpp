@@ -1,31 +1,19 @@
 #pragma once
 
-#include "CoreFWD.hpp"
 #include "Primitives.hpp"
 #include "Semantics.hpp"
 
 namespace Smol
 {
     struct WindowConfig;
-    class InputProvider;
 
-    class Window final{
-    private:
-        class Impl;
-        RAII<Impl> impl;
-
+    class Window{
     public:
-        Window(const WindowConfig&);
-        ~Window();
-        SMOL_DECLARE_PINNED(Window)
+        SMOL_DECLARE_INTERFACE_NOEXCEPT(Window)
 
-        bool ProcessEvents();
-
-        void* GetWindow() const noexcept;
-        u32 GetWidth() const noexcept;
-        u32 GetHeight() const noexcept;
-        Size2D GetSize() const noexcept;
-
-        const InputProvider* GetInputProvider() const noexcept;
+        virtual void* GetWindow() const noexcept = 0;
+        virtual u32 GetWidth() const noexcept = 0;
+        virtual u32 GetHeight() const noexcept = 0;
+        virtual Size2D GetSize() const noexcept = 0;
     };
 }

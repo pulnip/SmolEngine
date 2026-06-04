@@ -23,6 +23,8 @@ function(smol_gameplay_sample NAME)
 endfunction()
 
 smol_gameplay_sample(CharacterController
-    SOURCES CharacterControllerSample.cpp
-    DEPENDS SDL3::SDL3
+SOURCES CharacterControllerSample.cpp
+DEPENDS
+    SDL3::SDL3
+    Smol::Platform::Private
 )

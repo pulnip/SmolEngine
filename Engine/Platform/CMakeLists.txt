@@ -11,6 +11,8 @@ PRIVATE
     Smol::Log
 )
 
+smol_declare_private_interface(Platform)
+
 if(SMOL_ENABLE_TEST)
     smol_declare_test(Platform
         DIRECTORY Test

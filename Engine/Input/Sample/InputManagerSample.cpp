@@ -3,20 +3,18 @@
 #include "InputConfig.hpp"
 #include "InputManager.hpp"
 #include "InputModifier.hpp"
-#include "Window.hpp"
 #include "RuntimeConfig.hpp"
+#include "SDLInputProvider.hpp"
+#include "SDLWindow.hpp"
 
 using namespace Smol;
 
-static Window& GetWindow(){
-    static Window singleton(WindowConfig{
-        .title = "InputManagerSample",
-        .width = 400,
-        .height = 400
-    });
+static SDLInputProvider& GetInputProvider(){
+    static SDLInputProvider inputProvider;
 
-    return singleton;
+    return inputProvider;
 }
+
 static InputManager& GetInputManager(){
     using enum KeyCode;
     using enum SwizzleOrder;
@@ -69,7 +67,7 @@ static InputManager& GetInputManager(){
                 .count = 0
             }
         }
-    }, GetWindow().GetInputProvider());
+    }, &GetInputProvider());
 
     return singleton;
 }
@@ -153,12 +151,45 @@ public:
 };
 
 int main(int, char*[]){
-    auto& window = GetWindow();
+    SDLWindow window(WindowConfig{
+        .title = "InputManagerSample",
+        .width = 400,
+        .height = 400
+    });
+
+    auto& inputProvider = GetInputProvider();
     auto& manager = GetInputManager();
     TestActor actor;
 
     while(true){
-        if(!window.ProcessEvents()) [[unlikely]]
+        bool keepRunning = true;
+
+        inputProvider.NewFrame();
+
+        SDL_Event event;
+        while(SDL_PollEvent(&event)){
+            switch(event.type){
+            case SDL_EVENT_QUIT: [[unlikely]]
+                keepRunning = false;
+                break;
+            // Keyboard Event
+            case SDL_EVENT_KEY_DOWN:
+                [[fallthrough]];
+            case SDL_EVENT_KEY_UP:
+                inputProvider.OnPlatformEvent(event.key);
+                break;
+            }
+
+            if(!keepRunning) [[unlikely]]
+                break;
+
+            // Window Event
+            if(SDL_EVENT_WINDOW_FIRST <= event.type && event.type <= SDL_EVENT_WINDOW_LAST){
+                window.OnPlatformEvent(event.window);
+            }
+        }
+
+        if(!keepRunning) [[unlikely]]
             break;
 
         manager.NewFrame();

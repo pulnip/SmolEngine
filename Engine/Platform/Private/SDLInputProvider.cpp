@@ -184,19 +184,19 @@ namespace Smol
         return heldState[sdlCode];
     }
 
-    void SDLInputProvider::OnPlatformEvent(const SDL_Event& event) noexcept{
+    void SDLInputProvider::OnPlatformEvent(const SDL_KeyboardEvent& event) noexcept{
         switch(event.type){
         case SDL_EVENT_KEY_DOWN:
             [[fallthrough]];
         case SDL_EVENT_KEY_UP: {
-            if(event.key.repeat)
+            if(event.repeat)
                 break;
 
-            auto keyCode = convert(event.key.scancode);
+            auto keyCode = convert(event.scancode);
             if(keyCode == KeyCode::Unknown)
                 break;
 
-            if(event.key.down)
+            if(event.down)
                 PressKey(keyCode);
             else
                 ReleaseKey(keyCode);

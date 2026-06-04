@@ -1,5 +1,6 @@
-#include <SDL3/SDL_init.h>
 #include <SDL3/SDL_error.h>
+#include <SDL3/SDL_events.h>
+#include <SDL3/SDL_init.h>
 #include "CommandListPool.hpp"
 #include "FramePacer.hpp"
 #include "MainLoop.hpp"
@@ -8,8 +9,9 @@
 #include "RHIDevice.hpp"
 #include "RHISwapchain.hpp"
 #include "RuntimeConfig.hpp"
+#include "SDLInputProvider.hpp"
+#include "SDLWindow.hpp"
 #include "Timer.hpp"
-#include "Window.hpp"
 
 namespace Smol
 {
@@ -37,9 +39,11 @@ namespace Smol
     class OS::Impl{
     private:
         SDLInitializer initializer;
-        Window window;
+        SDLWindow window;
         RHISwapchainRAII swapchain = nullptr;
         u32 width = 0, height = 0;
+
+        SDLInputProvider inputProvider;
 
         // Non-stop timer
         Timer sysTimer;
@@ -48,15 +52,17 @@ namespace Smol
 
     public:
         Impl(const RuntimeConfig&, RHIDevice&);
-        ~Impl() = default;
+        ~Impl();
 
         void Run(MainLoop&, RHIDevice&);
 
-        const InputProvider* GetInputProvider() noexcept{
-            return window.GetInputProvider();
+        const InputProvider& GetInputProvider() noexcept{
+            return inputProvider;
         }
 
     private:
+        bool ProcessEvents();
+
         void BeginFrame(RHIDevice&);
         void EndFrame(RHIDevice&);
     };
@@ -76,6 +82,7 @@ namespace Smol
     )
         : initializer(config)
         , window(config.window)
+        , inputProvider()
         , framePacer(device)
         , cmdListPool(device)
     {
@@ -102,6 +109,10 @@ namespace Smol
         singleton = nullptr;
     }
 
+    OS::Impl::~Impl(){
+
+    }
+
     void OS::Run(MainLoop& mainLoop, RHIDevice& device){
         impl->Run(mainLoop, device);
     }
@@ -115,14 +126,14 @@ namespace Smol
         while(true){
             sysTimer.NewFrame();
 
-            if(!window.ProcessEvents()) [[unlikely]]
+            if(!ProcessEvents()) [[unlikely]]
                 break;
 
             if(!mainLoop.Update()) [[unlikely]]
                 break;
 
             BeginFrame(device);
-            if(!mainLoop.Render(cmdListPool)) [[unlikely]]
+            if(!mainLoop.Render(cmdListPool, *swapchain)) [[unlikely]]
                 break;
             EndFrame(device);
         }
@@ -130,10 +141,47 @@ namespace Smol
         mainLoop.Finalize();
     }
 
+    bool OS::Impl::ProcessEvents(){
+        bool keepRunning = true;
+
+        inputProvider.NewFrame();
+
+        SDL_Event event;
+        while(SDL_PollEvent(&event)){
+            // ImGui_ImplSDL3_ProcessEvent(&event);
+            switch(event.type){
+            case SDL_EVENT_QUIT: [[unlikely]]
+                keepRunning = false;
+                break;
+            // Keyboard Event
+            case SDL_EVENT_KEY_DOWN:
+                [[fallthrough]];
+            case SDL_EVENT_KEY_UP:
+                inputProvider.OnPlatformEvent(event.key);
+                break;
+            }
+
+            if(!keepRunning) [[unlikely]]
+                break;
+
+            // Window Event
+            if(SDL_EVENT_WINDOW_FIRST <= event.type && event.type <= SDL_EVENT_WINDOW_LAST){
+                if(event.type == SDL_EVENT_WINDOW_RESIZED){
+                    int w = event.window.data1;
+                    int h = event.window.data2;
+                    swapchain->Resize(w, h);
+                }
+                window.OnPlatformEvent(event.window);
+            }
+        }
+
+        return keepRunning;
+    }
+
     void OS::Impl::BeginFrame(RHIDevice& device){
         framePacer.BeginFrame();
 
-        if(swapchain != nullptr)
+        if(swapchain != nullptr) [[unlikely]]
             swapchain->AcquireNextImage();
 
         cmdListPool.BeginFrame();
@@ -149,7 +197,7 @@ namespace Smol
         framePacer.EndFrame();
     }
 
-    const InputProvider* OS::GetInputProvider() const noexcept{
+    const InputProvider& OS::GetInputProvider() const noexcept{
         return impl->GetInputProvider();
     }
 }

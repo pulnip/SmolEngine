@@ -27,7 +27,7 @@ namespace Smol
 
         inline static OS* Get(){ return singleton; }
 
-        const InputProvider* GetInputProvider() const noexcept;
+        const InputProvider& GetInputProvider() const noexcept;
     };
 
     // direct access to ptr is unsafe, but handy helper

@@ -15,6 +15,9 @@ function(smol_rhi_sample NAME)
 endfunction()
 
 smol_rhi_sample(Texture
-    SOURCES TextureSample.cpp
-    DEPENDS Smol::Serialization
+SOURCES TextureSample.cpp
+DEPENDS
+    Smol::Serialization
+    SDL3::SDL3
+    Smol::Platform::Private
 )

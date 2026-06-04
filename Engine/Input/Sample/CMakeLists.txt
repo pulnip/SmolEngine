@@ -11,6 +11,8 @@ function(smol_input_sample NAME)
 endfunction()
 
 smol_input_sample(InputManager
-    SOURCES InputManagerSample.cpp
-    DEPENDS SDL3::SDL3
+SOURCES InputManagerSample.cpp
+DEPENDS
+    SDL3::SDL3
+    Smol::Platform::Private
 )

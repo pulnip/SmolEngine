@@ -14,9 +14,15 @@ function(smol_render_sample NAME)
 endfunction()
 
 smol_render_sample(SpriteRenderer
-    SOURCES SpriteRendererSample.cpp
+SOURCES SpriteRendererSample.cpp
+DEPENDS
+    SDL3::SDL3
+    Smol::Platform::Private
 )
 
 smol_render_sample(SpriteRendererAnim
-    SOURCES SpriteRendererAnimSample.cpp
+SOURCES SpriteRendererAnimSample.cpp
+DEPENDS
+    SDL3::SDL3
+    Smol::Platform::Private
 )

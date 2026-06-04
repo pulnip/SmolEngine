@@ -7,7 +7,7 @@
 #include "RHITexture.hpp"
 #include "RuntimeConfig.hpp"
 #include "SpriteRenderer.hpp"
-#include "Window.hpp"
+#include "SDLWindow.hpp"
 
 using namespace Smol;
 
@@ -21,7 +21,7 @@ int main(void){
         .fullscreen = false,
         .resizable = false,
     };
-    Window window(windowConfig);
+    SDLWindow window(windowConfig);
     auto fWidth = static_cast<f32>(window.GetWidth());
     auto fHeight = static_cast<f32>(window.GetHeight());
 
@@ -57,7 +57,30 @@ int main(void){
     auto cmdList = device->CreateCommandList();
 
     while(true){
-        if(!window.ProcessEvents()) [[unlikely]]
+        bool keepRunning = true;
+
+        SDL_Event event;
+        while(SDL_PollEvent(&event)){
+            switch(event.type){
+            case SDL_EVENT_QUIT: [[unlikely]]
+                keepRunning = false;
+                break;
+            }
+
+            if(!keepRunning) [[unlikely]]
+                break;
+
+            if(SDL_EVENT_WINDOW_FIRST <= event.type && event.type <= SDL_EVENT_WINDOW_LAST){
+                if(event.type == SDL_EVENT_WINDOW_RESIZED){
+                    int w = event.window.data1;
+                    int h = event.window.data2;
+                    swapchain->Resize(w, h);
+                }
+                window.OnPlatformEvent(event.window);
+            }
+        }
+
+        if(!keepRunning) [[unlikely]]
             break;
 
         cmdList->Begin();
