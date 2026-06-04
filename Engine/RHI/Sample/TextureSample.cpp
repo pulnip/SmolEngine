@@ -50,8 +50,6 @@ int main(void){
         .resizable = false,
     };
     SDLWindow window(windowConfig);
-    auto fWidth = static_cast<f32>(window.GetWidth());
-    auto fHeight = static_cast<f32>(window.GetHeight());
 
     RHITextureCreateDesc backBufferDesc{
         .width = windowConfig.width, .height = windowConfig.height,
@@ -113,7 +111,8 @@ int main(void){
         cmdList->SetPipelineState(*pipeline);
         cmdList->SetViewport(RHIViewport{
             .x = 0, .y = 0,
-            .width = fWidth, .height = fHeight,
+            .width = static_cast<f32>(swapchain->GetWidth()),
+            .height = static_cast<f32>(swapchain->GetHeight()),
             .minDepth = 0, .maxDepth = 1
         });
 
