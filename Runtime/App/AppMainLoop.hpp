@@ -14,8 +14,9 @@ namespace Smol
     class AppMainLoop: public MainLoop{
     private:
         InputManager inputManager;
-        World world;
         SpriteRenderer spriteRenderer;
+
+        World world;
 
     public:
         AppMainLoop(const AppConfig&, OS&, RHIDevice&);

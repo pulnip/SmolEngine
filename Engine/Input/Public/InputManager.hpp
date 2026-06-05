@@ -46,10 +46,7 @@ namespace Smol
         ~InputManager() = default;
         SMOL_DECLARE_MOVE_ONLY(InputManager)
 
-        InputManager(
-            const InputConfig&,
-            const InputProvider*
-        );
+        InputManager(InputConfig&&, const InputProvider*);
 
         void NewFrame();
 

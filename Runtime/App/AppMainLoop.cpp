@@ -1,12 +1,11 @@
 #include "AppConfig.hpp"
 #include "AppMainLoop.hpp"
 #include "CommandListPool.hpp"
-#include "InputConfig.hpp"
-#include "InputModifier.hpp"
 #include "OS.hpp"
 #include "RHICommandList.hpp"
 #include "RHIDevice.hpp"
 #include "RHISwapchain.hpp"
+#include "SpawnContext.hpp"
 
 namespace Smol
 {
@@ -16,44 +15,21 @@ namespace Smol
         RHIDevice& device
     )
         // TODO. use toml later
-        : inputManager(InputConfig{
-            .mappings = {
-                ActionInfo{
-                    .name = "Move",
-                    .mappings = {
-                        KeyBinding{
-                            .keyCode = KeyCode::A,
-                            .modifiers = {
-                                ScaleModifier(10.0f),
-                                NegateModifier(true, false, false)
-                            }
-                        },
-                        KeyBinding{
-                            .keyCode = KeyCode::D,
-                            .modifiers = {
-                                ScaleModifier(10.0f),
-                            }
-                        }
-                    }
-                },
-                ActionInfo{
-                    .name = "Jump",
-                    .mappings = {
-                        KeyBinding{
-                            .keyCode = KeyCode::W
-                        },
-                        KeyBinding{
-                            .keyCode = KeyCode::Space
-                        }
-                    }
-                }
-            }
-        }, &os.GetInputProvider())
-        , world("")
+        : inputManager(
+            loadTomlFile<InputConfig>(config.defaultInputPath()),
+            &os.GetInputProvider()
+        )
         , spriteRenderer(device)
-    {
-
-    }
+        , world(
+            parseTomlFile(config.startupScenePath()),
+            SpawnContext{
+                .contentRoot = config.project.content_root,
+                .inputManager = inputManager,
+                .device = &device,
+                .spriteRenderer = &spriteRenderer
+            }
+        )
+    {}
 
     bool AppMainLoop::Initialize(){
 

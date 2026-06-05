@@ -15,4 +15,4 @@ name = "Player"
 possessed_by = "CharacterController"
 [[actors.components]]
 type = "SpriteComponent"
-image_path = "Content/Assets/Sprite/hollow_knight.png"
+image_path = "Assets/Sprite/hollow_knight.png"

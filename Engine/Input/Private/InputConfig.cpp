@@ -5,6 +5,7 @@
 #include "KeyCode.hpp"
 #include "LogLocal.hpp"
 #include "StringUtil.hpp"
+#include "TomlLoader.hpp"
 
 namespace{
     using RawActionMappings = std::unordered_map<Smol::ActionName, Smol::KeyBindings>;
@@ -111,8 +112,11 @@ namespace{
 namespace Smol
 {
     InputConfig TomlTraits<InputConfig>::from(
-        const DOM::Value& dom
+        const DOM::Value& dom,
+        const TomlMetadata& metadata
     ){
+        SMOL_ASSERT(metadata.type == "input");
+
         RawActionMappings raw;
 
         dom.forEach("context.mappings", [&raw](const DOM::Value& node){

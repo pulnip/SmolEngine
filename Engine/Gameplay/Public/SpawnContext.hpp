@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include "DOM.hpp"
 
 namespace Smol
@@ -13,6 +14,8 @@ namespace Smol
         static IInputManager& mockInputManager();
 
         const DOM::Value& dom = {};
+        const std::filesystem::path& contentRoot = {};
+
         IInputManager& inputManager = mockInputManager();
         // TODO. mock device?
         RHIDevice* device = nullptr;

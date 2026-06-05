@@ -1,20 +1,23 @@
+#include "Assert.hpp"
 #include "AppConfig.hpp"
 #include "OS.hpp"
 
 namespace Smol
 {
     AppConfig TomlTraits<AppConfig>::from(
-        const TomlMetadata& metadata,
-        const DOM::Value& root
+        const DOM::Value& root,
+        const TomlMetadata& metadata
     ){
+        SMOL_ASSERT(metadata.type == "app");
+
         // Project Config
         auto content_root = root.get<Str>("project.content_root")
             .value_or("Content/");
 
         // Boot Config
-        auto startup_scene = root.get<Str>("project.startup_scene")
+        auto startup_scene = root.get<Str>("boot.startup_scene")
             .value_or(Str{});
-        auto default_input = root.get<Str>("project.default_input")
+        auto default_input = root.get<Str>("boot.default_input")
             .value_or(Str{});
 
         return AppConfig{

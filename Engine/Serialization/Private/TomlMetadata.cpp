@@ -7,12 +7,15 @@ namespace Smol
     ){
         auto version = root.get<u32>("metadata.version")
             .value_or(0);
+        auto type = root.get<Str>("metadata.type")
+            .value_or("Unknown");
         auto name = root.get<Str>("metadata.name")
-            .value_or("UnnamedToml");
+            .value_or("Unnamed");
 
         return TomlMetadata{
             .version = version,
-            .name = name
+            .type = type,
+            .name = name,
         };
     }
 }

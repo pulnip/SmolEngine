@@ -11,6 +11,10 @@
 namespace Smol
 {
     struct SpawnContext;
+    namespace DOM
+    {
+        class Value;
+    }
 
     class World final{
     private:
@@ -28,9 +32,7 @@ namespace Smol
         ~World();
         SMOL_DECLARE_MOVE_ONLY(World)
 
-        World(StrView scenePath);
-        // inject actors from outside
-        World(SpawnContext&);
+        World(DOM::Value&&, SpawnContext);
 
         Actor* FindActorByName(StrView name) const;
 

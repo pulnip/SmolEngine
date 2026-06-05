@@ -25,11 +25,11 @@ namespace Smol
     }
 
     InputManager::InputManager(
-        const InputConfig& config,
+        InputConfig&& config,
         const InputProvider* provider
     )
-        : provider(std::move(provider))
-        , mappings(config.mappings)
+        : provider(provider)
+        , mappings(std::move(config.mappings))
     {}
 
     void InputManager::NewFrame(){

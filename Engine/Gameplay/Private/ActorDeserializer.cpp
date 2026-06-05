@@ -34,12 +34,14 @@ namespace{
 
         using namespace Smol;
 
-        auto imagePath = ctx.dom.get<Str>("image_path");
-        if(!imagePath){
+        auto image_path = ctx.dom.get<Str>("image_path");
+        if(!image_path){
             return;
         }
 
-        auto image = loadImage(*imagePath);
+        auto imagePath = ctx.contentRoot / * image_path;
+
+        auto image = loadImage(imagePath);
         auto texture = ctx.device->CreateTexture(
             RHITextureCreateDesc{
                 .width = image.GetWidth(), .height = image.GetHeight(),

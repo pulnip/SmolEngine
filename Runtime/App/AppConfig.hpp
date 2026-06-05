@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include "DOM.hpp"
 #include "Primitives.hpp"
 #include "RuntimeConfig.hpp"
@@ -8,7 +9,7 @@
 namespace Smol
 {
     struct ProjectConfig{
-        Str content_root;
+        std::filesystem::path content_root;
     };
 
     struct BootConfig{
@@ -22,10 +23,17 @@ namespace Smol
         RuntimeConfig runtime;
         ProjectConfig project;
         BootConfig boot;
+
+        auto startupScenePath() const{
+            return project.content_root / boot.statup_scene;
+        }
+        auto defaultInputPath() const{
+            return project.content_root / boot.default_input;
+        }
     };
 
     template<>
     struct TomlTraits<AppConfig>{
-        static AppConfig from(const TomlMetadata&, const DOM::Value& root);
+        static AppConfig from(const DOM::Value&, const TomlMetadata&);
     };
 }

@@ -29,6 +29,6 @@ namespace Smol
 
     template<>
     struct TomlTraits<InputConfig>{
-        static InputConfig from(const DOM::Value&);
+        static InputConfig from(const DOM::Value&, const TomlMetadata&);
     };
 }

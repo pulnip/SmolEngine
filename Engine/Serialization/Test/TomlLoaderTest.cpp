@@ -6,9 +6,9 @@ using namespace Smol;
 
 const auto TEST_TOML1 = R"(
 [metadata]
-image = "character.png"
-tile_width = 32
-tile_height = 32
+version = 0
+name = "character.png"
+type = "Test"
 
 [grid]
 columns = 8
@@ -30,7 +30,7 @@ frame_duration_ms = 80
 name = "run"
 start_row = 2
 tile_count = 8
-frame_duration_ms = 60    
+frame_duration_ms = 60
 )";
 
 TEST(Serializer, SpriteTOML){
@@ -86,11 +86,7 @@ TEST(Serializer, SpriteTOML){
 }
 
 struct TestResult1{
-    struct Metadata{
-        Str image;
-        i64 tileWidth = 0;
-        i64 tileHeight = 0;
-    } metadata;
+    TomlMetadata metadata;
     struct Grid{
         i64 columns = 0;
         i64 rows = 0;
@@ -106,13 +102,10 @@ struct TestResult1{
 
 template<>
 struct TomlTraits<TestResult1>{
-    static TestResult1 from(const DOM::Value& root){
-        TestResult1 result;
-
-        auto& metadata = result.metadata;
-        metadata.image = root.get<Str>("metadata.image").value_or("");
-        metadata.tileWidth = root.get<i64>("metadata.tile_width").value_or(0);
-        metadata.tileHeight = root.get<i64>("metadata.tile_height").value_or(0);
+    static TestResult1 from(const DOM::Value& root, const TomlMetadata& metadata){
+        TestResult1 result{
+            .metadata = metadata
+        };
 
         auto& grid = result.grid;
         grid.columns = root.get<i64>("grid.columns").value_or(1);
@@ -136,9 +129,9 @@ TEST(SerializerUsecase, SpriteTOML){
     auto result = loadToml<TestResult1>(TEST_TOML1);
 
     const auto& metadata = result.metadata;
-    EXPECT_EQ(metadata.image, "character.png");
-    EXPECT_EQ(metadata.tileWidth, 32);
-    EXPECT_EQ(metadata.tileHeight, 32);
+    EXPECT_EQ(metadata.version, 0);
+    EXPECT_EQ(metadata.name, "character.png");
+    EXPECT_EQ(metadata.type, "Test");
 
     const auto& grid = result.grid;
     EXPECT_EQ(grid.columns, 8);

@@ -1,4 +1,3 @@
-#include <stdexcept>
 #include "ActorDeserializer.hpp"
 #include "DOM.hpp"
 #include "LogLocal.hpp"
@@ -12,12 +11,19 @@ namespace Smol
         isShutdown = true;
     }
 
-    World::World(StrView scenePath){
-        // TODO.
-        throw std::runtime_error("Unimplemented");
-    }
+    World::World(
+        DOM::Value&& dom,
+        SpawnContext ctx
+    ){
+        SpawnContext rootContext{
+            .dom = dom,
+            .contentRoot = ctx.contentRoot,
+            .inputManager = ctx.inputManager,
+            .device = ctx.device,
+            .spriteRenderer = ctx.spriteRenderer,
+            .world = this
+        };
 
-    World::World(SpawnContext& ctx){
         ctx.dom.forEach("actors", [&](const DOM::Value& node){
             auto type = node.get<Str>("type");
             auto name = node.get<Str>("name");
