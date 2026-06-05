@@ -1,3 +1,4 @@
+#include "Actor.hpp"
 #include "ActorDeserializer.hpp"
 #include "DOM.hpp"
 #include "LogLocal.hpp"
@@ -24,7 +25,7 @@ namespace Smol
             .world = this
         };
 
-        ctx.dom.forEach("actors", [&](const DOM::Value& node){
+        dom.forEach("actors", [&](const DOM::Value& node){
             auto type = node.get<Str>("type");
             auto name = node.get<Str>("name");
 
@@ -35,15 +36,9 @@ namespace Smol
                 return;
             }
 
-            SpawnContext spawnContext{
-                .dom = node,
-                .inputManager = ctx.inputManager,
-                .device = ctx.device,
-                .spriteRenderer = ctx.spriteRenderer,
-                .world = this
-            };
+            auto nodeContext = rootContext.WithDOM(node);
 
-            auto actor = CreateActor(*type, spawnContext);
+            auto actor = CreateActor(*type, nodeContext);
             if(actor == nullptr) [[unlikely]]{
                 LOG_WARN("Actor type {} not exist", *type);
                 return;

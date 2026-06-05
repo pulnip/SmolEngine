@@ -16,7 +16,7 @@ public:
     ~SimpleObject() = default;
     SMOL_DECLARE_MOVE_ONLY(SimpleObject)
 
-    SimpleObject(Smol::SpawnContext&){}
+    SimpleObject(const Smol::SpawnContext&){}
 };
 
 SMOL_OBJECT(SimpleObject)

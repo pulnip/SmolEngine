@@ -22,7 +22,7 @@ namespace Smol
     struct ClassDesc{
         Str name;
         const ClassDesc* parent = nullptr;
-        std::function<ObjectRAII(SpawnContext&)> factory;
+        std::function<ObjectRAII(const SpawnContext&)> factory;
         StringHashMap<PropertyDesc> properties;
 
         template<typename Class, typename Member>
@@ -46,7 +46,7 @@ namespace Smol
         StringHashMap<ClassDesc*> classByName;
 
     public:
-        static ObjectRAII Create(StrView type, SpawnContext&);
+        static ObjectRAII Create(StrView type, const SpawnContext&);
 
     private:
         template<typename T>
@@ -99,8 +99,8 @@ namespace Smol
             return *this;
         }
 
-        ClassBuilder& SetFactory(std::function<RAII<T>(SpawnContext&)>&& f){
-            desc.factory = [f = std::move(f)](SpawnContext& context) -> RAII<Object> {
+        ClassBuilder& SetFactory(std::function<RAII<T>(const SpawnContext&)>&& f){
+            desc.factory = [f = std::move(f)](const SpawnContext& context) -> RAII<Object> {
                 return f(context);
             };
 
@@ -134,12 +134,12 @@ namespace Smol
             : desc(ClassRegistry::Get().DescFor<T>())
         {
             if constexpr (SpawnConstructible<T>){
-                desc.factory = [](SpawnContext& context) -> ObjectRAII {
+                desc.factory = [](const SpawnContext& context) -> ObjectRAII {
                     return std::make_unique<T>(context);
                 };
             }
             else if constexpr (std::is_default_constructible_v<T>){
-                desc.factory = [](SpawnContext&) -> ObjectRAII {
+                desc.factory = [](const SpawnContext&) -> ObjectRAII {
                     return std::make_unique<T>();
                 };
             }
@@ -152,5 +152,5 @@ namespace Smol
         return ClassBuilder<T>();
     }
 
-    ObjectRAII CreateObject(StrView type, SpawnContext& context);
+    ObjectRAII CreateObject(StrView type, const SpawnContext& context);
 }

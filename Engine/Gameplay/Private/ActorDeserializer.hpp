@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Actor.hpp"
+#include "ActorFWD.hpp"
 #include "Primitives.hpp"
 #include "SpawnContext.hpp"
 
 namespace Smol
 {
-    ActorRAII CreateActor(StrView type, SpawnContext& context);
+    ActorRAII CreateActor(StrView type, const SpawnContext& context);
 }

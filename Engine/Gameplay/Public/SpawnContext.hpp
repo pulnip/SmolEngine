@@ -23,5 +23,16 @@ namespace Smol
         SpriteRenderer* spriteRenderer = nullptr;
         // TODO. mock world?
         World* world = nullptr;
+
+        auto WithDOM(const DOM::Value& node) const{
+            return SpawnContext{
+                .dom = node,
+                .contentRoot = contentRoot,
+                .inputManager = inputManager,
+                .device = device,
+                .spriteRenderer = spriteRenderer,
+                .world = world
+            };
+        }
     };
 }

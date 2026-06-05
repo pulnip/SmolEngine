@@ -1,3 +1,4 @@
+#include "Actor.hpp"
 #include "ActorDeserializer.hpp"
 #include "CharacterController.hpp"
 #include "ClassRegistry.hpp"
@@ -22,13 +23,13 @@ namespace{
         return nullptr;
     }
 
-    void applyInputComponent(Smol::Actor& actor, Smol::SpawnContext& ctx){
+    void applyInputComponent(Smol::Actor& actor, const Smol::SpawnContext& ctx){
         using namespace Smol;
 
         actor.AddComponent<InputComponent>(ctx.inputManager);
     }
 
-    void applySpriteComponent(Smol::Actor& actor, Smol::SpawnContext& ctx){
+    void applySpriteComponent(Smol::Actor& actor, const Smol::SpawnContext& ctx){
         SMOL_ASSERT(ctx.device != nullptr);
         SMOL_ASSERT(ctx.spriteRenderer != nullptr);
 
@@ -57,7 +58,7 @@ namespace{
         );
     }
 
-    void applyComponent(Smol::Actor& actor, Smol::SpawnContext& ctx){
+    void applyComponent(Smol::Actor& actor, const Smol::SpawnContext& ctx){
         auto type = ctx.dom.get<Smol::Str>("type");
         if(!type.has_value()) [[unlikely]]{
             LOG_ERROR("no \"type\" key in [[actors.component]]");
@@ -72,18 +73,12 @@ namespace{
         }
     }
 
-    void apply(Smol::Actor& actor, Smol::SpawnContext& ctx){
+    void apply(Smol::Actor& actor, const Smol::SpawnContext& ctx){
         using namespace Smol;
 
         ctx.dom.forEach("components", [&](const DOM::Value& node){
-            SpawnContext context{
-                .dom = node,
-                .inputManager = ctx.inputManager,
-                .device = ctx.device,
-                .spriteRenderer = ctx.spriteRenderer,
-                .world = ctx.world
-            };
-            applyComponent(actor, context);
+            auto nodeContext = ctx.WithDOM(node);
+            applyComponent(actor, nodeContext);
         });
     }
 
@@ -115,7 +110,7 @@ namespace{
         pawn.PossessedBy(*controller);
     }
 
-    void apply(Smol::Pawn& pawn, Smol::SpawnContext& ctx){
+    void apply(Smol::Pawn& pawn, const Smol::SpawnContext& ctx){
         using namespace Smol;
 
         apply(static_cast<Actor&>(pawn), ctx);
@@ -131,7 +126,7 @@ namespace{
 
 namespace Smol
 {
-    ActorRAII CreateActor(StrView type, SpawnContext& ctx){
+    ActorRAII CreateActor(StrView type, const SpawnContext& ctx){
         auto object = CreateObject(type, ctx);
 
         if(object->IsA("Pawn")){
@@ -142,6 +137,7 @@ namespace Smol
         }
         else if(object->IsA("Actor")){{
             auto actor = uniqueCast<Actor>(object);
+            apply(*actor, ctx);
 
             return actor;
         }}
