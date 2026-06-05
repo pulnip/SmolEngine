@@ -16,6 +16,10 @@ void ExampleActor::PossessedBy(Smol::CharacterController& controller){
     Super::PossessedBy(controller);
 
     BindAction(
+        "Move", TriggerEvent::Started,
+        this, &ExampleActor::OnMoveStarted
+    );
+    BindAction(
         "Move", TriggerEvent::Triggered,
         this, &ExampleActor::OnMoveTriggered
     );

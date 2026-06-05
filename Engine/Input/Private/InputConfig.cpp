@@ -31,16 +31,16 @@ namespace{
         using enum KeyCode;
 
         static StringHashMap<KeyCode> map = {
-            {"Num0", Num0},
-            {"Num1", Num1},
-            {"Num2", Num2},
-            {"Num3", Num3},
-            {"Num4", Num4},
-            {"Num5", Num5},
-            {"Num6", Num6},
-            {"Num7", Num7},
-            {"Num8", Num8},
-            {"Num9", Num9},
+            {"NUM0", Num0},
+            {"NUM1", Num1},
+            {"NUM2", Num2},
+            {"NUM3", Num3},
+            {"NUM4", Num4},
+            {"NUM5", Num5},
+            {"NUM6", Num6},
+            {"NUM7", Num7},
+            {"NUM8", Num8},
+            {"NUM9", Num9},
             {"A", A},
             {"B", B},
             {"C", C},
@@ -78,13 +78,13 @@ namespace{
             {"F10", F10},
             {"F11", F11},
             {"F12", F12},
-            {"Ctrl", Ctrl},
-            {"Alt", Alt},
-            {"Shift", Shift},
-            {"Tab", Tab},
-            {"Space", Space},
-            {"Enter", Enter},
-            {"Escape", Escape}
+            {"CTRL", Ctrl},
+            {"ALT", Alt},
+            {"SHIFT", Shift},
+            {"TAB", Tab},
+            {"SPACE", Space},
+            {"ENTER", Enter},
+            {"ESCAPE", Escape}
         };
 
         auto upper = toUpper(str);
@@ -92,7 +92,7 @@ namespace{
             return it->second;
         }
 
-        LOG_ERROR("Unknown SwizzleOrder: {}", str);
+        LOG_ERROR("Unknown KeyCode: {}", str);
         return Unknown;
     }
 

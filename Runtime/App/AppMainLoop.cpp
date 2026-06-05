@@ -38,8 +38,10 @@ namespace Smol
     }
 
     bool AppMainLoop::Update(){
+        timer.NewFrame();
         auto deltaTime = timer.GetDeltaTime();
 
+        inputManager.NewFrame();
         world.Update(static_cast<f32>(deltaTime));
 
         return true;

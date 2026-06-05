@@ -91,8 +91,7 @@ namespace{
 
         auto actor = world.FindActorByName(possessor);
         if(actor == nullptr){
-            LOG_ERROR("Engine",
-                "Controller {} not found. (Potentially invalid Actor Define Order)",
+            LOG_ERROR("Controller {} not found. (Potentially invalid Actor Define Order)",
                 possessor
             );
             return;
@@ -100,8 +99,7 @@ namespace{
 
         auto controller = dynamic_cast<CharacterController*>(actor);
         if(controller == nullptr){
-            LOG_ERROR("Engine",
-                "Actor {} is not CharacterController",
+            LOG_ERROR("Actor {} is not CharacterController",
                 possessor
             );
             return;

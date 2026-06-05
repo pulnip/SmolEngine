@@ -12,7 +12,7 @@ type = "InputComponent"
 [[actors]]
 type = "ExampleActor"
 name = "Player"
-possessed_by = "CharacterController"
+possessed_by = "PlayerController"
 [[actors.components]]
 type = "SpriteComponent"
 image_path = "Assets/Sprite/hollow_knight.png"
