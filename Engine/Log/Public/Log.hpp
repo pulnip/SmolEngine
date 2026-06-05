@@ -26,6 +26,8 @@ namespace Smol
 
         detail::Log(std::move(msg));
     }
+
+    void SetLogLevel(LogLevel level);
 }
 
 #define LOG_IMPL(level, category, fmt, ...) \

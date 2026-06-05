@@ -19,6 +19,7 @@ PRIVATE
     Smol::Core
     "$<LINK_LIBRARY:WHOLE_ARCHIVE,Smol::Gameplay>"
     Smol::Input
+    Smol::Log
     Smol::Platform
     Smol::Render
     # Smol::Scene

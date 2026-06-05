@@ -2,12 +2,18 @@
 #include "AppMainLoop.hpp"
 #include "OS.hpp"
 #include "RHIDevice.hpp"
+#include "Log.hpp"
 
 using namespace Smol;
 
 constexpr CStr APP_CONFIG_PATH = "Config/Default.app.toml";
 
 i32 main(i32, CStr[]){
+#if defined(_DEBUG) || !defined(NDEBUG)
+    SetLogLevel(LogLevel::Warn);
+#else
+    SetLogLevel(LogLevel::Error);
+#endif
     auto config = loadTomlFile<AppConfig>(APP_CONFIG_PATH);
 
     auto device = Smol::CreateDevice();

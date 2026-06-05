@@ -8,4 +8,10 @@ namespace Smol
 
         logger.Log(std::move(msg));
     }
+
+    void SetLogLevel(LogLevel level){
+        static auto& logger = Logger::Get();
+
+        logger.SetMinLevel(level);
+    }
 }
