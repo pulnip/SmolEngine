@@ -14,9 +14,9 @@
 
 #include "MetalCommandList.hpp"
 
-namespace Smol
-{
-    inline auto convert(RHILoadAction action){
+namespace{
+    auto convert(Smol::RHILoadAction action){
+        using namespace Smol;
         using enum RHILoadAction;
         using namespace MTL;
 
@@ -29,7 +29,8 @@ namespace Smol
         }
     }
 
-    inline auto convert(RHIStoreAction action){
+    auto convert(Smol::RHIStoreAction action){
+        using namespace Smol;
         using enum RHIStoreAction;
         using namespace MTL;
 
@@ -40,22 +41,10 @@ namespace Smol
             std::unreachable();
         }
     }
+}
 
-    inline auto convert(RHIPrimitiveTopology topology){
-        using enum RHIPrimitiveTopology;
-        using namespace MTL;
-
-        switch(topology){
-        case PointList:     return PrimitiveTypePoint;
-        case LineList:      return PrimitiveTypeLine;
-        case LineStrip:     return PrimitiveTypeLineStrip;
-        case TriangleList:  return PrimitiveTypeTriangle;
-        case TriangleStrip: return PrimitiveTypeTriangleStrip;
-        default:
-            std::unreachable();
-        }
-    }
-
+namespace Smol
+{
     MetalCommandList::MetalCommandList(MTL::CommandQueue* queue)
         : commandQueue(queue){}
 
@@ -427,7 +416,7 @@ namespace Smol
         );
 
         renderEncoder->drawPrimitives(
-            convert(currentTopology),
+            currentTopology,
             startVertex,
             vertexCount,
             instanceCount,
@@ -451,7 +440,7 @@ namespace Smol
         auto indexOffset = currentIndexBufferOffset + startIndex * indexSize;
 
         renderEncoder->drawIndexedPrimitives(
-            convert(currentTopology),
+            currentTopology,
             indexCount,
             currentIndexFormat,
             currentIndexBuffer,

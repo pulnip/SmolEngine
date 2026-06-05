@@ -19,7 +19,7 @@ namespace Smol
         MTL::RenderPipelineState* pipeline = nullptr;
         MTL::DepthStencilState* depthStencilState = nullptr;
         RHIRasterizerState rasterizerState{};
-        RHIPrimitiveTopology topology = RHIPrimitiveTopology::TriangleList;
+        MTL::PrimitiveType topology = MTL::PrimitiveType::PrimitiveTypeTriangleStrip;
 
         RHIGraphicsBindingInfo bindingInfo;
 
@@ -40,7 +40,7 @@ namespace Smol
 
         void Bind(MTL::RenderCommandEncoder&);
 
-        RHIPrimitiveTopology GetTopology() const{
+        MTL::PrimitiveType GetTopology() const noexcept{
             return topology;
         }
 

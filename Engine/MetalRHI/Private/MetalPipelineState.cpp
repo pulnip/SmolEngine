@@ -17,9 +17,25 @@
 #include "StringUtil.hpp"
 #include "MetalPipelineState.hpp"
 
-namespace Smol
-{
-    inline auto convertVertexFormat(RHIPixelFormat format){
+namespace{
+    auto convert(Smol::RHIPrimitiveTopology topology){
+        using namespace Smol;
+        using enum RHIPrimitiveTopology;
+        using namespace MTL;
+
+        switch(topology){
+        case PointList:     return PrimitiveTypePoint;
+        case LineList:      return PrimitiveTypeLine;
+        case LineStrip:     return PrimitiveTypeLineStrip;
+        case TriangleList:  return PrimitiveTypeTriangle;
+        case TriangleStrip: return PrimitiveTypeTriangleStrip;
+        default:
+            std::unreachable();
+        }
+    }
+
+    inline auto convertVertexFormat(Smol::RHIPixelFormat format){
+        using namespace Smol;
         using enum RHIPixelFormat;
         using namespace MTL;
 
@@ -44,7 +60,8 @@ namespace Smol
         }
     }
 
-    inline auto convert(RHIStencilOp op){
+    auto convert(Smol::RHIStencilOp op){
+        using namespace Smol;
         using enum RHIStencilOp;
         using namespace MTL;
 
@@ -62,7 +79,8 @@ namespace Smol
         }
     }
 
-    inline auto convert(RHIBlend blend){
+    auto convert(Smol::RHIBlend blend){
+        using namespace Smol;
         using enum RHIBlend;
         using namespace MTL;
 
@@ -85,7 +103,8 @@ namespace Smol
         }
     }
 
-    inline auto convert(RHIBlendOp op){
+    auto convert(Smol::RHIBlendOp op){
+        using namespace Smol;
         using enum RHIBlendOp;
         using namespace MTL;
 
@@ -100,7 +119,8 @@ namespace Smol
         }
     }
 
-    inline auto convert(RHICullMode mode){
+    auto convert(Smol::RHICullMode mode){
+        using namespace Smol;
         using enum RHICullMode;
         using namespace MTL;
 
@@ -113,9 +133,9 @@ namespace Smol
         }
     }
 
-    inline void configureStencil(
+    void configureStencil(
         MTL::StencilDescriptor& desc,
-        const RHIStencilOpDesc& op
+        const Smol::RHIStencilOpDesc& op
     ){
         desc.setStencilCompareFunction(convert(op.func));
         desc.setStencilFailureOperation(convert(op.stencilFailOp));
@@ -123,7 +143,8 @@ namespace Smol
         desc.setDepthStencilPassOperation(convert(op.passOp));
     }
 
-    inline auto convert(MTL::BindingAccess access){
+    auto convert(MTL::BindingAccess access){
+        using namespace Smol;
         using enum RHIBindingAccess;
         using namespace MTL;
 
@@ -136,11 +157,13 @@ namespace Smol
         }
     }
 
-    inline MTL::Function* compileShader(
+    MTL::Function* compileShader(
         MTL::Device& device,
         const std::filesystem::path& filePath,
-        StrView entryPoint
+        Smol::StrView entryPoint
     ){
+        using namespace Smol;
+
         NS::Error* error = nullptr;
         MTL::Library* library;
 
@@ -189,7 +212,9 @@ namespace Smol
         return func;
     }
 
-    inline auto extractBindingInfo(NS::Array& bindings){
+    auto extractBindingInfo(NS::Array& bindings){
+        using namespace Smol;
+
         RHIShaderBindingInfo info;
 
         for(NS::UInteger i=0; i<bindings.count(); ++i){
@@ -236,18 +261,21 @@ namespace Smol
     }
 
     inline auto extractBindingInfo(MTL::RenderPipelineReflection& refl){
-        return RHIGraphicsBindingInfo{
+        return Smol::RHIGraphicsBindingInfo{
             .vsInfo = extractBindingInfo(*refl.vertexBindings()),
             .fsInfo = extractBindingInfo(*refl.fragmentBindings())
         };
     }
 
     inline auto extractBindingInfo(MTL::ComputePipelineReflection& refl){
-        return RHIComputeBindingInfo{
+        return Smol::RHIComputeBindingInfo{
             .csInfo = extractBindingInfo(*refl.bindings())
         };
     }
+}
 
+namespace Smol
+{
     MetalGraphicsPipelineState::MetalGraphicsPipelineState(
         MTL::Device& device,
         const RHIGraphicsPipelineStateDesc& desc,
@@ -309,22 +337,22 @@ namespace Smol
 
                 if(rtBlend.blendEnable){
                     colorAttach->setSourceRGBBlendFactor(
-                        convert(rtBlend.srcBlend)
+                        ::convert(rtBlend.srcBlend)
                     );
                     colorAttach->setDestinationRGBBlendFactor(
-                        convert(rtBlend.dstBlend)
+                        ::convert(rtBlend.dstBlend)
                     );
                     colorAttach->setRgbBlendOperation(
-                        convert(rtBlend.blendOp)
+                        ::convert(rtBlend.blendOp)
                     );
                     colorAttach->setSourceAlphaBlendFactor(
-                        convert(rtBlend.srcBlendAlpha)
+                        ::convert(rtBlend.srcBlendAlpha)
                     );
                     colorAttach->setDestinationAlphaBlendFactor(
-                        convert(rtBlend.dstBlendAlpha)
+                        ::convert(rtBlend.dstBlendAlpha)
                     );
                     colorAttach->setAlphaBlendOperation(
-                        convert(rtBlend.blendOpAlpha)
+                        ::convert(rtBlend.blendOpAlpha)
                     );
                 }
 
@@ -380,7 +408,7 @@ namespace Smol
 
         // Store rasterizer state for command list
         rasterizerState = desc.rasterizer;
-        topology = desc.topology;
+        topology = ::convert(desc.topology);
     }
 
     MetalGraphicsPipelineState::~MetalGraphicsPipelineState(){
@@ -410,7 +438,7 @@ namespace Smol
         }
 
         // Rasterizer state
-        encoder.setCullMode(convert(rasterizerState.cullMode));
+        encoder.setCullMode(::convert(rasterizerState.cullMode));
         encoder.setFrontFacingWinding(
             rasterizerState.frontCounterClockwise ?
                 MTL::WindingCounterClockwise :

@@ -2,44 +2,53 @@
 #include <Metal/Metal.hpp>
 #include "MetalSampler.hpp"
 #include "MetalUtil.hpp"
+#include "RHIDefinitions.hpp"
 
-namespace Smol
-{
-    inline auto convert(RHIAddressMode mode){
+namespace{
+    auto convert(Smol::RHIAddressMode mode){
+        using namespace Smol;
+        using enum RHIAddressMode;
         using namespace MTL;
 
         switch(mode){
-        case RHIAddressMode::Wrap  : return SamplerAddressModeRepeat;
-        case RHIAddressMode::Clamp : return SamplerAddressModeClampToEdge;
-        case RHIAddressMode::Mirror: return SamplerAddressModeMirrorRepeat;
-        case RHIAddressMode::Border: return SamplerAddressModeClampToBorderColor;
+        case Wrap  : return SamplerAddressModeRepeat;
+        case Clamp : return SamplerAddressModeClampToEdge;
+        case Mirror: return SamplerAddressModeMirrorRepeat;
+        case Border: return SamplerAddressModeClampToBorderColor;
         default:
             std::unreachable();
         }
     }
 
-    inline auto convertMinMagFilter(RHIFilter filter){
+    auto convertMinMagFilter(Smol::RHIFilter filter){
+        using namespace Smol;
+        using enum RHIFilter;
         using namespace MTL;
 
         switch(filter){
-        case RHIFilter::Nearest: return SamplerMinMagFilterNearest;
-        case RHIFilter::Linear:  return SamplerMinMagFilterLinear;
+        case Nearest: return SamplerMinMagFilterNearest;
+        case Linear:  return SamplerMinMagFilterLinear;
         default:
             std::unreachable();
         }
     }
 
-    inline auto convertMipFilter(RHIFilter filter){
+    auto convertMipFilter(Smol::RHIFilter filter){
+        using namespace Smol;
+        using enum RHIFilter;
         using namespace MTL;
 
         switch(filter){
-        case RHIFilter::Nearest: return SamplerMipFilterNearest;
-        case RHIFilter::Linear:  return SamplerMipFilterLinear;
+        case Nearest: return SamplerMipFilterNearest;
+        case Linear:  return SamplerMipFilterLinear;
         default:
             std::unreachable();
         }
     }
+}
 
+namespace Smol
+{
     MetalSampler::MetalSampler(
         MTL::Device& device,
         const RHISamplerState& desc
@@ -48,9 +57,9 @@ namespace Smol
         samplerDesc->setMinFilter(convertMinMagFilter(desc.minFilter));
         samplerDesc->setMagFilter(convertMinMagFilter(desc.magFilter));
         samplerDesc->setMipFilter(convertMipFilter(desc.magFilter));
-        samplerDesc->setSAddressMode(convert(desc.addressU));
-        samplerDesc->setTAddressMode(convert(desc.addressV));
-        samplerDesc->setRAddressMode(convert(desc.addressW));
+        samplerDesc->setSAddressMode(::convert(desc.addressU));
+        samplerDesc->setTAddressMode(::convert(desc.addressV));
+        samplerDesc->setRAddressMode(::convert(desc.addressW));
         samplerDesc->setLodMinClamp(desc.minLOD);
         samplerDesc->setLodMaxClamp(desc.maxLOD);
         samplerDesc->setMaxAnisotropy(desc.maxAnisotropy);

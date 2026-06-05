@@ -5,6 +5,7 @@
 #include <Metal/MTLBlitCommandEncoder.hpp>
 #include <QuartzCore/CAMetalDrawable.hpp>
 #include <Metal/MTLBuffer.hpp>
+#include <Metal/MTLRenderCommandEncoder.hpp>
 #include <Metal/MTLStageInputOutputDescriptor.hpp>
 #include <Metal/MTLTypes.hpp>
 #include "RHIAPI.hpp"
@@ -32,7 +33,7 @@ namespace Smol
         u32 currentIndexBufferOffset = 0;
         MTL::IndexType currentIndexFormat = MTL::IndexTypeUInt32;
 
-        RHIPrimitiveTopology currentTopology = RHIPrimitiveTopology::TriangleList;
+        MTL::PrimitiveType currentTopology = MTL::PrimitiveType::PrimitiveTypeTriangle;
         MTL::Size threadsPerThreadgroup = {0, 0, 0};
         bool isRecording = false;
 

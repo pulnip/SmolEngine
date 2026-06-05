@@ -3,24 +3,29 @@
 #include "MetalTexture.hpp"
 #include "MetalUtil.hpp"
 #include "Primitives.hpp"
+#include "RHIDefinitions.hpp"
 
-namespace Smol
-{
-    inline auto convert(RHITextureUsage usage){
+namespace{
+    auto convert(Smol::RHITextureUsage usage){
+        using namespace Smol;
+        using enum RHITextureUsage;
         MTL::TextureUsage mtlUsage = 0;
 
-        if(hasFlag(usage, RHITextureUsage::AllowShaderRead))
+        if(hasFlag(usage, AllowShaderRead))
             mtlUsage |= MTL::TextureUsageShaderRead;
-        if(hasFlag(usage, RHITextureUsage::AllowRenderTarget))
+        if(hasFlag(usage, AllowRenderTarget))
             mtlUsage |= MTL::TextureUsageRenderTarget;
-        if(hasFlag(usage, RHITextureUsage::AllowDepthStencil))
+        if(hasFlag(usage, AllowDepthStencil))
             mtlUsage |= MTL::TextureUsageRenderTarget;
-        if(hasFlag(usage, RHITextureUsage::AllowShaderWrite))
+        if(hasFlag(usage, AllowShaderWrite))
             mtlUsage |= MTL::TextureUsageShaderWrite;
 
         return mtlUsage;
     }
+}
 
+namespace Smol
+{
     MetalTexture::MetalTexture(
         MTL::Device& device,
         const RHITextureCreateDesc& desc,
@@ -43,7 +48,7 @@ namespace Smol
                 (desc.arraySize > 1 ? MTL::TextureType2DArray
                                     : MTL::TextureType2D)
         );
-        texDesc->setUsage(convert(desc.usage));
+        texDesc->setUsage(::convert(desc.usage));
     #if TARGET_OS_OSX
         bool needsGPUOnly = hasFlag(desc.access, RHIMemoryAccess::GPUOnly);
         texDesc->setStorageMode(needsGPUOnly ?
