@@ -31,6 +31,8 @@ namespace Smol
             .vertexShaderPath = "Engine/Shader/SpriteQuad.vert.hlsl",
             .vertexShaderEntryPoint = "vs_main",
         #elif defined(SMOL_METALRHI)
+            .vertexShaderPath = "Engine/Shader/SpriteQuad.metal",
+            .vertexShaderEntryPoint = "vs_main",
         #endif
             .rasterizer = RHIRasterizerState{
                 .frontCounterClockwise = false
@@ -39,6 +41,8 @@ namespace Smol
             .fragmentShaderPath = "Engine/Shader/Sprite.pixel.hlsl",
             .fragmentShaderEntryPoint = "ps_main",
         #elif defined(SMOL_METALRHI)
+            .fragmentShaderPath = "Engine/Shader/SpriteQuad.metal",
+            .fragmentShaderEntryPoint = "fs_main",
         #endif
             // Alpha blending
             .blend = RHIBlendState{

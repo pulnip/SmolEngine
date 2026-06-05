@@ -335,12 +335,17 @@ namespace Smol
 
         switch(stage){
         case VertexShader:
-            [[fallthrough]];
+            SMOL_ASSERT(renderEncoder != nullptr,
+                "Did you call RHICommandList::beginRenderPass()?"
+            );
+            renderEncoder->setVertexBytes(bytes, size, slot);
+            break;
         case FragmentShader:
             SMOL_ASSERT(renderEncoder != nullptr,
                 "Did you call RHICommandList::beginRenderPass()?"
             );
-            throw std::runtime_error("Unimplemented");
+            renderEncoder->setFragmentBytes(bytes, size, slot);
+            break;
         case ComputeShader:
             SMOL_ASSERT(computeEncoder != nullptr,
                 "Did you call RHICommandList::beginCompute()?"
