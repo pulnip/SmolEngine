@@ -56,7 +56,7 @@ namespace Smol
 
     void World::Update(f32 deltaTime){
         for(auto& actor: actors){
-            actor->OnUpdate(deltaTime);
+            actor->Update(deltaTime);
         }
 
         // lazy destroy
