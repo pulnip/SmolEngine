@@ -32,12 +32,15 @@ namespace Smol
     {}
 
     bool AppMainLoop::Initialize(){
+        timer.Reset();
 
         return true;
     }
 
     bool AppMainLoop::Update(){
-        world.Update(0.0f);
+        auto deltaTime = timer.GetDeltaTime();
+
+        world.Update(static_cast<f32>(deltaTime));
 
         return true;
     }

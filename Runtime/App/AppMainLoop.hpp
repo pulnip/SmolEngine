@@ -4,6 +4,7 @@
 #include "MainLoop.hpp"
 #include "RHIFWD.hpp"
 #include "SpriteRenderer.hpp"
+#include "Timer.hpp"
 #include "World.hpp"
 
 namespace Smol
@@ -17,6 +18,8 @@ namespace Smol
         SpriteRenderer spriteRenderer;
 
         World world;
+
+        Timer timer;
 
     public:
         AppMainLoop(const AppConfig&, OS&, RHIDevice&);
