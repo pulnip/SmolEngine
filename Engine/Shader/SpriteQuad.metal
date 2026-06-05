@@ -12,14 +12,14 @@ struct SpriteConstants{
     float2 offset;
 };
 
-// TriangleStrip, Counter-Clockwise to Front-Face
+// TriangleStrip, Clockwise to Front-Face
 static constant float2 positions[4] = {
-    float2(-1,  1), float2(-1, -1),
-    float2( 1,  1), float2( 1, -1)
+    float2(-1,  1), float2(1,  1),
+    float2(-1, -1), float2(1, -1)
 };
 static constant float2 texCoords[4] = {
-    float2(0, 0), float2(0, 1),
-    float2(1, 0), float2(1, 1)
+    float2(0, 0), float2(1, 0),
+    float2(0, 1), float2(1, 1)
 };
 
 vertex VertexOut vs_main(

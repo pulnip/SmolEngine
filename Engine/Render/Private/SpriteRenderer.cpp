@@ -54,7 +54,11 @@ namespace Smol
                         .dstBlend = RHIBlend::InvSrcAlpha
                     }
                 }
-            }
+            },
+            .renderTargetFormats = {
+                RHIPixelFormat::RGBA8_UNORM
+            },
+            .renderTargetCount = 1
         }))
         , sampler(device.CreateSampler(LINEAR_WRAP_SAMPLER))
     {
