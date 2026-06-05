@@ -1,28 +1,39 @@
 #include <algorithm>
 #include "Assert.hpp"
+#include "LogLocal.hpp"
 #include "RHITexture.hpp"
 #include "SpriteComponent.hpp"
 #include "SpriteRenderer.hpp"
 
 namespace Smol
 {
-    SpriteComponent::SpriteComponent() = default;
     SpriteComponent::~SpriteComponent() = default;
 
     SpriteComponent::SpriteComponent(
         RHITextureRAII&& sprite,
-        SpriteRenderer& renderer)
-        : sprite(std::move(sprite))
-        , proxy(renderer.BindRenderItem(*sprite))
+        Transform& transform,
+        SpriteRenderer& renderer
+    )
+        : proxy(renderer.BindRenderItem(*sprite))
+        , sprite(std::move(sprite))
+        , transform(transform)
     {
         SMOL_ASSERT(proxy.IsValid());
 
         auto& item = proxy.GetRenderItem();
+        item.transform = transform;
+
+        transform.scale = Vec3(4, 4, 1);
+        // TODO. change later
         item.uvScale = {1.0f/16, 1.0f/16};
+        item.offset = {0, 0};
     }
 
     void SpriteComponent::Update(f32 dt){
         elapsedTime += std::min(dt, framePerSeconds);
+
+        auto& item = proxy.GetRenderItem();
+        item.transform = transform;
 
         if(elapsedTime > framePerSeconds){
             elapsedTime -= framePerSeconds;

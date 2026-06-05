@@ -23,14 +23,14 @@ namespace Smol
         // if someone called setter of member variable below,
         // synced = false
         bool synced = true;
+        Transform& transform;
         u32 iframe = 0;
 
     public:
-        SpriteComponent();
         virtual ~SpriteComponent();
         SMOL_DECLARE_PINNED(SpriteComponent)
 
-        SpriteComponent(RHITextureRAII&&, SpriteRenderer&);
+        SpriteComponent(RHITextureRAII&&, Transform&, SpriteRenderer&);
 
         void Update(f32) override;
 

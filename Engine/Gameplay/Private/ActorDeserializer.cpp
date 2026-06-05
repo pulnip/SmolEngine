@@ -6,6 +6,7 @@
 #include "ImageLoader.hpp"
 #include "InputComponent.hpp"
 #include "LogLocal.hpp"
+#include "MoveComponent.hpp"
 #include "Pawn.hpp"
 #include "RHIDevice.hpp"
 #include "RHITexture.hpp"
@@ -27,6 +28,12 @@ namespace{
         using namespace Smol;
 
         actor.AddComponent<InputComponent>(ctx.inputManager);
+    }
+
+    void applyMoveComponent(Smol::Actor& actor, const Smol::SpawnContext&){
+        using namespace Smol;
+
+        actor.AddComponent<MoveComponent>();
     }
 
     void applySpriteComponent(Smol::Actor& actor, const Smol::SpawnContext& ctx){
@@ -67,6 +74,9 @@ namespace{
 
         if(*type == "InputComponent"){
             applyInputComponent(actor, ctx);
+        }
+        else if(*type == "MoveComponent"){
+            applyMoveComponent(actor, ctx);
         }
         else if(*type == "SpriteComponent"){
             applySpriteComponent(actor, ctx);

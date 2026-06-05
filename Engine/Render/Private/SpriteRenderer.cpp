@@ -113,14 +113,6 @@ namespace Smol
 
     SpriteProxy SpriteRenderer::BindRenderItem(RHITexture& texture){
         auto handle = renderItems.emplace(SpriteRenderItem{
-            .transform = Transform{
-                .position = zeros(),
-                .rotation = unitQuat(),
-                .scale = Vec3(4.0f, 4.0, 1.0f)
-            },
-            // TODO. change later
-            .uvScale = {1.0f/16, 1.0f/16},
-            .offset = {.x = 0, .y = 0},
             .texture = texture,
         });
 

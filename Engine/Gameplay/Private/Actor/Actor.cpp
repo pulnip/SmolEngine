@@ -1,5 +1,6 @@
 #include "Actor.hpp"
 #include "InputComponent.hpp"
+#include "MoveComponent.hpp"
 #include "Rigidbody.hpp"
 #include "SpriteComponent.hpp"
 #include "World.hpp"
@@ -98,6 +99,21 @@ namespace Smol
     }
 
     template<>
+    MoveComponent* Actor::AddComponent<MoveComponent>(){
+        constexpr auto index = GetComponentTypeIndex<MoveComponent>();
+        auto c = std::make_unique<MoveComponent>(transform);
+        builtinComponents[index] = std::move(c);
+
+        return static_cast<MoveComponent*>(builtinComponents[index].get());
+    }
+
+    template<>
+    MoveComponent* Actor::GetComponent<MoveComponent>(){
+        constexpr auto index = GetComponentTypeIndex<MoveComponent>();
+        return static_cast<MoveComponent*>(builtinComponents[index].get());
+    }
+
+    template<>
     RigidBody* Actor::AddComponent<RigidBody>(){
         constexpr auto index = GetComponentTypeIndex<RigidBody>();
         auto c = std::make_unique<RigidBody>();
@@ -118,7 +134,7 @@ namespace Smol
         SpriteRenderer& renderer
     ){
         constexpr auto index = GetComponentTypeIndex<SpriteComponent>();
-        auto c = std::make_unique<SpriteComponent>(std::move(texture), renderer);
+        auto c = std::make_unique<SpriteComponent>(std::move(texture), transform, renderer);
         builtinComponents[index] = std::move(c);
 
         return static_cast<SpriteComponent*>(builtinComponents[index].get());

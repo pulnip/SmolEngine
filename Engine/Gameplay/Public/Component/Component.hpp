@@ -1,7 +1,7 @@
 #pragma once
 
 #include <type_traits>
-#include "ComponentFWD.hpp"
+#include "CoreFWD.hpp"
 #include "Object.hpp"
 #include "Primitives.hpp"
 #include "Semantics.hpp"
@@ -36,19 +36,25 @@ namespace Smol
         TypeID GetTypeID() const override final{ return &typeIDStorage; }
     };
 
+    using ComponentRAII = RAII<Component>;
+
+    class InputComponent;
+    class MoveComponent;
+    class RigidBody;
+    class SpriteComponent;
+    constexpr u32 NUM_BUILTIN_COMPONENTS = 4;
+
     template<typename T>
     consteval u32 GetComponentTypeIndex(){
         if constexpr(std::is_same_v<T, InputComponent>) return 0;
-        else if constexpr(std::is_same_v<T, RigidBody>) return 1;
-        else if constexpr(std::is_same_v<T, SpriteComponent>) return 2;
+        else if constexpr(std::is_same_v<T, MoveComponent>) return 1;
+        else if constexpr(std::is_same_v<T, RigidBody>) return 2;
+        else if constexpr(std::is_same_v<T, SpriteComponent>) return 3;
         return NUM_BUILTIN_COMPONENTS;
     }
 
     template<typename T>
     consteval bool IsBuiltinComponent(){
-        if constexpr(std::is_same_v<T, InputComponent>) return true;
-        else if constexpr(std::is_same_v<T, RigidBody>) return true;
-        else if constexpr(std::is_same_v<T, SpriteComponent>) return true;
-        return false;
+        return GetComponentTypeIndex<T>() != NUM_BUILTIN_COMPONENTS;
     }
 }

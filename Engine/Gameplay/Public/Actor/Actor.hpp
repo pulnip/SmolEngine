@@ -34,7 +34,11 @@ namespace Smol
         std::vector<ActorRAII> children;
 
     protected:
-        Transform transform;
+        Transform transform{
+            .position = zeros(),
+            .rotation = unitQuat(),
+            .scale = ones()
+        };
 
     public:
         Actor() = default;
