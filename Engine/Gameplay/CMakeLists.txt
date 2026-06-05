@@ -47,7 +47,7 @@ PRIVATE
 target_link_libraries(SmolGameplay
 PUBLIC
     Smol::Core
-    Smol::Reflection
+    "$<LINK_LIBRARY:WHOLE_ARCHIVE,Smol::Reflection>"
     Smol::Input
     Smol::Render
 PRIVATE

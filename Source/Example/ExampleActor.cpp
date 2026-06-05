@@ -2,7 +2,7 @@
 #include "InputAction.hpp"
 #include "LogLocal.hpp"
 
-SMOL_ACTOR(ExampleActor)
+SMOL_ACTOR(ExampleActor, Smol::Actor)
 SMOL_ACTOR_END(ExampleActor)
 
 void ExampleActor::OnUpdate(float dt){

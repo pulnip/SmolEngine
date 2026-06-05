@@ -3,7 +3,7 @@
 
 namespace Smol
 {
-    SMOL_ACTOR(Pawn)
+    SMOL_ACTOR(Pawn, Actor)
     SMOL_ACTOR_END(Pawn)
 
     Pawn::~Pawn(){

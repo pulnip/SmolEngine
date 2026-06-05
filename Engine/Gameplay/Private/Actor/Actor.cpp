@@ -6,6 +6,9 @@
 
 namespace Smol
 {
+    SMOL_ACTOR(Actor, Object)
+    SMOL_ACTOR_END(Actor)
+
     Actor::Actor(Actor&& other) noexcept
         : builtinComponents(std::move(other.builtinComponents))
         , userdefinedComponents(std::move(other.userdefinedComponents))

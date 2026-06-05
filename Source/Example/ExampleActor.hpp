@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ActorRegistry.hpp"
 #include "Pawn.hpp"
 
 class ExampleActor: public Smol::Pawn{

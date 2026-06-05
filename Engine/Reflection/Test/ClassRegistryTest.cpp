@@ -23,7 +23,7 @@ SMOL_OBJECT(SimpleObject)
 SMOL_OBJECT_END(SimpleObject)
 
 TEST(Reflection, SimpleObject){
-    ASSERT_TRUE(IsRegisteredSimpleObject);
+    ASSERT_TRUE(IsSimpleObjectRegistered);
     Smol::SpawnContext spawnContext{};
 
     Smol::Str objectName = "SimpleObject";

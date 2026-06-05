@@ -2,6 +2,6 @@
 
 namespace Smol
 {
-    SMOL_ACTOR(CharacterController)
+    SMOL_ACTOR(CharacterController, Actor)
     SMOL_ACTOR_END(CharacterController)
 }

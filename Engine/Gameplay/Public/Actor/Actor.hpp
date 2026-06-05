@@ -10,11 +10,23 @@
 #include "Primitives.hpp"
 #include "Semantics.hpp"
 
+#define SMOL_ACTOR_BODY(Type, Parent) \
+    SMOL_OBJECT_BODY(Type, Parent)
+
+#define SMOL_ACTOR(Type, Parent) \
+    SMOL_OBJECT(Type) \
+        .Inherits<Parent>()
+
+#define SMOL_ACTOR_END(Type) \
+    SMOL_OBJECT_END(Type)
+
 namespace Smol
 {
     class World;
 
     class Actor: public Object{
+        SMOL_ACTOR_BODY(Actor, Object)
+
     private:
         std::array<ComponentRAII, NUM_BUILTIN_COMPONENTS> builtinComponents;
         std::unordered_map<Component::TypeID, ComponentRAII> userdefinedComponents;
