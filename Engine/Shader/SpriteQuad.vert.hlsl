@@ -5,6 +5,7 @@ struct VertexOut{
 
 cbuffer spriteConstants : register(b0)
 {
+    float4x4 mvp;
     float2 uvScale;
     float2 offset;
 };
@@ -21,7 +22,7 @@ VertexOut vs_main(uint vertexID : SV_VertexID){
     };
 
     VertexOut output;
-    output.position = float4(ndc[vertexID], 0, 1);
+    output.position = mul(mvp, float4(ndc[vertexID], 0, 1));
     output.uv = uvScale * (texCoords[vertexID] + offset);
 
     return output;

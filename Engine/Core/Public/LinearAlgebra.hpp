@@ -218,38 +218,6 @@ namespace Smol
         return Mat4{lhs*rhs[0], lhs*rhs[1], lhs*rhs[2], lhs*rhs[3]};
     }
 
-    inline auto perspective(
-        f32 fovY, f32 aspect, f32 nearZ, f32 farZ
-    ) noexcept{
-        auto tanHalfFovY = std::tan(0.5f * fovY);
-        auto dz = nearZ - farZ;
-
-        auto e00 = 1.0f / (aspect*tanHalfFovY);
-        auto e11 = 1.0f / tanHalfFovY;
-        auto e22 = farZ / dz;
-        auto e23 = (farZ*nearZ) / dz;
-
-        return Mat4{
-            Vec4{ e00, 0.0f, 0.0f,  0.0f},
-            Vec4{0.0f,  e11, 0.0f,  0.0f},
-            Vec4{0.0f, 0.0f,  e22, -1.0f},
-            Vec4{0.0f, 0.0f,  e23,  0.0f}
-        };
-    }
-
-    inline constexpr auto orthographic(f32 w, f32 h, f32 nearZ, f32 farZ) noexcept{
-        auto e22 = 1/(farZ-nearZ);
-        auto e23 = -nearZ*e22;
-
-        return Mat4{
-            // column vector
-            Vec4{ 2/w, 0.0f, 0.0f, 0.0f},
-            Vec4{0.0f,  2/h, 0.0f, 0.0f},
-            Vec4{0.0f, 0.0f,  e22, 0.0f},
-            Vec4{0.0f, 0.0f,  e23, 1.0f}
-        };
-    }
-
     inline auto lookAt(Vec3 eye, Vec3 target, Vec3 up) noexcept{
         auto f = normalize(target - eye);
         auto r = normalize(cross(f, up));
@@ -331,7 +299,7 @@ namespace Smol
         };
     }
 
-    inline constexpr auto model_mat(Vec3 pos, Vec4 q, Vec3 scale) noexcept{
+    inline constexpr auto modelMat(Vec3 pos, Vec4 q, Vec3 scale) noexcept{
         auto t = translateMat(pos);
         auto r = rotateMat(q);
         auto s = scaleMat(scale);
@@ -339,13 +307,58 @@ namespace Smol
         return t*r*s;
     }
 
-    inline constexpr auto view_mat(Vec3 pos, Vec4 q) noexcept{
+    inline constexpr auto modelMat(Transform transform) noexcept{
+        auto t = translateMat(transform.position);
+        auto r = rotateMat(transform.rotation);
+        auto s = scaleMat(transform.scale);
+
+        return t*r*s;
+    }
+
+    inline constexpr auto viewMat(Vec3 pos, Vec4 q) noexcept{
         auto inv = conjugate(q);
 
         auto r =    rotateMat( inv);
         auto t = translateMat(-pos);
 
         return r*t;
+    }
+
+    inline constexpr auto orthographic(f32 w, f32 h, f32 nearZ, f32 farZ) noexcept{
+        auto e22 = 1/(farZ-nearZ);
+        auto e23 = -nearZ*e22;
+
+        return Mat4{
+            // column-major
+            Vec4{ 2/w, 0.0f, 0.0f, 0.0f},
+            Vec4{0.0f,  2/h, 0.0f, 0.0f},
+            Vec4{0.0f, 0.0f,  e22, 0.0f},
+            Vec4{0.0f, 0.0f,  e23, 1.0f}
+        };
+    }
+
+    inline auto perspective(
+        f32 fovY, f32 aspect, f32 nearZ, f32 farZ
+    ) noexcept{
+        auto tanHalfFovY = std::tan(0.5f * fovY);
+        auto dz = nearZ - farZ;
+
+        auto e00 = 1.0f / (aspect*tanHalfFovY);
+        auto e11 = 1.0f / tanHalfFovY;
+        auto e22 = farZ / dz;
+        auto e23 = (farZ*nearZ) / dz;
+
+        return Mat4{
+            Vec4{ e00, 0.0f, 0.0f,  0.0f},
+            Vec4{0.0f,  e11, 0.0f,  0.0f},
+            Vec4{0.0f, 0.0f,  e22, -1.0f},
+            Vec4{0.0f, 0.0f,  e23,  0.0f}
+        };
+    }
+
+    inline constexpr auto mvp(Mat4 model, Mat4 view, Mat4 proj) noexcept{
+        // column-vector convention
+        return proj * view * model;
     }
 
     inline constexpr bool overlap(
