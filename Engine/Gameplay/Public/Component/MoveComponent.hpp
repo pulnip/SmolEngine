@@ -20,6 +20,7 @@ namespace Smol
 
         MoveComponent(Transform& transform)
             : transform(transform){}
+        MoveComponent(const SpawnContext&);
 
         void Update(f32) noexcept override;
 

@@ -1,12 +1,16 @@
+#include <stdexcept>
 #include <algorithm>
 #include "Assert.hpp"
 #include "LogLocal.hpp"
 #include "RHITexture.hpp"
+#include "SpawnContext.hpp"
 #include "SpriteComponent.hpp"
 #include "SpriteRenderer.hpp"
 
 namespace Smol
 {
+    static Transform trs;
+
     SMOL_COMPONENT(SpriteComponent)
     SMOL_COMPONENT_END(SpriteComponent)
 
@@ -30,6 +34,14 @@ namespace Smol
         // TODO. change later
         item.uvScale = {1.0f/16, 1.0f/16};
         item.offset = {0, 0};
+    }
+
+    SpriteComponent::SpriteComponent(const SpawnContext& ctx)
+        // : proxy(ctx.spriteRenderer->BindRenderItem(*sprite))
+        // , sprite(std::move(sprite))
+        : transform(trs)
+    {
+        throw std::runtime_error("Unimplemented");
     }
 
     void SpriteComponent::Update(f32 dt){

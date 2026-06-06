@@ -1,13 +1,14 @@
 #include "InputComponent.hpp"
 #include "IInputManager.hpp"
+#include "SpawnContext.hpp"
 
 namespace Smol
 {
     SMOL_COMPONENT(InputComponent)
     SMOL_COMPONENT_END(InputComponent)
 
-    InputComponent::InputComponent(IInputManager& manager)
-        : manager(manager) {}
+    InputComponent::InputComponent(const SpawnContext& ctx)
+        : manager(ctx.inputManager) {}
 
     void InputComponent::BindAction(
         StrView action,

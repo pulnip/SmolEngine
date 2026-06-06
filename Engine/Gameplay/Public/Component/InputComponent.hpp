@@ -22,7 +22,9 @@ namespace Smol
         virtual ~InputComponent() = default;
         SMOL_DECLARE_PINNED(InputComponent)
 
-        InputComponent(IInputManager& manager);
+        InputComponent(IInputManager& manager)
+            : manager(manager){}
+        InputComponent(const SpawnContext&);
 
         void BindAction(StrView action, TriggerEvent, Pawn*, InputAction::Callback&&);
         void UnbindAction(Pawn* pawn);

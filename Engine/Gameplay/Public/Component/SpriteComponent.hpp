@@ -33,6 +33,7 @@ namespace Smol
         SMOL_DECLARE_PINNED(SpriteComponent)
 
         SpriteComponent(RHITextureRAII&&, Transform&, SpriteRenderer&);
+        SpriteComponent(const SpawnContext&);
 
         void Update(f32) override;
 
