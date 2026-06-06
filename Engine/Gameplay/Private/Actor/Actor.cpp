@@ -1,8 +1,4 @@
 #include "Actor.hpp"
-#include "InputComponent.hpp"
-#include "MoveComponent.hpp"
-#include "Rigidbody.hpp"
-#include "SpriteComponent.hpp"
 #include "World.hpp"
 
 namespace Smol
@@ -85,68 +81,5 @@ namespace Smol
         }
 
         return world->IsShutdown();
-    }
-
-    template<>
-    InputComponent* Actor::AddComponent<InputComponent>(IInputManager& manager){
-        constexpr auto index = GetComponentTypeIndex<InputComponent>();
-        auto c = std::make_unique<InputComponent>(manager);
-        builtinComponents[index] = std::move(c);
-
-        return static_cast<InputComponent*>(builtinComponents[index].get());
-    }
-
-    template<>
-    InputComponent* Actor::GetComponent<InputComponent>(){
-        constexpr auto index = GetComponentTypeIndex<InputComponent>();
-        return static_cast<InputComponent*>(builtinComponents[index].get());
-    }
-
-    template<>
-    MoveComponent* Actor::AddComponent<MoveComponent>(){
-        constexpr auto index = GetComponentTypeIndex<MoveComponent>();
-        auto c = std::make_unique<MoveComponent>(transform);
-        builtinComponents[index] = std::move(c);
-
-        return static_cast<MoveComponent*>(builtinComponents[index].get());
-    }
-
-    template<>
-    MoveComponent* Actor::GetComponent<MoveComponent>(){
-        constexpr auto index = GetComponentTypeIndex<MoveComponent>();
-        return static_cast<MoveComponent*>(builtinComponents[index].get());
-    }
-
-    template<>
-    Rigidbody* Actor::AddComponent<Rigidbody>(){
-        constexpr auto index = GetComponentTypeIndex<Rigidbody>();
-        auto c = std::make_unique<Rigidbody>();
-        builtinComponents[index] = std::move(c);
-
-        return static_cast<Rigidbody*>(builtinComponents[index].get());
-    }
-
-    template<>
-    Rigidbody* Actor::GetComponent<Rigidbody>(){
-        constexpr auto index = GetComponentTypeIndex<Rigidbody>();
-        return static_cast<Rigidbody*>(builtinComponents[index].get());
-    }
-
-    template<>
-    SpriteComponent* Actor::AddComponent<SpriteComponent>(
-        RHITextureRAII&& texture,
-        SpriteRenderer& renderer
-    ){
-        constexpr auto index = GetComponentTypeIndex<SpriteComponent>();
-        auto c = std::make_unique<SpriteComponent>(std::move(texture), transform, renderer);
-        builtinComponents[index] = std::move(c);
-
-        return static_cast<SpriteComponent*>(builtinComponents[index].get());
-    }
-
-    template<>
-    SpriteComponent* Actor::GetComponent<SpriteComponent>(){
-        constexpr auto index = GetComponentTypeIndex<SpriteComponent>();
-        return static_cast<SpriteComponent*>(builtinComponents[index].get());
     }
 }

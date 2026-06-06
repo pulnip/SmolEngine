@@ -58,6 +58,9 @@ namespace Smol
     consteval bool IsBuiltinComponent(){
         return GetComponentTypeIndex<T>() != NUM_BUILTIN_COMPONENTS;
     }
+
+    template<typename T>
+    concept BuiltinComponent = IsBuiltinComponent<T>();
 }
 
 // Component Body macro

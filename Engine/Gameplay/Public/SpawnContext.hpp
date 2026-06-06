@@ -9,6 +9,7 @@ namespace Smol
     class RHIDevice;
     class SpriteRenderer;
     class World;
+    class Actor;
 
     struct SpawnContext{
         static IInputManager& mockInputManager();
@@ -24,14 +25,28 @@ namespace Smol
         // TODO. mock world?
         World* world = nullptr;
 
-        auto WithDOM(const DOM::Value& node) const{
+        Actor* owner = nullptr;
+
+        auto WithDOM(const DOM::Value& node) const noexcept{
             return SpawnContext{
                 .dom = node,
                 .contentRoot = contentRoot,
                 .inputManager = inputManager,
                 .device = device,
                 .spriteRenderer = spriteRenderer,
-                .world = world
+                .world = world,
+                .owner = owner
+            };
+        }
+        auto WithOwner(Actor* actor) const noexcept{
+            return SpawnContext{
+                .dom = dom,
+                .contentRoot = contentRoot,
+                .inputManager = inputManager,
+                .device = device,
+                .spriteRenderer = spriteRenderer,
+                .world = world,
+                .owner = actor
             };
         }
     };

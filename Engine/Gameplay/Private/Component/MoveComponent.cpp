@@ -1,20 +1,16 @@
-#include <stdexcept>
+#include "Actor.hpp"
 #include "LinearAlgebra.hpp"
 #include "MoveComponent.hpp"
 #include "SpawnContext.hpp"
 
 namespace Smol
 {
-    static Transform trs;
-
     SMOL_COMPONENT(MoveComponent)
     SMOL_COMPONENT_END(MoveComponent)
 
-    MoveComponent::MoveComponent(const SpawnContext&)
-        : transform(trs)
-    {
-        throw std::runtime_error("Unimplemented");
-    }
+    MoveComponent::MoveComponent(const SpawnContext& ctx)
+        : transform(ctx.owner->GetTransform())
+    {}
 
     void MoveComponent::Update(f32 dt) noexcept{
         transform.position += (speed * dt) * dir;

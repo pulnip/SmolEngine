@@ -3,13 +3,11 @@
 #include "CharacterController.hpp"
 #include "ClassRegistry.hpp"
 #include "DOM.hpp"
-#include "ImageLoader.hpp"
 #include "InputComponent.hpp"
 #include "LogLocal.hpp"
 #include "MoveComponent.hpp"
+#include "SpriteComponent.hpp"
 #include "Pawn.hpp"
-#include "RHIDevice.hpp"
-#include "RHITexture.hpp"
 #include "World.hpp"
 
 namespace{
@@ -24,62 +22,29 @@ namespace{
         return nullptr;
     }
 
-    void applyInputComponent(Smol::Actor& actor, const Smol::SpawnContext& ctx){
-        using namespace Smol;
-
-        actor.AddComponent<InputComponent>(ctx.inputManager);
-    }
-
-    void applyMoveComponent(Smol::Actor& actor, const Smol::SpawnContext&){
-        using namespace Smol;
-
-        actor.AddComponent<MoveComponent>();
-    }
-
-    void applySpriteComponent(Smol::Actor& actor, const Smol::SpawnContext& ctx){
-        SMOL_ASSERT(ctx.device != nullptr);
-        SMOL_ASSERT(ctx.spriteRenderer != nullptr);
-
-        using namespace Smol;
-
-        auto image_path = ctx.dom.get<Str>("image_path");
-        if(!image_path){
-            return;
-        }
-
-        auto imagePath = ctx.contentRoot / * image_path;
-
-        auto image = loadImage(imagePath);
-        auto texture = ctx.device->CreateTexture(
-            RHITextureCreateDesc{
-                .width = image.GetWidth(), .height = image.GetHeight(),
-                .format = RHIPixelFormat::RGBA8_UNORM,
-                .usage = RHITextureUsage::AllowShaderRead,
-                .initialData = image.GetBufferPointer()
-            }
-        );
-
-        actor.AddComponent<SpriteComponent>(
-            std::move(texture),
-            *ctx.spriteRenderer
-        );
-    }
-
     void applyComponent(Smol::Actor& actor, const Smol::SpawnContext& ctx){
-        auto type = ctx.dom.get<Smol::Str>("type");
+        SMOL_ASSERT(ctx.owner == &actor);
+
+        using namespace Smol;
+
+        auto type = ctx.dom.get<Str>("type");
         if(!type.has_value()) [[unlikely]]{
             LOG_ERROR("no \"type\" key in [[actors.component]]");
             return;
         }
 
+
         if(*type == "InputComponent"){
-            applyInputComponent(actor, ctx);
+            actor.AddComponent<InputComponent>(ctx);
         }
         else if(*type == "MoveComponent"){
-            applyMoveComponent(actor, ctx);
+            actor.AddComponent<MoveComponent>(ctx);
         }
         else if(*type == "SpriteComponent"){
-            applySpriteComponent(actor, ctx);
+            SMOL_ASSERT(ctx.device != nullptr);
+            SMOL_ASSERT(ctx.spriteRenderer != nullptr);
+
+            actor.AddComponent<SpriteComponent>(ctx);
         }
     }
 
@@ -145,13 +110,17 @@ namespace Smol
 
         if(object->IsA("Pawn")){
             auto pawn = uniqueCast<Pawn>(object);
-            apply(*pawn, ctx);
+
+            auto nodeContext = ctx.WithOwner(pawn.get());
+            apply(*pawn, nodeContext);
 
             return pawn;
         }
         else if(object->IsA("Actor")){{
             auto actor = uniqueCast<Actor>(object);
-            apply(*actor, ctx);
+
+            auto nodeContext = ctx.WithOwner(actor.get());
+            apply(*actor, nodeContext);
 
             return actor;
         }}

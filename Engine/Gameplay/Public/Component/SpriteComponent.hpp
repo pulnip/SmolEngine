@@ -9,16 +9,21 @@ namespace Smol
 {
     class SpriteRenderer;
 
+    struct SpriteResource{
+        const RHITextureRAII texture;
+
+        const u32 frameCount = 1;
+        const f32 framePerSeconds = 0.16f;
+    };
+
     class SpriteComponent: public TypedComponent<SpriteComponent>{
         SMOL_COMPONENT_BODY(SpriteComponent)
 
     private:
-        SpriteProxy proxy;
         // TODO. use Resource Handle later
-        RHITextureRAII sprite;
+        SpriteResource resource;
 
-        const u32 frameCount = 8;
-        const f32 framePerSeconds = 0.16f;
+        SpriteProxy proxy;
 
         f32 elapsedTime = 0.0f;
 

@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 #include "ActorFWD.hpp"
+#include "ClassRegistry.hpp"
 #include "Component.hpp"
 #include "GenericHandle.hpp"
 #include "Object.hpp"
@@ -52,9 +53,28 @@ namespace Smol
 
             return static_cast<T*>(it->second.get());
         }
-        template<typename T, class... Args>
-            requires (IsBuiltinComponent<T>())
-        T* AddComponent(Args&&...);
+
+        template<BuiltinComponent T>
+            requires std::is_default_constructible_v<T>
+        T* AddComponent(){
+            constexpr auto index = GetComponentTypeIndex<T>();
+            auto c = std::make_unique<T>();
+
+            builtinComponents[index] = std::move(c);
+            return static_cast<T*>(builtinComponents[index].get());
+        }
+
+        template<BuiltinComponent T>
+            requires SpawnConstructible<T>
+        T* AddComponent(const SpawnContext& ctx){
+            constexpr auto index = GetComponentTypeIndex<T>();
+            auto c = std::make_unique<T>(ctx);
+
+            builtinComponents[index] = std::move(c);
+            return static_cast<T*>(builtinComponents[index].get());
+        }
+
+        auto& GetTransform(this auto& self) noexcept{ return self.transform; }
 
         template<typename T>
             requires (!IsBuiltinComponent<T>())
@@ -71,7 +91,10 @@ namespace Smol
         }
         template<typename T>
             requires (IsBuiltinComponent<T>())
-        T* GetComponent();
+        T* GetComponent(){
+            constexpr auto index = GetComponentTypeIndex<T>();
+            return static_cast<T*>(builtinComponents[index].get());
+        }
 
         void Destroy();
 
