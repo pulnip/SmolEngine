@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CoreFWD.hpp"
+#include "Primitives.hpp"
 #include "RHIFWD.hpp"
 #include "Semantics.hpp"
 

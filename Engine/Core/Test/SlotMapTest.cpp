@@ -1,6 +1,6 @@
 #include <vector>
 #include <gtest/gtest.h>
-#include "CoreFWD.hpp"
+#include "Primitives.hpp"
 #include "Semantics.hpp"
 #include "SlotMap.hpp"
 

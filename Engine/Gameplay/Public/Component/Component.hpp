@@ -1,7 +1,6 @@
 #pragma once
 
 #include <type_traits>
-#include "CoreFWD.hpp"
 #include "Object.hpp"
 #include "Primitives.hpp"
 #include "Semantics.hpp"

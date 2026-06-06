@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <format>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -29,6 +30,9 @@ namespace Smol
     using CStr = const char*;
     using Str = std::string;
     using StrView = std::string_view;
+
+    template<typename T>
+    using RAII = std::unique_ptr<T>;
 
     struct Vec3;
     struct Vec4;

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CoreFWD.hpp"
-#include "Semantics.hpp"
 #include "LogDefinitions.hpp"
+#include "Primitives.hpp"
+#include "Semantics.hpp"
 
 namespace Smol
 {

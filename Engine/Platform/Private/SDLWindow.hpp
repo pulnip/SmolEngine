@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL_events.h>
-#include "CoreFWD.hpp"
+#include "Primitives.hpp"
 #include "Window.hpp"
 
 namespace Smol

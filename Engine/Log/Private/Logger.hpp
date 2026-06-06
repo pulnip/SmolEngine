@@ -2,7 +2,7 @@
 
 #include <atomic>
 #include <vector>
-#include "CoreFWD.hpp"
+#include "Primitives.hpp"
 #include "Sink.hpp"
 
 namespace Smol

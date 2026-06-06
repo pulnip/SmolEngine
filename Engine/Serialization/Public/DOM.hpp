@@ -1,11 +1,9 @@
 #pragma once
 
-#include <memory>
 #include <optional>
 #include <unordered_map>
 #include <variant>
 #include <vector>
-#include "CoreFWD.hpp"
 #include "Primitives.hpp"
 #include "Semantics.hpp"
 
