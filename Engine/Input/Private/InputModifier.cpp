@@ -1,7 +1,36 @@
-#include "InputModifier.hpp"
 #include "DOM.hpp"
+#include "EnumUtil.hpp"
+#include "InputModifier.hpp"
 #include "LogLocal.hpp"
 #include "StringUtil.hpp"
+
+namespace Smol
+{
+    template<>
+    CStr EnumTraits<SwizzleOrder>::name = "SwizzleOrder";
+
+    template<>
+    SwizzleOrder EnumTraits<SwizzleOrder>::convert(StrView str){
+        using enum SwizzleOrder;
+
+        static StringHashMap<SwizzleOrder> map = {
+            {"XYZ", XYZ},
+            {"XZY", XZY},
+            {"YXZ", YXZ},
+            {"YZX", YZX},
+            {"ZXY", ZXY},
+            {"ZYX", ZYX}
+        };
+
+        auto upper = toUpper(str);
+        if(auto it = map.find(upper); it != map.end()){
+            return it->second;
+        }
+
+        LOG_ERROR("Unknown SwizzleOrder: {}", str);
+        return XYZ;
+    }
+}
 
 namespace{
     auto createNegateModifier(const Smol::DOM::Value& v){
@@ -35,33 +64,11 @@ namespace{
         return ScaleModifier();
     }
 
-    auto toSwizzleOrder(Smol::StrView str){
-        using namespace Smol;
-        using enum SwizzleOrder;
-
-        static StringHashMap<SwizzleOrder> map = {
-            {"XYZ", XYZ},
-            {"XZY", XZY},
-            {"YXZ", YXZ},
-            {"YZX", YZX},
-            {"ZXY", ZXY},
-            {"ZYX", ZYX}
-        };
-
-        auto upper = toUpper(str);
-        if(auto it = map.find(upper); it != map.end()){
-            return it->second;
-        }
-
-        LOG_ERROR("Unknown SwizzleOrder: {}", str);
-        return XYZ;
-    }
-
     auto createSwizzleModifier(const Smol::DOM::Value& v){
         using namespace Smol;
 
         if(auto order = v.get<Str>("order")){
-            return SwizzleModifier(toSwizzleOrder(*order));
+            return SwizzleModifier(EnumTraits<SwizzleOrder>::convert(*order));
         }
 
         LOG_WARN("key \"order\" not found in DOM::Value");

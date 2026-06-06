@@ -1,11 +1,18 @@
 #pragma once
 
 #include <type_traits>
+#include "Primitives.hpp"
 
 namespace Smol
 {
     template<typename T>
     concept EnumType = std::is_enum_v<T>;
+
+    template<typename T>
+    struct EnumTraits{
+        static CStr name;
+        static T convert(StrView);
+    };
 
     template<EnumType E>
     constexpr bool hasFlag(E flags, E test){

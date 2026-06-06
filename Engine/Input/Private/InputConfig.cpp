@@ -1,6 +1,7 @@
 #include <unordered_map>
-#include "InputConfig.hpp"
 #include "DOM.hpp"
+#include "EnumUtil.hpp"
+#include "InputConfig.hpp"
 #include "InputModifier.hpp"
 #include "KeyCode.hpp"
 #include "LogLocal.hpp"
@@ -26,8 +27,26 @@ namespace{
         return mappings;
     }
 
-    Smol::KeyCode toKeyCode(Smol::StrView str){
+    std::vector<Smol::InputModifier> gatherModifiers(const Smol::DOM::Value& node){
         using namespace Smol;
+
+        std::vector<InputModifier> modifiers;
+
+        node.forEach("modifiers", [&modifiers](const DOM::Value& node){
+            modifiers.emplace_back(CreateInputModifier(node));
+        });
+
+        return modifiers;
+    }
+}
+
+namespace Smol
+{
+    template<>
+    CStr EnumTraits<KeyCode>::name = "KeyCode";
+
+    template<>
+    KeyCode EnumTraits<KeyCode>::convert(StrView str){
         using enum KeyCode;
 
         static StringHashMap<KeyCode> map = {
@@ -96,21 +115,6 @@ namespace{
         return Unknown;
     }
 
-    std::vector<Smol::InputModifier> gatherModifiers(const Smol::DOM::Value& node){
-        using namespace Smol;
-
-        std::vector<InputModifier> modifiers;
-
-        node.forEach("modifiers", [&modifiers](const DOM::Value& node){
-            modifiers.emplace_back(CreateInputModifier(node));
-        });
-
-        return modifiers;
-    }
-}
-
-namespace Smol
-{
     InputConfig TomlTraits<InputConfig>::from(
         const DOM::Value& dom,
         const TomlMetadata& metadata
@@ -127,7 +131,7 @@ namespace Smol
 
             raw[*action].emplace_back(
                 KeyBinding{
-                    .keyCode = toKeyCode(*key),
+                    .keyCode = EnumTraits<KeyCode>::convert(*key),
                     .modifiers = gatherModifiers(node)
                 }
             );

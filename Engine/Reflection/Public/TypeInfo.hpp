@@ -1,18 +1,23 @@
 #pragma once
 
 #include "DOM.hpp"
+#include "EnumUtil.hpp"
 #include "Primitives.hpp"
 
 namespace Smol
 {
-    struct TypeInfo{
-        CStr name;
-        usize size;
-        void (*deserialize)(void*, const DOM::Value&);
-    };
-
     template<typename T>
     struct TypeTraits;
+
+    template<EnumType T>
+    struct TypeTraits<T>{
+        inline static CStr name = EnumTraits<T>::name;
+        static void deserialize(void* data, const DOM::Value& value){
+            if(auto v = value.asString()){
+                *static_cast<T*>(data) = EnumTraits<T>::convert(*v);
+            }
+        }
+    };
 
     template<>
     struct TypeTraits<bool>{
@@ -108,6 +113,12 @@ namespace Smol
     struct TypeTraits<Transform>{
         static constexpr CStr name = "Transform";
         static void deserialize(void*, const DOM::Value&);
+    };
+
+    struct TypeInfo{
+        CStr name;
+        usize size;
+        void (*deserialize)(void*, const DOM::Value&);
     };
 
     template<typename T>
