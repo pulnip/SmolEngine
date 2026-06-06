@@ -13,12 +13,33 @@ namespace Smol
 
     template<typename Class, typename Member>
     struct MemberAccessor: public PropertyAccessor{
+    private:
         Member Class::* ptr = nullptr;
 
-        explicit MemberAccessor(Member Class::* ptr):ptr(ptr){}
+    public:
+        explicit MemberAccessor(Member Class::* ptr)
+            : ptr(ptr){}
 
         void* Get(void* obj) const override{
-            return &(static_cast<Class*>(obj)->*ptr);
+            Member& member = static_cast<Class*>(obj)->*ptr;
+            return &member;
+        }
+    };
+
+    template<typename Class, typename Member, typename Leaf>
+    struct NestedMemberAccessor: public PropertyAccessor{
+        Member Class::* memberPtr = nullptr;
+        Leaf Member::* ptr = nullptr;
+
+        explicit NestedMemberAccessor(
+            Member Class::* memberPtr,
+            Leaf Member::* ptr
+        ): memberPtr(memberPtr), ptr(ptr){}
+
+        void* Get(void* obj) const override{
+            Member& member = static_cast<Class*>(obj)->*memberPtr;
+            Leaf& leaf = (&member)->*ptr;
+            return &leaf;
         }
     };
 

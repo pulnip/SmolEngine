@@ -90,6 +90,15 @@ namespace{
             auto nodeContext = ctx.WithDOM(node);
             applyComponent(actor, nodeContext);
         });
+
+        auto pos = ctx.dom.get<Str>("position");
+        if(pos.has_value()){
+            auto& desc = ClassRegistry::Get().DescFor<Actor>();
+            auto it = desc.properties.find("position");
+            if(it != desc.properties.end()){
+
+            }
+        }
     }
 
     void applyPossessedBy(

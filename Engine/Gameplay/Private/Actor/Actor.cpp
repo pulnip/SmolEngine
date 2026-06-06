@@ -8,6 +8,10 @@
 namespace Smol
 {
     SMOL_OBJECT(Actor)
+        .SetProperty("transform", &Actor::transform)
+        .SetProperty("position", &Actor::transform, &Transform::position)
+        .SetProperty("rotation", &Actor::transform, &Transform::rotation)
+        .SetProperty("scale", &Actor::transform, &Transform::scale)
     SMOL_OBJECT_END(Actor)
 
     Actor::Actor(Actor&& other) noexcept

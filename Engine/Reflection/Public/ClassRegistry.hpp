@@ -1,6 +1,5 @@
 #pragma once
 
-#include <format>
 #include <functional>
 #include <typeindex>
 #include <unordered_map>
@@ -30,14 +29,30 @@ namespace Smol
         StringHashMap<PropertyDesc> properties;
 
         template<typename Class, typename Member>
-        PropertyDesc& AddProperty(Str name, Member Class::* member){
-            auto topoName = std::format("{}.{}", this->name, name);
+        PropertyDesc& AddProperty(CStr name, Member Class::* member){
+            auto [it, ret] = properties.try_emplace(
+                name,
+                PropertyDesc{
+                    .typeInfo = *GetTypeInfo<Member>(),
+                    .accessor = std::make_unique<MemberAccessor<Class, Member>>(member),
+                    .meta = {}
+                }
+            );
 
-            auto [it, ret] = properties.try_emplace(std::move(topoName), PropertyDesc{
-                .typeInfo = *GetTypeInfo<Member>(),
-                .accessor = std::make_unique<MemberAccessor<Class, Member>>(member),
-                .meta = {}
-            });
+            SMOL_ASSERT(ret);
+            return it->second;
+        }
+
+        template<typename Class, typename Member, typename Leaf>
+        PropertyDesc& AddProperty(CStr name, Member Class::* member, Leaf Member::* leaf){
+            auto [it, ret] = properties.try_emplace(
+                name,
+                PropertyDesc{
+                    .typeInfo = *GetTypeInfo<Leaf>(),
+                    .accessor = std::make_unique<NestedMemberAccessor<Class, Member, Leaf>>(member, leaf),
+                    .meta = {}
+                }
+            );
 
             SMOL_ASSERT(ret);
             return it->second;
@@ -57,6 +72,7 @@ namespace Smol
             requires std::is_base_of_v<Object, T>
         friend class ClassBuilder;
 
+    public:
         static ClassRegistry& Get();
 
         template<typename T>
@@ -114,6 +130,13 @@ namespace Smol
         template<typename Member>
         ClassBuilder& SetProperty(CStr name, Member T::* member){
             lastProp = &desc.AddProperty(name, member);
+
+            return *this;
+        }
+
+        template<typename Member, typename Leaf>
+        ClassBuilder& SetProperty(CStr name, Member T::* member, Leaf Member::*leaf){
+            lastProp = &desc.AddProperty(name, member, leaf);
 
             return *this;
         }
