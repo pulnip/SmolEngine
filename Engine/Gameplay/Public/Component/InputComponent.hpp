@@ -12,6 +12,8 @@ namespace Smol
     class Pawn;
 
     class InputComponent: public TypedComponent<InputComponent>{
+        SMOL_COMPONENT_BODY(InputComponent)
+
     private:
         IInputManager& manager;
         std::unordered_map<Pawn*, std::vector<InputAction>> actions;

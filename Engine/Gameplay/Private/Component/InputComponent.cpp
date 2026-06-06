@@ -3,6 +3,9 @@
 
 namespace Smol
 {
+    SMOL_COMPONENT(InputComponent)
+    SMOL_COMPONENT_END(InputComponent)
+
     InputComponent::InputComponent(IInputManager& manager)
         : manager(manager) {}
 

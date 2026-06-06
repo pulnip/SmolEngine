@@ -4,7 +4,8 @@
 
 namespace Smol
 {
-    class RigidBody: public TypedComponent<RigidBody>{
+    class Rigidbody: public TypedComponent<Rigidbody>{
+        SMOL_COMPONENT_BODY(Rigidbody)
 
     };
 }

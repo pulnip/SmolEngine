@@ -7,6 +7,9 @@
 
 namespace Smol
 {
+    SMOL_COMPONENT(SpriteComponent)
+    SMOL_COMPONENT_END(SpriteComponent)
+
     SpriteComponent::~SpriteComponent() = default;
 
     SpriteComponent::SpriteComponent(

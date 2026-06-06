@@ -7,6 +7,8 @@
 namespace Smol
 {
     class MoveComponent: public TypedComponent<MoveComponent>{
+        SMOL_COMPONENT_BODY(MoveComponent)
+
     private:
         Transform& transform;
         Vec3 dir;

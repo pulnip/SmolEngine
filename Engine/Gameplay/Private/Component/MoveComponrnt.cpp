@@ -3,6 +3,9 @@
 
 namespace Smol
 {
+    SMOL_COMPONENT(MoveComponent)
+    SMOL_COMPONENT_END(MoveComponent)
+
     void MoveComponent::Update(f32 dt) noexcept{
         transform.position += (speed * dt) * dir;
     }

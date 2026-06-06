@@ -10,6 +10,8 @@ namespace Smol
     class SpriteRenderer;
 
     class SpriteComponent: public TypedComponent<SpriteComponent>{
+        SMOL_COMPONENT_BODY(SpriteComponent)
+
     private:
         SpriteProxy proxy;
         // TODO. use Resource Handle later

@@ -41,7 +41,7 @@ namespace Smol
 
     class InputComponent;
     class MoveComponent;
-    class RigidBody;
+    class Rigidbody;
     class SpriteComponent;
     constexpr u32 NUM_BUILTIN_COMPONENTS = 4;
 
@@ -49,7 +49,7 @@ namespace Smol
     consteval u32 GetComponentTypeIndex(){
         if constexpr(std::is_same_v<T, InputComponent>) return 0;
         else if constexpr(std::is_same_v<T, MoveComponent>) return 1;
-        else if constexpr(std::is_same_v<T, RigidBody>) return 2;
+        else if constexpr(std::is_same_v<T, Rigidbody>) return 2;
         else if constexpr(std::is_same_v<T, SpriteComponent>) return 3;
         return NUM_BUILTIN_COMPONENTS;
     }

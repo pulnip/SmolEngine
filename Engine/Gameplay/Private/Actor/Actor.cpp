@@ -114,18 +114,18 @@ namespace Smol
     }
 
     template<>
-    RigidBody* Actor::AddComponent<RigidBody>(){
-        constexpr auto index = GetComponentTypeIndex<RigidBody>();
-        auto c = std::make_unique<RigidBody>();
+    Rigidbody* Actor::AddComponent<Rigidbody>(){
+        constexpr auto index = GetComponentTypeIndex<Rigidbody>();
+        auto c = std::make_unique<Rigidbody>();
         builtinComponents[index] = std::move(c);
 
-        return static_cast<RigidBody*>(builtinComponents[index].get());
+        return static_cast<Rigidbody*>(builtinComponents[index].get());
     }
 
     template<>
-    RigidBody* Actor::GetComponent<RigidBody>(){
-        constexpr auto index = GetComponentTypeIndex<RigidBody>();
-        return static_cast<RigidBody*>(builtinComponents[index].get());
+    Rigidbody* Actor::GetComponent<Rigidbody>(){
+        constexpr auto index = GetComponentTypeIndex<Rigidbody>();
+        return static_cast<Rigidbody*>(builtinComponents[index].get());
     }
 
     template<>
