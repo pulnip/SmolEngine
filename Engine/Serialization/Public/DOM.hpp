@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <optional>
 #include <unordered_map>
 #include <variant>
@@ -75,9 +76,38 @@ namespace Smol
             const Value* at(StrView path) const noexcept;
 
             template<typename T>
-            std::optional<T> get() const noexcept;
+            std::optional<T> get() const noexcept(
+                !std::is_same_v<T, Str> &&
+                noexcept(getImpl<T>())
+            ){
+                if constexpr(std::same_as<T, bool>){
+                    return asBool();
+                }
+                else if constexpr(std::integral<T>){
+                    if(auto opt = asInt())
+                        return static_cast<T>(*opt);
+                }
+                else if constexpr(std::floating_point<T>){
+                    if(auto opt = asFloat())
+                        return static_cast<T>(*opt);
+                    else if(auto opt = asInt())
+                        return static_cast<T>(*opt);
+                }
+                else if constexpr(std::same_as<T, Str>){
+                    if(auto ptr = asString())
+                        return *ptr;
+                }
+                else{
+                    return getImpl<T>();
+                }
+
+                return std::nullopt;
+            }
+
             template<typename T>
-            std::optional<T> get(StrView path) const noexcept{
+            std::optional<T> get(StrView path) const noexcept(
+                noexcept(get<T>())
+            ){
                 auto node = at(path);
 
                 return node != nullptr ?
@@ -97,6 +127,24 @@ namespace Smol
                     fn(val);
                 }
             }
+
+        private:
+            template<typename T>
+            std::optional<T> getImpl() const noexcept{
+                static_assert(false);
+            }
         };
+
+    #define DECLARE_VALUE_GETIMPL_NOEXCEPT(TYPE) \
+        template<> \
+        std::optional<TYPE> Value::getImpl<TYPE>() const noexcept;
+
+        DECLARE_VALUE_GETIMPL_NOEXCEPT(Vec2)
+        DECLARE_VALUE_GETIMPL_NOEXCEPT(Vec3)
+        DECLARE_VALUE_GETIMPL_NOEXCEPT(Vec4)
+        DECLARE_VALUE_GETIMPL_NOEXCEPT(Size2D)
+        DECLARE_VALUE_GETIMPL_NOEXCEPT(Transform)
+
+    #undef DECLARE_VALUE_GETIMPL_NOEXCEPT
     }
 }

@@ -147,111 +147,7 @@ namespace Smol
     }
 
     template<>
-    std::optional<bool> DOM::Value::get<bool>() const noexcept{
-        return asBool();
-    }
-
-    template<>
-    std::optional<i8> DOM::Value::get<i8>() const noexcept{
-        if(auto opt = asInt()){
-            return static_cast<i8>(*opt);
-        }
-
-        return std::nullopt;
-    }
-
-    template<>
-    std::optional<i16> DOM::Value::get<i16>() const noexcept{
-        if(auto opt = asInt()){
-            return static_cast<i16>(*opt);
-        }
-
-        return std::nullopt;
-    }
-
-    template<>
-    std::optional<i32> DOM::Value::get<i32>() const noexcept{
-        if(auto opt = asInt()){
-            return static_cast<i32>(*opt);
-        }
-
-        return std::nullopt;
-    }
-
-    template<>
-    std::optional<i64> DOM::Value::get<i64>() const noexcept{
-        return asInt();
-    }
-
-    template<>
-    std::optional<u8> DOM::Value::get<u8>() const noexcept{
-        if(auto opt = asInt()){
-            return static_cast<u8>(*opt);
-        }
-
-        return std::nullopt;
-    }
-
-    template<>
-    std::optional<u16> DOM::Value::get<u16>() const noexcept{
-        if(auto opt = asInt()){
-            return static_cast<u16>(*opt);
-        }
-
-        return std::nullopt;
-    }
-
-    template<>
-    std::optional<u32> DOM::Value::get<u32>() const noexcept{
-        if(auto opt = asInt()){
-            return static_cast<u32>(*opt);
-        }
-
-        return std::nullopt;
-    }
-
-    template<>
-    std::optional<u64> DOM::Value::get<u64>() const noexcept{
-        if(auto opt = asInt()){
-            return static_cast<u64>(*opt);
-        }
-
-        return std::nullopt;
-    }
-
-    template<>
-    std::optional<f32> DOM::Value::get<f32>() const noexcept{
-        auto fopt = asFloat();
-        auto iopt = asInt();
-        if(fopt || iopt){
-            return static_cast<f32>(fopt ? *fopt : static_cast<f32>(*iopt));
-        }
-
-        return std::nullopt;
-    }
-
-    template<>
-    std::optional<f64> DOM::Value::get<f64>() const noexcept{
-        auto fopt = asFloat();
-        auto iopt = asInt();
-        if(fopt || iopt){
-            return fopt ? *fopt : static_cast<f64>(*iopt);
-        }
-
-        return std::nullopt;
-    }
-
-    template<>
-    std::optional<Str> DOM::Value::get<Str>() const noexcept{
-        auto s = asString();
-        if(s == nullptr){
-            return std::nullopt;
-        }
-        return *s;
-    }
-
-    template<>
-    std::optional<Vec2> DOM::Value::get<Vec2>() const noexcept{
+    std::optional<Vec2> DOM::Value::getImpl<Vec2>() const noexcept{
         auto a = asArray();
         if(a == nullptr || a->size() != 2){
             return std::nullopt;
@@ -273,7 +169,7 @@ namespace Smol
     }
 
     template<>
-    std::optional<Vec3> DOM::Value::get<Vec3>() const noexcept{
+    std::optional<Vec3> DOM::Value::getImpl<Vec3>() const noexcept{
         auto a = asArray();
         if(a == nullptr || a->size() != 3){
             return std::nullopt;
@@ -299,7 +195,7 @@ namespace Smol
     }
 
     template<>
-    std::optional<Vec4> DOM::Value::get<Vec4>() const noexcept{
+    std::optional<Vec4> DOM::Value::getImpl<Vec4>() const noexcept{
         auto a = asArray();
         if(a == nullptr || a->size() != 4){
             return std::nullopt;
@@ -329,7 +225,7 @@ namespace Smol
     }
 
     template<>
-    std::optional<Size2D> DOM::Value::get<Size2D>() const noexcept{
+    std::optional<Size2D> DOM::Value::getImpl<Size2D>() const noexcept{
         auto a = asArray();
         if(a == nullptr || a->size() != 4){
             return std::nullopt;
@@ -346,7 +242,7 @@ namespace Smol
     }
 
     template<>
-    std::optional<Transform> DOM::Value::get<Transform>() const noexcept{
+    std::optional<Transform> DOM::Value::getImpl<Transform>() const noexcept{
         auto pos = get<Vec3>("position");
         auto rot = get<Vec3>("rotation");
         auto scale = get<Vec3>("scale");
