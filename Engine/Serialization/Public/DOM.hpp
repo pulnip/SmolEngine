@@ -75,7 +75,15 @@ namespace Smol
             const Value* at(StrView path) const noexcept;
 
             template<typename T>
-            std::optional<T> get(StrView path) const noexcept;
+            std::optional<T> get() const noexcept;
+            template<typename T>
+            std::optional<T> get(StrView path) const noexcept{
+                auto node = at(path);
+
+                return node != nullptr ?
+                    node->get<T>() :
+                    std::nullopt;
+            }
 
             template<typename F>
             void forEach(StrView p, F&& fn) const{

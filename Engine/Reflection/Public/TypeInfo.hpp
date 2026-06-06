@@ -4,6 +4,13 @@
 #include "EnumUtil.hpp"
 #include "Primitives.hpp"
 
+#define DECLARE_TYPETRAITS(TYPE) \
+    template<> \
+    struct TypeTraits<TYPE>{ \
+        static constexpr CStr name = #TYPE; \
+        static void deserialize(void*, const DOM::Value&); \
+    };
+
 namespace Smol
 {
     template<typename T>
@@ -19,102 +26,25 @@ namespace Smol
         }
     };
 
-    template<>
-    struct TypeTraits<bool>{
-        static constexpr CStr name = "bool";
-        static void deserialize(void*, const DOM::Value&);
-    };
+    DECLARE_TYPETRAITS(bool)
+    DECLARE_TYPETRAITS(i8)
+    DECLARE_TYPETRAITS(i16)
+    DECLARE_TYPETRAITS(i32)
+    DECLARE_TYPETRAITS(i64)
+    DECLARE_TYPETRAITS(u8)
+    DECLARE_TYPETRAITS(u16)
+    DECLARE_TYPETRAITS(u32)
+    DECLARE_TYPETRAITS(u64)
+    DECLARE_TYPETRAITS(f32)
+    DECLARE_TYPETRAITS(f64)
+    DECLARE_TYPETRAITS(Str)
+    DECLARE_TYPETRAITS(Vec2)
+    DECLARE_TYPETRAITS(Vec3)
+    DECLARE_TYPETRAITS(Vec4)
+    DECLARE_TYPETRAITS(Size2D)
+    DECLARE_TYPETRAITS(Transform)
 
-    template<>
-    struct TypeTraits<i8>{
-        static constexpr CStr name = "i8";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
-    template<>
-    struct TypeTraits<i16>{
-        static constexpr CStr name = "i16";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
-    template<>
-    struct TypeTraits<i32>{
-        static constexpr CStr name = "i32";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
-    template<>
-    struct TypeTraits<i64>{
-        static constexpr CStr name = "i64";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
-    template<>
-    struct TypeTraits<u8>{
-        static constexpr CStr name = "u8";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
-    template<>
-    struct TypeTraits<u16>{
-        static constexpr CStr name = "u16";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
-    template<>
-    struct TypeTraits<u32>{
-        static constexpr CStr name = "u32";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
-    template<>
-    struct TypeTraits<u64>{
-        static constexpr CStr name = "u64";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
-    template<>
-    struct TypeTraits<usize>{
-        static constexpr CStr name = "usize";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
-    template<>
-    struct TypeTraits<isize>{
-        static constexpr CStr name = "isize";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
-    template<>
-    struct TypeTraits<f32>{
-        static constexpr CStr name = "f32";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
-    template<>
-    struct TypeTraits<f64>{
-        static constexpr CStr name = "f64";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
-    template<>
-    struct TypeTraits<Str>{
-        static constexpr CStr name = "Str";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
-    template<>
-    struct TypeTraits<Size2D>{
-        static constexpr CStr name = "Size2D";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
-    template<>
-    struct TypeTraits<Transform>{
-        static constexpr CStr name = "Transform";
-        static void deserialize(void*, const DOM::Value&);
-    };
-
+    // use TypeInfo for type erasure
     struct TypeInfo{
         CStr name;
         usize size;
@@ -131,3 +61,5 @@ namespace Smol
         return &info;
     }
 }
+
+#undef DECLARE_TYPETRAITS
