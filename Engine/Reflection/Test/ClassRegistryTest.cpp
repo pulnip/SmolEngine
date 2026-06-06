@@ -9,7 +9,7 @@ namespace Smol{
 }
 
 class SimpleObject final: public Smol::Object{
-    SMOL_OBJECT_BODY(SimpleObject, Smol::Object)
+    SMOL_OBJECT_BODY(SimpleObject)
 
 public:
     SimpleObject() = default;

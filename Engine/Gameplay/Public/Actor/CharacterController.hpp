@@ -10,7 +10,7 @@ namespace Smol
 
     // Notice! Lifetime of CharacterController should be longer than Possessed Actor
     class CharacterController: public Actor{
-        SMOL_ACTOR_BODY(CharacterController, Actor)
+        SMOL_ACTOR_BODY(CharacterController)
 
     public:
         CharacterController() = default;

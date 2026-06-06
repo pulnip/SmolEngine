@@ -4,7 +4,7 @@
 #include "MoveComponent.hpp"
 #include "Primitives.hpp"
 
-SMOL_ACTOR(ExampleActor, Smol::Actor)
+SMOL_ACTOR(ExampleActor, Smol::Pawn)
 SMOL_ACTOR_END(ExampleActor)
 
 void ExampleActor::OnUpdate(float dt){

@@ -9,7 +9,7 @@ namespace Smol
     class CharacterController;
 
     class Pawn: public Actor{
-        SMOL_ACTOR_BODY(Pawn, Actor)
+        SMOL_ACTOR_BODY(Pawn)
 
     private:
         InputComponent* possessor = nullptr;

@@ -19,6 +19,10 @@ namespace Smol
         { T(ctx) };
     };
 
+    // Reflection target is Object
+    class Object;
+    using ObjectRAII = RAII<Object>;
+
     struct ClassDesc{
         Str name;
         const ClassDesc* parent = nullptr;
@@ -145,12 +149,6 @@ namespace Smol
             }
         }
     };
-
-    template<typename T>
-        requires std::is_base_of_v<Object, T>
-    ClassBuilder<T> Reflect(){
-        return ClassBuilder<T>();
-    }
 
     ObjectRAII CreateObject(StrView type, const SpawnContext& context);
 }

@@ -24,18 +24,26 @@ namespace Smol
         }
         static auto _SmolReflectImpl();
     };
+
+    template<typename T>
+        requires std::is_base_of_v<Object, T>
+    ClassBuilder<T> Reflect(){
+        return ClassBuilder<T>();
+    }
 }
 
+#define SMOL_MACRO_DISPATCHER_FOR_2_ARGS(_1, _2, NAME, ...) NAME
 
-#define SMOL_OBJECT_BODY(Type, Parent) \
+// Object Body macro
+#define SMOL_OBJECT_BODY_IMPL(TYPE, PARENT) \
 public: \
     static constexpr ::Smol::CStr StaticClassName(){ \
-        return #Type; \
+        return #TYPE; \
     } \
     virtual ::Smol::CStr GetClassName() const override{ \
         return StaticClassName(); \
     } \
-    using Super = Parent; \
+    using Super = PARENT; \
     virtual bool IsA(::Smol::StrView name) const override{ \
         if(name == StaticClassName()) \
             return true; \
@@ -44,15 +52,38 @@ public: \
     static auto _SmolReflectImpl(); \
 private:
 
-#define SMOL_OBJECT(Type) \
-auto Type::_SmolReflectImpl(){ \
-    return ::Smol::Reflect<Type>() \
-        .SetName(#Type) \
-        .Inherits<::Smol::Object>()
+#define SMOL_OBJECT_BODY_DIRECT(TYPE) \
+    SMOL_OBJECT_BODY_IMPL(TYPE, ::Smol::Object)
 
-#define SMOL_OBJECT_END(Type) \
+#define SMOL_OBJECT_BODY_HELPER(_1, _2, NAME, ...) NAME
+#define SMOL_OBJECT_BODY(...) \
+    SMOL_OBJECT_BODY_HELPER( \
+        __VA_ARGS__, \
+        SMOL_OBJECT_BODY_IMPL, \
+        SMOL_OBJECT_BODY_DIRECT \
+    )(__VA_ARGS__)
+
+// Object Registration start macro
+#define SMOL_OBJECT_IMPL(TYPE, PARENT) \
+auto TYPE::_SmolReflectImpl(){ \
+    return ::Smol::Reflect<TYPE>() \
+        .SetName(#TYPE) \
+        .Inherits<PARENT>()
+
+#define SMOL_OBJECT_DIRECT(TYPE) \
+    SMOL_OBJECT_IMPL(TYPE, ::Smol::Object)
+
+#define SMOL_OBJECT(...) \
+    SMOL_MACRO_DISPATCHER_FOR_2_ARGS( \
+        __VA_ARGS__, \
+        SMOL_OBJECT_IMPL, \
+        SMOL_OBJECT_DIRECT \
+    )(__VA_ARGS__)
+
+// Object Registration end macro
+#define SMOL_OBJECT_END(TYPE) \
         .Build(); \
 } \
 namespace{ \
-    const auto Is##Type##Registered = Type::_SmolReflectImpl(); \
+    const auto Is##TYPE##Registered = TYPE::_SmolReflectImpl(); \
 }

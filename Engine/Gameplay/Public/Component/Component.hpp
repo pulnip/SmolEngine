@@ -8,6 +8,8 @@
 namespace Smol
 {
     class Component: public Object{
+        SMOL_OBJECT_BODY(Component)
+
     public:
         using TypeID = const void*;
 
@@ -57,3 +59,36 @@ namespace Smol
         return GetComponentTypeIndex<T>() != NUM_BUILTIN_COMPONENTS;
     }
 }
+
+// Component Body macro
+#define SMOL_COMPONENT_BODY_IMPL(TYPE, PARENT) \
+    SMOL_OBJECT_BODY(TYPE, PARENT)
+
+#define SMOL_COMPONENT_BODY_DIRECT(TYPE) \
+    SMOL_COMPONENT_BODY_IMPL(TYPE, ::Smol::Component)
+
+#define SMOL_COMPONENT_BODY_HELPER(_1, _2, NAME, ...) NAME
+#define SMOL_COMPONENT_BODY(...) \
+    SMOL_COMPONENT_BODY_HELPER( \
+        __VA_ARGS__, \
+        SMOL_COMPONENT_BODY_IMPL, \
+        SMOL_COMPONENT_BODY_DIRECT, \
+    )(__VA_ARGS__)
+
+// Component Registeration start macro
+#define SMOL_COMPONENT_IMPL(TYPE, PARENT) \
+    SMOL_OBJECT(TYPE, PARENT)
+
+#define SMOL_COMPONENT_DIRECT(TYPE) \
+    SMOL_COMPONENT_IMPL(TYPE, ::Smol::Component)
+
+#define SMOL_COMPONENT(...) \
+    SMOL_MACRO_DISPATCHER_FOR_2_ARGS( \
+        __VA_ARGS__, \
+        SMOL_COMPONENT_IMPL, \
+        SMOL_COMPONENT_DIRECT \
+    )(__VA_ARGS__)
+
+// Component Registeration end macro
+#define SMOL_COMPONENT_END(TYPE) \
+    SMOL_OBJECT_END(TYPE)

@@ -10,22 +10,12 @@
 #include "Primitives.hpp"
 #include "Semantics.hpp"
 
-#define SMOL_ACTOR_BODY(Type, Parent) \
-    SMOL_OBJECT_BODY(Type, Parent)
-
-#define SMOL_ACTOR(Type, Parent) \
-    SMOL_OBJECT(Type) \
-        .Inherits<Parent>()
-
-#define SMOL_ACTOR_END(Type) \
-    SMOL_OBJECT_END(Type)
-
 namespace Smol
 {
     class World;
 
     class Actor: public Object{
-        SMOL_ACTOR_BODY(Actor, Object)
+        SMOL_OBJECT_BODY(Actor)
 
     private:
         std::array<ComponentRAII, NUM_BUILTIN_COMPONENTS> builtinComponents;
@@ -108,3 +98,36 @@ namespace Smol
         bool IsWorldShutdown() const noexcept;
     };
 }
+
+// Actor Body macro
+#define SMOL_ACTOR_BODY_IMPL(TYPE, PARENT) \
+    SMOL_OBJECT_BODY(TYPE, PARENT)
+
+#define SMOL_ACTOR_BODY_DIRECT(TYPE) \
+    SMOL_ACTOR_BODY_IMPL(TYPE, ::Smol::Actor)
+
+#define SMOL_ACTOR_BODY_HELPER(_1, _2, NAME, ...) NAME
+#define SMOL_ACTOR_BODY(...) \
+    SMOL_ACTOR_BODY_HELPER( \
+        __VA_ARGS__, \
+        SMOL_ACTOR_BODY_IMPL, \
+        SMOL_ACTOR_BODY_DIRECT, \
+    )(__VA_ARGS__)
+
+// Actor Registeration start macro
+#define SMOL_ACTOR_IMPL(TYPE, PARENT) \
+    SMOL_OBJECT(TYPE, PARENT)
+
+#define SMOL_ACTOR_DIRECT(TYPE) \
+    SMOL_ACTOR_IMPL(TYPE, ::Smol::Actor)
+
+#define SMOL_ACTOR(...) \
+    SMOL_MACRO_DISPATCHER_FOR_2_ARGS( \
+        __VA_ARGS__, \
+        SMOL_ACTOR_IMPL, \
+        SMOL_ACTOR_DIRECT \
+    )(__VA_ARGS__)
+
+// Actor Registeration end macro
+#define SMOL_ACTOR_END(TYPE) \
+    SMOL_OBJECT_END(TYPE)
