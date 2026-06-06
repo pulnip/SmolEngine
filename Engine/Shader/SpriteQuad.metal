@@ -8,6 +8,7 @@ struct VertexOut{
 };
 
 struct SpriteConstants{
+    float4x4 mvp;
     float2 uvScale;
     float2 offset;
 };
@@ -27,7 +28,7 @@ vertex VertexOut vs_main(
     constant SpriteConstants& spriteConstants [[buffer(0)]]
 ){
     VertexOut output;
-    output.position = float4(positions[vertexID], 0, 1);
+    output.position = spriteConstants.mvp * float4(positions[vertexID], 0, 1);
     output.texCoord = spriteConstants.uvScale * (texCoords[vertexID] + spriteConstants.offset);
 
     return output;
