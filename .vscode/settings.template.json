@@ -8,16 +8,25 @@
         "*.cpp": "cpp"
     },
     "files.exclude": {
+        ".cache/": true,
+        ".vs": true,
         "**/DX11RHI/**": true,
         "**/*.hlsl": true,
         "**/MetalRHI/**": true,
         "**/*.metal": true
     },
     "search.exclude": {
+        ".cache/": true,
+        ".vs": true,
         "**/DX11RHI/**": true,
         "**/*.hlsl": true,
         "**/MetalRHI/**": true,
         "**/*.metal": true
     },
-    "clangd.path": "/path/to/clangd"
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "clangd.path": "/path/to/clangd",
+    "github.copilot.enable": {
+        "*": false
+    },
+    "cmake.modifyLists.addNewSourceFiles": "no"
 }
