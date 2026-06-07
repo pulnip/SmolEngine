@@ -3,6 +3,7 @@
 #include "AppMainLoop.hpp"
 #include "OS.hpp"
 #include "RHIDevice.hpp"
+#include "RHITexture.hpp"
 #include "Log.hpp"
 
 using namespace Smol;

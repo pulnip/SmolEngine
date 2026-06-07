@@ -4,7 +4,9 @@
 #include "OS.hpp"
 #include "RHICommandList.hpp"
 #include "RHIDevice.hpp"
+#include "RHITexture.hpp"
 #include "RHISwapchain.hpp"
+#include "ResourceManager.hpp"
 #include "SpawnContext.hpp"
 
 namespace Smol
@@ -14,22 +16,27 @@ namespace Smol
         OS& os,
         RHIDevice& device
     )
+        : resourceLoader(device, config.project.content_root)
+        , spriteManager(resourceLoader)
         // TODO. use toml later
-        : inputManager(
+        , inputManager(
             loadTomlFile<InputConfig>(config.defaultInputPath()),
             &os.GetInputProvider()
         )
-        , spriteRenderer(device)
+        , spriteRenderer(device, spriteManager)
         , world(
             parseTomlFile(config.startupScenePath()),
             SpawnContext{
-                .contentRoot = config.project.content_root,
+                .spriteManager = &spriteManager,
                 .inputManager = inputManager,
                 .device = &device,
-                .spriteRenderer = &spriteRenderer
+                .spriteRenderer = &spriteRenderer,
+                .world = &world
             }
         )
-    {}
+    {
+        spriteManager.DrainCompletions();
+    }
 
     bool AppMainLoop::Initialize(){
         timer.Reset();

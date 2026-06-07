@@ -16,15 +16,6 @@ namespace Smol
         DOM::Value&& dom,
         SpawnContext ctx
     ){
-        SpawnContext rootContext{
-            .dom = dom,
-            .contentRoot = ctx.contentRoot,
-            .inputManager = ctx.inputManager,
-            .device = ctx.device,
-            .spriteRenderer = ctx.spriteRenderer,
-            .world = this
-        };
-
         dom.forEach("actors", [&](const DOM::Value& node){
             auto type = node.get<Str>("type");
             auto name = node.get<Str>("name");
@@ -36,7 +27,7 @@ namespace Smol
                 return;
             }
 
-            auto nodeContext = rootContext.WithDOM(node);
+            auto nodeContext = ctx.WithDOM(node);
 
             auto actor = CreateActor(*type, nodeContext);
             if(actor == nullptr) [[unlikely]]{

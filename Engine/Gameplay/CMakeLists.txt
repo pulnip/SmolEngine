@@ -50,6 +50,7 @@ PUBLIC
     "$<LINK_LIBRARY:WHOLE_ARCHIVE,Smol::Reflection>"
     Smol::Input
     Smol::Render
+    Smol::Resource
 PRIVATE
     Smol::Log
 )

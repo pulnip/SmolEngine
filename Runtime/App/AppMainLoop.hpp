@@ -1,7 +1,10 @@
 #pragma once
 
+#include "ImmediateResourceLoader.hpp"
 #include "InputManager.hpp"
 #include "MainLoop.hpp"
+#include "Resource.hpp"
+#include "ResourceManager.hpp"
 #include "RHIFWD.hpp"
 #include "SpriteRenderer.hpp"
 #include "Timer.hpp"
@@ -14,6 +17,9 @@ namespace Smol
 
     class AppMainLoop: public MainLoop{
     private:
+        ImmediateResourceLoader resourceLoader;
+        ResourceManager<SpriteResource> spriteManager;
+
         InputManager inputManager;
         SpriteRenderer spriteRenderer;
 

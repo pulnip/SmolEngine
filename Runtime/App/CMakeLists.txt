@@ -22,6 +22,7 @@ PRIVATE
     Smol::Log
     Smol::Platform
     Smol::Render
+    Smol::Resource
     # Smol::Scene
 )
 

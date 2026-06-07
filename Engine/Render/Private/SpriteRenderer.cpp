@@ -1,6 +1,7 @@
 #include "Assert.hpp"
 #include "LinearAlgebra.hpp"
 #include "Primitives.hpp"
+#include "ResourceManager.hpp"
 #include "RHICommandList.hpp"
 #include "RHIDefinitions.hpp"
 #include "RHIDevice.hpp"
@@ -53,8 +54,12 @@ namespace{
 
 namespace Smol
 {
-    SpriteRenderer::SpriteRenderer(RHIDevice& device)
-        : pipeline(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
+    SpriteRenderer::SpriteRenderer(
+        RHIDevice& device,
+        ResourceManager<SpriteResource>& spriteManager
+    )
+        : spriteManager(spriteManager)
+        , pipeline(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
             .topology = RHIPrimitiveTopology::TriangleStrip,
         #if defined(SMOL_DXRHI)
             .vertexShaderPath = "Engine/Shader/SpriteQuad.vert.hlsl",
@@ -111,9 +116,11 @@ namespace Smol
 
     SpriteRenderer::~SpriteRenderer() = default;
 
-    SpriteProxy SpriteRenderer::BindRenderItem(RHITexture& texture){
+    SpriteProxy SpriteRenderer::BindRenderItem(
+        ResourceHandle resourceHandle
+    ){
         auto handle = renderItems.emplace(SpriteRenderItem{
-            .texture = texture,
+            .handle = resourceHandle,
         });
 
         return SpriteProxy(handle, *this);
@@ -146,8 +153,10 @@ namespace Smol
                 RHIShaderStage::VertexShader
             );
 
+            auto& resource = spriteManager.Get(item.handle);
+
             cmdList.SetTexture(
-                item.texture,
+                *resource.texture,
                 fs.tex,
                 RHIBindingAccess::ReadOnly,
                 RHIShaderStage::FragmentShader

@@ -2,6 +2,7 @@
 
 #include "GenericHandle.hpp"
 #include "Primitives.hpp"
+#include "Resource.hpp"
 #include "RHIFWD.hpp"
 #include "Semantics.hpp"
 
@@ -10,6 +11,8 @@ namespace Smol
     class SpriteRenderer;
 
     struct SpriteRenderItem{
+        using Handle = GenericHandle<SpriteResource>;
+
         Transform transform{
             .position = zeros(),
             .rotation = unitQuat(),
@@ -20,7 +23,7 @@ namespace Smol
         // [cols, rows]
         Vec2 offset{.x = 0, .y = 0};
 
-        RHITexture& texture;
+        Handle handle;
     };
 
     class SpriteProxy final{

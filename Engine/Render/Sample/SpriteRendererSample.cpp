@@ -1,6 +1,7 @@
-#include <array>
-#include "ImageLoader.hpp"
+#include "ImmediateResourceLoader.hpp"
 #include "Primitives.hpp"
+#include "Resource.hpp"
+#include "ResourceManager.hpp"
 #include "RHICommandList.hpp"
 #include "RHIDevice.hpp"
 #include "RHISwapchain.hpp"
@@ -11,13 +12,13 @@
 
 using namespace Smol;
 
-CStr IMAGE_PATH = "Content/Assets/Sprite/hollow_knight.png";
+CStr IMAGE_PATH = "Assets/Sprite/hollow_knight.png";
 
 int main(void){
     auto device = CreateDevice();
     WindowConfig windowConfig{
         .title = "TextureSample",
-        .width = 800, .height = 800,
+        .width = 800, .height = 600,
         .fullscreen = false,
         .resizable = false,
     };
@@ -32,24 +33,19 @@ int main(void){
         .bufferDesc = backBufferDesc
     });
 
-    SpriteRenderer renderer(*device);
+    ImmediateResourceLoader resourceLoader(*device, "Content/");
+    ResourceManager<SpriteResource> resourceManager(resourceLoader);
+    SpriteRenderer renderer(*device, resourceManager);
 
-    // load Texture from Image
-    auto image = loadImage(IMAGE_PATH);
-    auto texture = device->CreateTexture(RHITextureCreateDesc{
-        .width = image.GetWidth(), .height = image.GetHeight(),
-        .format = RHIPixelFormat::RGBA8_UNORM,
-        .usage = RHITextureUsage::AllowShaderRead,
-        .initialData = image.GetBufferPointer()
+    auto handle = resourceManager.Load(SpriteRequest{
+        .path = IMAGE_PATH,
+        .frameCount = 8,
+        .framePerSeconds = 0.16f
     });
-    std::array items = {
-        SpriteRenderItem{
-            .uvScale = {1.0f/16, 1.0f/16},
-            .offset = {0, 0},
-            .texture = *texture
-        }
-    };
-    auto _ = renderer.BindRenderItem(*texture);
+    auto proxy = renderer.BindRenderItem(handle);
+    proxy.GetRenderItem().uvScale = {.x = 1.0f/16, .y = 1.0f/16};
+
+    resourceManager.DrainCompletions();
 
     RHIClearColor clearColor{.v = {0.5f, 0.5f, 0.5f, 1.0f}};
     auto cmdList = device->CreateCommandList();
@@ -80,6 +76,8 @@ int main(void){
 
         if(!keepRunning) [[unlikely]]
             break;
+
+        swapchain->AcquireNextImage();
 
         cmdList->Begin();
         cmdList->BeginRenderPass(*swapchain,

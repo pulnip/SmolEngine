@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Primitives.hpp"
+#include "Resource.hpp"
 #include "RHIFWD.hpp"
 #include "Semantics.hpp"
 #include "SlotMap.hpp"
@@ -8,11 +9,16 @@
 
 namespace Smol
 {
+    template<Resource T>
+    class ResourceManager;
+
     class SpriteRenderer final{
     public:
+        using ResourceHandle = SpriteRenderItem::Handle;
         using Handle = SpriteProxy::Handle;
 
     private:
+        ResourceManager<SpriteResource>& spriteManager;
         SlotMap<SpriteRenderItem> renderItems;
 
         RHIGraphicsPipelineStateRAII pipeline;
@@ -31,12 +37,12 @@ namespace Smol
         } fs;
 
     public:
-        SpriteRenderer(RHIDevice&);
+        SpriteRenderer(RHIDevice&, ResourceManager<SpriteResource>&);
         ~SpriteRenderer();
-        SMOL_DECLARE_MOVE_ONLY(SpriteRenderer)
+        SMOL_DECLARE_PINNED(SpriteRenderer)
 
         [[nodiscard]]
-        SpriteProxy BindRenderItem(RHITexture&);
+        SpriteProxy BindRenderItem(ResourceHandle);
 
         void Draw(RHICommandList&);
 
