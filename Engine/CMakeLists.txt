@@ -14,6 +14,7 @@ elseif(RENDER_BACKEND STREQUAL "Metal")
     add_subdirectory(MetalRHI)
 endif()
 
+add_subdirectory(Resource)
 # 3-0) Subsystem Layer
 add_subdirectory(Input)
 add_subdirectory(Render)

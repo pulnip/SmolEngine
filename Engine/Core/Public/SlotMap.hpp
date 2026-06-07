@@ -22,7 +22,7 @@ namespace Smol
 
         class Slot{
         private:
-            std::optional<T> data;
+            std::optional<T> data = std::nullopt;
             usize generation = 0;
 
         public:
@@ -42,6 +42,10 @@ namespace Smol
             auto& GetData(this auto& self) noexcept{
                 SMOL_ASSERT(self.IsUsing());
                 return self.data.value();
+            }
+
+            void SwapData(T&& data) noexcept{
+                this->data = std::move(data);
             }
 
             usize GetGeneration() const noexcept{
@@ -71,6 +75,13 @@ namespace Smol
             auto& slot = slots[freeIndex];
 
             slot.EmplaceData(std::forward<Args>(args)...);
+
+            return Handle(freeIndex, slot.GetGeneration());
+        }
+
+        Handle reserve(){
+            auto freeIndex = acquireSlot();
+            auto& slot = slots[freeIndex];
 
             return Handle(freeIndex, slot.GetGeneration());
         }
@@ -140,6 +151,18 @@ namespace Smol
                 slot.GetGeneration() == handle.GetGeneration()
             );
             return slot.GetData();
+        }
+
+        void swap(this auto& self, Handle handle, T&& data) noexcept{
+            auto index = handle.GetIndex();
+            auto& slot = self.slots[index];
+
+            SMOL_ASSERT(
+                index < self.slots.size() &&
+                slot.GetGeneration() == handle.GetGeneration()
+            );
+
+            slot.SwapData(std::move(data));
         }
 
         void reserve(usize size){
