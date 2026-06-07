@@ -6,6 +6,7 @@
 #include "InputComponent.hpp"
 #include "LogLocal.hpp"
 #include "MoveComponent.hpp"
+#include "SpriteAnimComponent.hpp"
 #include "SpriteComponent.hpp"
 #include "Pawn.hpp"
 #include "World.hpp"
@@ -39,6 +40,12 @@ namespace{
         }
         else if(*type == "MoveComponent"){
             actor.AddComponent<MoveComponent>(ctx);
+        }
+        else if(*type == "SpriteAnimComponent"){
+            SMOL_ASSERT(ctx.device != nullptr);
+            SMOL_ASSERT(ctx.spriteRenderer != nullptr);
+
+            actor.AddComponent<SpriteAnimComponent>(ctx);
         }
         else if(*type == "SpriteComponent"){
             SMOL_ASSERT(ctx.device != nullptr);

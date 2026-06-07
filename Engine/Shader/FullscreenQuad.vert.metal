@@ -9,8 +9,8 @@ struct VertexOut{
 
 // TriangleStrip, Clockwise to Front-Face
 static constant float2 positions[4] = {
-    float2(-1,  1), float2(1,  1),
-    float2(-1, -1), float2(1, -1)
+    float2(-0.5,  0.5), float2(0.5,  0.5),
+    float2(-0.5, -0.5), float2(0.5, -0.5)
 };
 static constant float2 texCoords[4] = {
     float2(0, 0), float2(1, 0),

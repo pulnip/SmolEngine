@@ -18,6 +18,8 @@ namespace Smol
             .rotation = unitQuat(),
             .scale = ones()
         };
+        Vec3 spriteScale = ones();
+
         // for 8 * 8 sprite, [1/8, 1/8]
         Vec2 uvScale{.x = 1.0f, .y = 1.0f};
         // [cols, rows]

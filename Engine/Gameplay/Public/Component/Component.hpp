@@ -42,17 +42,29 @@ namespace Smol
     class InputComponent;
     class MoveComponent;
     class Rigidbody;
+    class SpriteAnimComponent;
     class SpriteComponent;
-    constexpr u32 NUM_BUILTIN_COMPONENTS = 4;
 
     template<typename T>
-    consteval u32 GetComponentTypeIndex(){
-        if constexpr(std::is_same_v<T, InputComponent>) return 0;
-        else if constexpr(std::is_same_v<T, MoveComponent>) return 1;
-        else if constexpr(std::is_same_v<T, Rigidbody>) return 2;
-        else if constexpr(std::is_same_v<T, SpriteComponent>) return 3;
-        return NUM_BUILTIN_COMPONENTS;
+    consteval auto GetComponentTypeIndex(){
+        u32 index = 0;
+
+    #define COUNT_COMPONENT(TYPE) \
+        if constexpr(std::is_same_v<T, TYPE>){ \
+            return index; \
+        } ++index;
+
+        COUNT_COMPONENT(InputComponent)
+        COUNT_COMPONENT(MoveComponent)
+        COUNT_COMPONENT(Rigidbody)
+        COUNT_COMPONENT(SpriteAnimComponent)
+        COUNT_COMPONENT(SpriteComponent)
+
+    #undef COUNT_COMPONENT
+
+        return index;
     }
+    constexpr auto NUM_BUILTIN_COMPONENTS = GetComponentTypeIndex<void>();
 
     template<typename T>
     consteval bool IsBuiltinComponent(){

@@ -15,9 +15,19 @@ position = [5, 3, 0]
 name = "Player"
 possessed_by = "PlayerController"
 [[actors.components]]
-type = "SpriteComponent"
+type = "SpriteAnimComponent"
 image_path = "Assets/Sprite/hollow_knight.png"
+sprite_scale = [8, 8]
 [[actors.components]]
 type = "MoveComponent"
 speed = 16
 scale = 5.0
+
+[[actors]]
+type = "Actor"
+position = [-2, 5, 0]
+name = "NPC"
+[[actors.components]]
+type = "SpriteComponent"
+image_path = "Assets/Sprite/hollow_knight.png"
+sprite_scale = [8, 8]

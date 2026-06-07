@@ -42,7 +42,11 @@ namespace{
     auto pack(const Smol::SpriteRenderItem& item){
         using namespace Smol;
 
-        auto model = modelMat(item.transform);
+        auto model = modelMat(
+            item.transform.position,
+            item.transform.rotation,
+            item.transform.scale * item.spriteScale
+        );
 
         return SpriteConstants{
             .mvp = mvp(model, view, ogProj),

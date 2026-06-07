@@ -6,8 +6,8 @@ struct VertexOut{
 VertexOut vs_main(uint vertexID : SV_VertexID){
     // TriangleStrip, Clockwise to Front-Face
     static const float2 ndc[4] = {
-        float2(-1,  1), float2(1,  1),
-        float2(-1, -1), float2(1, -1)
+        float2(-0.5,  0.5), float2(0.5,  0.5),
+        float2(-0.5, -0.5), float2(0.5, -0.5)
     };
     static const float2 texCoords[4] = {
         float2(0, 0), float2(1, 0),
