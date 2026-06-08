@@ -1,21 +1,16 @@
 [metadata]
 version = 0
-# meta file for hollow_knight.png
-name = "hollow_knight.png" # for validation
+name = "hollow_knight"
 type = "sprite"
 
-[grid]
-columns = 16
+[sheet]
+image = "Assets/Sprite/hollow_knight.png"
 rows = 16
+columns = 16
 
 [[animations]]
-name = "Idle"
+name = "walk"
 start_row = 0
-tile_count = 1
-frame_duration_ms = 0
-
-[[animations]]
-name = "Walk"
-start_row = 0
-tile_count = 8
-frame_duration_ms = 150
+start_col = 0
+frame_count = 8
+frame_duration_ms = 160

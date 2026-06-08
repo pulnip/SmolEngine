@@ -30,8 +30,8 @@ namespace Smol
         done.emplace_back(ResourceLoader<SpriteResource>::Completion{
             .data = SpriteResource{
                 .texture = std::move(texture),
-                .frameCount = 8,
-                .framePerSeconds = 0.16f
+                .sheetSize = request.sheetSize,
+                .animations = request.animations
             },
             .handle = handle
         });

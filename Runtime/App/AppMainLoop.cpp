@@ -27,6 +27,7 @@ namespace Smol
         , world(
             parseTomlFile(config.startupScenePath()),
             SpawnContext{
+                .contentRoot = config.project.content_root,
                 .spriteManager = &spriteManager,
                 .inputManager = inputManager,
                 .device = &device,

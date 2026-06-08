@@ -8,16 +8,19 @@
 
 namespace Smol
 {
+    class Actor;
     class SpriteRenderer;
 
     class SpriteAnimComponent: public TypedComponent<SpriteAnimComponent>{
         SMOL_COMPONENT_BODY(SpriteAnimComponent)
 
     private:
+        Actor& owner;
+
         using Handle = GenericHandle<SpriteResource>;
         Handle handle;
-        const u32 frameCount = 1;
-        const f32 framePerSeconds = 0.16f;
+        u32 frameCount = 1;
+        f32 framePerSeconds = 0.16f;
 
         SpriteProxy proxy;
 
@@ -26,7 +29,6 @@ namespace Smol
         // if someone called setter of member variable below,
         // synced = false
         bool synced = true;
-        Transform& transform;
         u32 iframe = 0;
 
     public:

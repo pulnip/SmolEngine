@@ -40,8 +40,18 @@ int main(void){
 
     auto handle = resourceManager.Load(SpriteRequest{
         .path = IMAGE_PATH,
-        .frameCount = 8,
-        .framePerSeconds = 0.16f
+        .sheetSize = {16, 16},
+        .animations = {
+            {
+                "walk",
+                SpriteAnimation{
+                    .startRow = 0,
+                    .startCol = 0,
+                    .frameCount = 8,
+                    .frameDurationMs = 160
+                }
+            }
+        }
     });
     auto proxy = renderer.BindRenderItem(handle);
     proxy.GetRenderItem().uvScale = {.x = 1.0f/16, .y = 1.0f/16};

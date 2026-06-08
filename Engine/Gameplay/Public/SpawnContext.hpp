@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include "DOM.hpp"
 #include "Resource.hpp"
 
@@ -17,6 +18,7 @@ namespace Smol
         static IInputManager& mockInputManager();
 
         const DOM::Value& dom = {};
+        const std::filesystem::path contentRoot = "Content/";
 
         ResourceManager<SpriteResource>* spriteManager = nullptr;
         IInputManager& inputManager = mockInputManager();
@@ -32,6 +34,7 @@ namespace Smol
         auto WithDOM(const DOM::Value& node) const noexcept{
             return SpawnContext{
                 .dom = node,
+                .contentRoot = contentRoot,
                 .spriteManager = spriteManager,
                 .inputManager = inputManager,
                 .device = device,
@@ -43,6 +46,7 @@ namespace Smol
         auto WithOwner(Actor* actor) const noexcept{
             return SpawnContext{
                 .dom = dom,
+                .contentRoot = contentRoot,
                 .spriteManager = spriteManager,
                 .inputManager = inputManager,
                 .device = device,

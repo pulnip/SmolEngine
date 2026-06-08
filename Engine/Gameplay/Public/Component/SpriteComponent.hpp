@@ -8,18 +8,19 @@
 
 namespace Smol
 {
+    class Actor;
     class SpriteRenderer;
 
     class SpriteComponent: public TypedComponent<SpriteComponent>{
         SMOL_COMPONENT_BODY(SpriteComponent)
 
     private:
+        Actor& owner;
+
         using Handle = GenericHandle<SpriteResource>;
         Handle handle;
 
         SpriteProxy proxy;
-
-        Transform& transform;
 
     public:
         virtual ~SpriteComponent();
