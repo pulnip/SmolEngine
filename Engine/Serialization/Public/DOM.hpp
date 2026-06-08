@@ -2,7 +2,11 @@
 
 #include <concepts>
 #include <optional>
-#include <ranges>
+#if defined(__cpp_lib_ranges_enumerate)
+    #include <ranges>
+#else
+    #include "View.hpp"
+#endif
 #include <unordered_map>
 #include <variant>
 #include <vector>
