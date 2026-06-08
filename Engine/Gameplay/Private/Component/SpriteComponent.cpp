@@ -15,9 +15,9 @@ namespace Smol
     SpriteComponent::~SpriteComponent() = default;
 
     SpriteComponent::SpriteComponent(const SpawnContext& ctx)
-        : owner(*ctx.owner)
+        : TypedComponent(ctx.owner)
     {
-        SMOL_ASSERT(ctx.owner != nullptr);
+        SMOL_ASSERT(owner != nullptr);
 
         const auto request = createSpriteRequest(
             ctx.dom,
@@ -28,7 +28,7 @@ namespace Smol
         SMOL_ASSERT(proxy.IsValid());
 
         auto& item = proxy.GetRenderItem();
-        item.transform = owner.GetTransform();
+        item.transform = owner->GetTransform();
 
         auto spriteScale = ctx.dom.get<Vec2>("sprite_scale")
             .value_or(Vec2(1, 1));
@@ -41,6 +41,6 @@ namespace Smol
 
     void SpriteComponent::Update(f32){
         auto& item = proxy.GetRenderItem();
-        item.transform = owner.GetTransform();
+        item.transform = owner->GetTransform();
     }
 }

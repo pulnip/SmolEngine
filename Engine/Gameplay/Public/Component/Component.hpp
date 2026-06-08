@@ -7,16 +7,22 @@
 
 namespace Smol
 {
+    class Actor;
+
     class Component: public Object{
         SMOL_OBJECT_BODY(Component)
 
     public:
         using TypeID = const void*;
 
+    protected:
+        Actor* owner = nullptr;
+
     public:
-        Component() = default;
+        Component(Actor* owner = nullptr)
+            : owner(owner){}
         virtual ~Component() = default;
-        SMOL_DECLARE_MOVE_ONLY(Component)
+        SMOL_DECLARE_PINNED(Component)
 
         virtual TypeID GetTypeID() const = 0;
 
@@ -29,9 +35,10 @@ namespace Smol
         inline static u8 typeIDStorage = 0;
 
     public:
-        TypedComponent() = default;
+        TypedComponent(Actor* owner = nullptr)
+            : Component(owner){}
         virtual ~TypedComponent() = default;
-        SMOL_DECLARE_MOVE_ONLY(TypedComponent)
+        SMOL_DECLARE_PINNED(TypedComponent)
 
         static constexpr TypeID GetStaticTypeID(){ return &typeIDStorage; }
         TypeID GetTypeID() const override final{ return &typeIDStorage; }

@@ -10,7 +10,6 @@ namespace Smol
         SMOL_COMPONENT_BODY(MoveComponent)
 
     private:
-        Transform& transform;
         Vec3 dir;
         float speed = 12.0f;
 
@@ -18,8 +17,6 @@ namespace Smol
         virtual ~MoveComponent() = default;
         SMOL_DECLARE_PINNED(MoveComponent)
 
-        MoveComponent(Transform& transform)
-            : transform(transform){}
         MoveComponent(const SpawnContext&);
 
         void Update(f32) noexcept override;

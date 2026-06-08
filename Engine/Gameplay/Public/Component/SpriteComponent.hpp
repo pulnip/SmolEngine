@@ -15,8 +15,6 @@ namespace Smol
         SMOL_COMPONENT_BODY(SpriteComponent)
 
     private:
-        Actor& owner;
-
         using Handle = GenericHandle<SpriteResource>;
         Handle handle;
 

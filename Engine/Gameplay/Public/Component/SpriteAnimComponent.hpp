@@ -15,8 +15,6 @@ namespace Smol
         SMOL_COMPONENT_BODY(SpriteAnimComponent)
 
     private:
-        Actor& owner;
-
         using Handle = GenericHandle<SpriteResource>;
         Handle handle;
         u32 frameCount = 1;

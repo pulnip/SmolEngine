@@ -1,4 +1,5 @@
 #include "Actor.hpp"
+#include "Assert.hpp"
 #include "LinearAlgebra.hpp"
 #include "MoveComponent.hpp"
 #include "SpawnContext.hpp"
@@ -9,10 +10,13 @@ namespace Smol
     SMOL_COMPONENT_END(MoveComponent)
 
     MoveComponent::MoveComponent(const SpawnContext& ctx)
-        : transform(ctx.owner->GetTransform())
-    {}
+        : TypedComponent(ctx.owner)
+    {
+        SMOL_ASSERT(owner != nullptr);
+    }
 
     void MoveComponent::Update(f32 dt) noexcept{
+        auto& transform = owner->GetTransform();
         transform.position += (speed * dt) * dir;
     }
 

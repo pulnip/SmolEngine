@@ -8,7 +8,8 @@ namespace Smol
     SMOL_COMPONENT_END(InputComponent)
 
     InputComponent::InputComponent(const SpawnContext& ctx)
-        : manager(ctx.inputManager) {}
+        : TypedComponent(ctx.owner)
+        , manager(ctx.inputManager) {}
 
     void InputComponent::BindAction(
         StrView action,
