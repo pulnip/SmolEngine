@@ -2,6 +2,7 @@
 
 #include <concepts>
 #include <optional>
+#include <ranges>
 #include <unordered_map>
 #include <variant>
 #include <vector>
@@ -115,9 +116,19 @@ namespace Smol
                     std::nullopt;
             }
 
-            template<typename F>
-            void forEach(StrView p, F&& fn) const{
-                auto n = at(p);
+            template<std::invocable<const DOM::Value&> F>
+            void forEach(F&& fn) const{
+                auto arr = asArray();
+                if(arr == nullptr) return;
+
+                for(auto& val: *arr){
+                    fn(val);
+                }
+            }
+
+            template<std::invocable<const DOM::Value&> F>
+            void forEach(StrView path, F&& fn) const{
+                auto n = at(path);
                 if(n == nullptr) return;
 
                 auto arr = n->asArray();
@@ -125,6 +136,29 @@ namespace Smol
 
                 for(auto& val: *arr){
                     fn(val);
+                }
+            }
+
+            template<std::invocable<isize, const DOM::Value&> F>
+            void enumerate(F&& fn) const{
+                auto arr = asArray();
+                if(arr == nullptr) return;
+
+                for(auto [idx, value]: std::views::enumerate(*arr)){
+                    fn(static_cast<isize>(idx), value);
+                }
+            }
+
+            template<std::invocable<isize, const DOM::Value&> F>
+            void enumerate(StrView path, F&& fn) const{
+                auto n = at(path);
+                if(n == nullptr) return;
+
+                auto arr = n->asArray();
+                if(arr == nullptr) return;
+
+                for(auto [idx, value]: std::views::enumerate(*arr)){
+                    fn(static_cast<isize>(idx), value);
                 }
             }
 
