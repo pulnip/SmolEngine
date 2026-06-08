@@ -3,35 +3,37 @@
 #include "Assert.hpp"
 #include "ResourceManager.hpp"
 #include "RHITexture.hpp"
-#include "SpawnContext.hpp"
 #include "SpriteAnimComponent.hpp"
 #include "SpriteConfig.hpp"
 #include "SpriteRenderer.hpp"
+#include "World.hpp"
 
 namespace Smol
 {
     SMOL_COMPONENT(SpriteAnimComponent)
     SMOL_COMPONENT_END(SpriteAnimComponent)
 
-    SpriteAnimComponent::~SpriteAnimComponent() = default;
+    void SpriteAnimComponent::OnAttach(
+        const DOM::Value& dom,
+        const std::filesystem::path& contentRoot
+    ){
+        SMOL_ASSERT(!handle.IsValid());
 
-    SpriteAnimComponent::SpriteAnimComponent(const SpawnContext& ctx)
-        : TypedComponent(ctx.owner)
-    {
-        SMOL_ASSERT(owner != nullptr);
+        const auto request = createSpriteRequest(dom, contentRoot);
 
-        const auto request = createSpriteRequest(
-            ctx.dom,
-            ctx.contentRoot
-        );
-        handle = ctx.spriteManager->Load(request);
-        proxy = ctx.spriteRenderer->BindRenderItem(handle);
+        auto world = owner->GetWorld();
+        auto spriteManager = world->GetSpriteManager();
+        auto spriteRenderer = world->GetSpriteRenderer();
+
+        handle = spriteManager->Load(request);
+        proxy = spriteRenderer->BindRenderItem(handle);
         SMOL_ASSERT(proxy.IsValid());
 
+        // Initialize RenderItem
         auto& item = proxy.GetRenderItem();
         item.transform = owner->GetTransform();
 
-        auto spriteScale = ctx.dom.get<Vec2>("sprite_scale")
+        auto spriteScale = dom.get<Vec2>("sprite_scale")
             .value_or(Vec2(1, 1));
         item.spriteScale = toVec3(spriteScale, 1.0f);
 

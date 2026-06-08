@@ -19,14 +19,15 @@ namespace Smol
         Actor* owner = nullptr;
 
     public:
-        Component(Actor* owner = nullptr)
-            : owner(owner){}
+        Component() = default;
         virtual ~Component() = default;
         SMOL_DECLARE_PINNED(Component)
 
         virtual TypeID GetTypeID() const = 0;
 
         virtual void Update(f32){}
+
+        void MarkManaged(Actor* owner) noexcept;
     };
 
     template<typename Derived>
@@ -35,8 +36,7 @@ namespace Smol
         inline static u8 typeIDStorage = 0;
 
     public:
-        TypedComponent(Actor* owner = nullptr)
-            : Component(owner){}
+        TypedComponent() = default;
         virtual ~TypedComponent() = default;
         SMOL_DECLARE_PINNED(TypedComponent)
 

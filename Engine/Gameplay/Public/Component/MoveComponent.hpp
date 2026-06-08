@@ -14,10 +14,9 @@ namespace Smol
         float speed = 12.0f;
 
     public:
+        MoveComponent() = default;
         virtual ~MoveComponent() = default;
         SMOL_DECLARE_PINNED(MoveComponent)
-
-        MoveComponent(const SpawnContext&);
 
         void Update(f32) noexcept override;
 

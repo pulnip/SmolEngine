@@ -24,7 +24,7 @@ namespace Smol
 
         std::vector<ActorRAII> children;
 
-    protected:
+    private:
         Transform transform{
             .position = zeros(),
             .rotation = unitQuat(),
@@ -40,11 +40,27 @@ namespace Smol
 
         void Update(f32);
 
+        // Built-in Component, Called both engine and user
+        template<BuiltinComponent T>
+        T* AddComponent(){
+            constexpr auto index = GetComponentTypeIndex<T>();
+            auto c = std::make_unique<T>();
+            c->MarkManaged(this);
+
+            builtinComponents[index] = std::move(c);
+            return static_cast<T*>(builtinComponents[index].get());
+        }
+
+        // User-defined Component, but Called by engine
+        Component* AddComponent(StrView type);
+
+        // User-defined Component, but Called by user
         template<typename T, class... Args>
             requires (!IsBuiltinComponent<T>())
         T* AddComponent(Args&&... args){
             constexpr auto typeID = TypedComponent<T>::GetStaticTypeID();
             auto c = std::make_unique<T>(std::forward<Args>(args)...);
+            c->MarkManaged(this);
 
             auto [it, ret] = userdefinedComponents.try_emplace(typeID, std::move(c));
             if(!ret){
@@ -54,26 +70,7 @@ namespace Smol
             return static_cast<T*>(it->second.get());
         }
 
-        template<BuiltinComponent T>
-            requires std::is_default_constructible_v<T>
-        T* AddComponent(){
-            constexpr auto index = GetComponentTypeIndex<T>();
-            auto c = std::make_unique<T>();
-
-            builtinComponents[index] = std::move(c);
-            return static_cast<T*>(builtinComponents[index].get());
-        }
-
-        template<BuiltinComponent T>
-            requires SpawnConstructible<T>
-        T* AddComponent(const SpawnContext& ctx){
-            constexpr auto index = GetComponentTypeIndex<T>();
-            auto c = std::make_unique<T>(ctx);
-
-            builtinComponents[index] = std::move(c);
-            return static_cast<T*>(builtinComponents[index].get());
-        }
-
+        World* GetWorld() const noexcept{ return world; }
         auto& GetTransform(this auto& self) noexcept{ return self.transform; }
 
         template<typename T>
@@ -107,14 +104,14 @@ namespace Smol
     private:
         friend class World;
 
-        // World ptr and Handle is valid if
-        // 1. Actor is managed by World
-        // 2. And Also Actor not destroyed at World
         World* world = nullptr;
+        // Handle for prevent double free
+        // That means, Actor is managed by world
+        // If Actor not destroyed at World, Handle is valid.
         using Handle = GenericHandle<ActorRAII>;
         Handle handle = Handle::InvalidHandle();
 
-        void MarkManaged(World*, Handle);
+        void MarkManaged(World* world, Handle handle);
 
     protected:
         // for skip

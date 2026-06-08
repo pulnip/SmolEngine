@@ -21,10 +21,14 @@ namespace Smol
         SpriteProxy proxy;
 
     public:
-        virtual ~SpriteComponent();
+        SpriteComponent() = default;
+        virtual ~SpriteComponent() = default;
         SMOL_DECLARE_PINNED(SpriteComponent)
 
-        SpriteComponent(const SpawnContext&);
+        void OnAttach(
+            const DOM::Value&,
+            const std::filesystem::path&
+        );
 
         void Update(f32) override;
     };

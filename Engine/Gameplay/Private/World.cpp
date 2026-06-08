@@ -1,8 +1,6 @@
 #include "Actor.hpp"
-#include "ActorDeserializer.hpp"
-#include "DOM.hpp"
 #include "LogLocal.hpp"
-#include "SpawnContext.hpp"
+#include "PtrUtil.hpp"
 #include "World.hpp"
 
 namespace Smol
@@ -12,37 +10,32 @@ namespace Smol
         isShutdown = true;
     }
 
-    World::World(
-        DOM::Value&& dom,
-        SpawnContext ctx
-    ){
-        dom.forEach("actors", [&](const DOM::Value& node){
-            auto type = node.get<Str>("type");
-            auto name = node.get<Str>("name");
+    Actor* World::SpawnActor(StrView type, StrView name){
+        if(auto ptr = FindActorByName(name)){
+            LOG_WARN("Actor name \"{}\" already exists", name);
+            return nullptr;
+        }
 
-            if(!type || !name) return;
+        auto object = ClassRegistry::Create(type);
+        auto actor = uniqueCast<Actor>(object);
+        if(actor == nullptr) [[unlikely]]{
+            LOG_WARN("Actor type {} not exist", type);
+            return nullptr;
+        }
 
-            if(auto it = handleMap.find(*name); it != handleMap.end()){
-                LOG_WARN("Actor name \"{}\" already exists", *name);
-                return;
-            }
+        auto ptr = actor.get();
+        manageActor(std::move(actor), Str(name));
 
-            auto nodeContext = ctx.WithDOM(node);
+        return ptr;
+    }
 
-            auto actor = CreateActor(*type, nodeContext);
-            if(actor == nullptr) [[unlikely]]{
-                LOG_WARN("Actor type {} not exist", *type);
-                return;
-            }
+    void World::manageActor(ActorRAII&& actor, Str name){
+        auto ptr = actor.get();
+        auto handle = actors.emplace(std::move(actor));
+        ptr->MarkManaged(this, handle);
 
-            auto ptr = actor.get();
-            auto handle = actors.emplace(std::move(actor));
-            ptr->MarkManaged(this, handle);
-
-            // register name with handle
-            handleMap[*name] = handle;
-            handleToName[handle] = *name;
-        });
+        handleMap[name] = handle;
+        handleToName[handle] = name;
     }
 
     void World::Update(f32 deltaTime){

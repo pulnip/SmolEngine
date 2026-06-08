@@ -11,13 +11,6 @@
 
 namespace Smol
 {
-    struct SpawnContext;
-
-    template<typename T>
-    concept SpawnConstructible = requires(::Smol::SpawnContext ctx){
-        { T(ctx) };
-    };
-
     // Reflection target is Object
     class Object;
     using ObjectRAII = RAII<Object>;
@@ -25,7 +18,7 @@ namespace Smol
     struct ClassDesc{
         Str name;
         const ClassDesc* parent = nullptr;
-        std::function<ObjectRAII(const SpawnContext&)> factory;
+        std::function<ObjectRAII()> factory;
         StringHashMap<PropertyDesc> properties;
 
         template<typename Class, typename Member>
@@ -65,7 +58,7 @@ namespace Smol
         StringHashMap<ClassDesc*> classByName;
 
     public:
-        static ObjectRAII Create(StrView type, const SpawnContext&);
+        static ObjectRAII Create(StrView type);
 
     private:
         template<typename T>
@@ -119,9 +112,9 @@ namespace Smol
             return *this;
         }
 
-        ClassBuilder& SetFactory(std::function<RAII<T>(const SpawnContext&)>&& f){
-            desc.factory = [f = std::move(f)](const SpawnContext& context) -> RAII<Object> {
-                return f(context);
+        ClassBuilder& SetFactory(std::function<RAII<T>()>&& f){
+            desc.factory = [f = std::move(f)]() -> RAII<Object> {
+                return f();
             };
 
             return *this;
@@ -160,18 +153,11 @@ namespace Smol
         ClassBuilder()
             : desc(ClassRegistry::Get().DescFor<T>())
         {
-            if constexpr (SpawnConstructible<T>){
-                desc.factory = [](const SpawnContext& context) -> ObjectRAII {
-                    return std::make_unique<T>(context);
-                };
-            }
-            else if constexpr (std::is_default_constructible_v<T>){
-                desc.factory = [](const SpawnContext&) -> ObjectRAII {
+            if constexpr(std::is_default_constructible_v<T>){
+                desc.factory = []() -> ObjectRAII {
                     return std::make_unique<T>();
                 };
             }
         }
     };
-
-    ObjectRAII CreateObject(StrView type, const SpawnContext& context);
 }

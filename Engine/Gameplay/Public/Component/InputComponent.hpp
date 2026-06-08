@@ -15,16 +15,12 @@ namespace Smol
         SMOL_COMPONENT_BODY(InputComponent)
 
     private:
-        IInputManager& manager;
         std::unordered_map<Pawn*, std::vector<InputAction>> actions;
 
     public:
+        InputComponent() = default;
         virtual ~InputComponent() = default;
         SMOL_DECLARE_PINNED(InputComponent)
-
-        InputComponent(IInputManager& manager)
-            : manager(manager){}
-        InputComponent(const SpawnContext&);
 
         void BindAction(StrView action, TriggerEvent, Pawn*, InputAction::Callback&&);
         void UnbindAction(Pawn* pawn);

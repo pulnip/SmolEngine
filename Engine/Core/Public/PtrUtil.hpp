@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+#include <type_traits>
 #include "Primitives.hpp"
 
 namespace Smol
@@ -32,5 +34,16 @@ namespace Smol
     }
     inline const void* ptrSub(const void* ptr, usize nbyte){
         return static_cast<const u8*>(ptr) - nbyte;
+    }
+
+    template <typename Derived, typename Base>
+        requires std::is_base_of_v<Base, Derived>
+    std::unique_ptr<Derived> uniqueCast(std::unique_ptr<Base>& base){
+        if(Derived* raw = dynamic_cast<Derived*>(base.get())){
+            base.release();
+            return std::unique_ptr<Derived>(raw);
+        }
+
+        return nullptr;
     }
 }

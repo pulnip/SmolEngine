@@ -1,4 +1,7 @@
 #include "Actor.hpp"
+#include "Assert.hpp"
+#include "LogLocal.hpp"
+#include "PtrUtil.hpp"
 #include "World.hpp"
 
 namespace Smol
@@ -39,6 +42,7 @@ namespace Smol
     void Actor::Update(f32 dt){
         updateComponents(dt);
 
+        auto* ptr = &transform.position;
         OnUpdate(dt);
     }
 
@@ -57,6 +61,26 @@ namespace Smol
         }
     }
 
+    Component* Actor::AddComponent(StrView type){
+        auto object = ClassRegistry::Create(type);
+        auto component = uniqueCast<Component>(object);
+        if(component == nullptr) [[unlikely]]{
+            LOG_WARN("Actor type {} not exist", type);
+            return nullptr;
+        }
+
+        auto typeID = component->GetTypeID();
+        auto ptr = component.get();
+
+        auto [it, ret] = userdefinedComponents.try_emplace(typeID, std::move(component));
+        if(!ret){
+            return nullptr;
+        }
+
+        ptr->MarkManaged(this);
+        return ptr;
+    }
+
     void Actor::Destroy(){
         if(world == nullptr) [[unlikely]]{
             return;
@@ -71,6 +95,7 @@ namespace Smol
     }
 
     void Actor::MarkManaged(World* world, Handle handle){
+        SMOL_ASSERT(this->world == nullptr);
         this->world = world;
         this->handle = handle;
     }

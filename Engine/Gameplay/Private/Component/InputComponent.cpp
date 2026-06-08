@@ -1,15 +1,12 @@
+#include "Actor.hpp"
 #include "InputComponent.hpp"
 #include "IInputManager.hpp"
-#include "SpawnContext.hpp"
+#include "World.hpp"
 
 namespace Smol
 {
     SMOL_COMPONENT(InputComponent)
     SMOL_COMPONENT_END(InputComponent)
-
-    InputComponent::InputComponent(const SpawnContext& ctx)
-        : TypedComponent(ctx.owner)
-        , manager(ctx.inputManager) {}
 
     void InputComponent::BindAction(
         StrView action,
@@ -17,7 +14,9 @@ namespace Smol
         Pawn* pawn,
         InputAction::Callback&& callback
     ){
-        auto handle = manager.BindAction(
+        auto manager = owner->GetWorld()->GetInputManager();
+
+        auto handle = manager->BindAction(
             action,
             event,
             std::move(callback)

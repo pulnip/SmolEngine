@@ -30,10 +30,14 @@ namespace Smol
         u32 iframe = 0;
 
     public:
-        virtual ~SpriteAnimComponent();
+        SpriteAnimComponent() = default;
+        virtual ~SpriteAnimComponent() = default;
         SMOL_DECLARE_PINNED(SpriteAnimComponent)
 
-        SpriteAnimComponent(const SpawnContext&);
+        void OnAttach(
+            const DOM::Value&,
+            const std::filesystem::path&
+        );
 
         void Update(f32) override;
 

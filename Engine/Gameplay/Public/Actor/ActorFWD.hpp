@@ -6,4 +6,7 @@ namespace Smol
 {
     class Actor;
     using ActorRAII = RAII<Actor>;
+
+    class CharacterController;
+    class Pawn;
 }
