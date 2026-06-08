@@ -1,7 +1,6 @@
 #include "AppConfig.hpp"
 #include "AppMainLoop.hpp"
 #include "CharacterController.hpp"
-#include "ClassRegistry.hpp"
 #include "CommandListPool.hpp"
 #include "InputComponent.hpp"
 #include "LogLocal.hpp"
@@ -24,9 +23,8 @@ namespace{
         const Smol::DOM::Value& dom
     ){
         auto component = actor.AddComponent<T>();
-        auto& desc = Smol::ClassRegistry::Get().DescFor<T>();
 
-        ApplyProperties(desc, &actor, dom);
+        ApplyProperties(component, dom);
         return component;
     }
 
@@ -72,9 +70,8 @@ namespace{
         const Smol::Str& name
     ){
         auto actor = world.SpawnActor<T>(name);
-        auto& desc = Smol::ClassRegistry::Get().DescFor<T>();
 
-        ApplyProperties(desc, actor, dom);
+        ApplyProperties(actor, dom);
         return actor;
     }
 

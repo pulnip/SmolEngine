@@ -82,7 +82,17 @@ namespace Smol
         bool Register(ClassDesc& desc);
     };
 
-    void ApplyProperties(const ClassDesc&, void* object, const DOM::Value&);
+    namespace detail
+    {
+        void ApplyProperties(const ClassDesc&, void* object, const DOM::Value&);
+    }
+
+    template<typename T>
+        requires (!std::is_pointer_v<T>)
+    void ApplyProperties(T* object, const DOM::Value& dom){
+        auto& desc = Smol::ClassRegistry::Get().DescFor<T>();
+        detail::ApplyProperties(desc, object, dom);
+    }
 
     template<typename T>
         requires std::is_base_of_v<Object, T>
