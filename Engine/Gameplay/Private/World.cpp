@@ -1,14 +1,41 @@
+#include "Assert.hpp"
 #include "Actor.hpp"
+#include "ColliderComponent.hpp"
+#include "Geometry/Overlap2D.hpp"
 #include "LogLocal.hpp"
+#include "Object.hpp"
+#include "PhysicsEngine2D.hpp"
 #include "PtrUtil.hpp"
 #include "World.hpp"
 
+namespace{
+    void OnContact(Smol::Object* a, Smol::Object* b, const Smol::SweepResult2D& hit){
+        SMOL_ASSERT(a != nullptr);
+        SMOL_ASSERT(a->IsA("ColliderComponent"));
+        SMOL_ASSERT(b != nullptr);
+        SMOL_ASSERT(b->IsA("ColliderComponent"));
+
+        using namespace Smol;
+
+        auto* ca= static_cast<ColliderComponent*>(a);
+        auto* cb = static_cast<ColliderComponent*>(b);
+    }
+}
+
 namespace Smol
 {
-    World::World() = default;
+    World::World()
+        : physicsEngine(OnContact)
+    {}
+
     World::~World(){
         isShutdown = true;
     }
+
+    World::World(EngineService service)
+        : service(service)
+        , physicsEngine(OnContact)
+    {}
 
     Actor* World::SpawnActor(StrView type, StrView name){
         if(auto ptr = FindActorByName(name)){

@@ -273,7 +273,7 @@ namespace Smol
                 :slots(s), index(i){}
 
             reference operator*() const{
-                return (*slots)[index].get();
+                return (*slots)[index].GetData();
             }
             pointer operator->() const{
                 return &(*slots)[index].get();

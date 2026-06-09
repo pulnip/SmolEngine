@@ -4,7 +4,7 @@
 #include <vector>
 #include "Actor.hpp"
 #include "GenericHandle.hpp"
-#include "PtrUtil.hpp"
+#include "PhysicsEngine2D.hpp"
 #include "Resource.hpp"
 #include "Semantics.hpp"
 #include "SlotMap.hpp"
@@ -43,13 +43,14 @@ namespace Smol
 
         EngineService service;
 
+        PhysicsEngine2D physicsEngine;
+
     public:
         World();
         ~World();
-        SMOL_DECLARE_MOVE_ONLY(World)
+        SMOL_DECLARE_PINNED(World)
 
-        World(EngineService service)
-            : service(service){}
+        World(EngineService service);
 
         template<std::derived_from<Actor> T>
         T* SpawnActor(Str name = {}){
