@@ -35,10 +35,10 @@ smol_link_or_copy_directory(Config)
 function(smol_declare_module NAME)
     add_library(Smol${NAME} STATIC)
 
-    file(GLOB PUBLIC_SOURCES
+    file(GLOB_RECURSE PUBLIC_SOURCES
         "Public/*.hpp"
     )
-    file(GLOB PRIVATE_SOURCES
+    file(GLOB_RECURSE PRIVATE_SOURCES
         "Private/*.hpp"
         "Private/*.cpp"
     )

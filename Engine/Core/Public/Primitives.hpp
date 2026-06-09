@@ -410,6 +410,12 @@ namespace Smol
         Vec4 rotation;
         Vec3 scale;
     };
+
+    struct Transform2D{
+        Vec2 position;
+        f32 theta;
+        Vec2 scale;
+    };
 }
 
 template<>

@@ -167,6 +167,21 @@ namespace Smol
         return static_cast<Vec3>(r);
     }
 
+    // 2D
+    inline auto right(f32 theta) noexcept{
+        return Vec2{
+            .x = std::cos(theta),
+            .y = std::sin(theta)
+        };
+    }
+    inline auto up(f32 theta) noexcept{
+        return Vec2{
+            .x = -std::sin(theta),
+            .y = std::cos(theta)
+        };
+    }
+
+    // 3D
     inline constexpr auto right(Vec4 q) noexcept{
         auto e_x = Vec4{1.0f, 0.0f, 0.0f, 0.0f};
         auto r = rotate(e_x, q);
