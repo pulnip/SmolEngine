@@ -163,6 +163,7 @@ namespace Smol
         ClassBuilder()
             : desc(ClassRegistry::Get().DescFor<T>())
         {
+            // TODO.
             if constexpr(std::is_default_constructible_v<T>){
                 desc.factory = []() -> ObjectRAII {
                     return std::make_unique<T>();
