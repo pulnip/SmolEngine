@@ -2,6 +2,7 @@
 
 #include <array>
 #include "GeoUtil.hpp"
+#include "Geometry/GJK.hpp"
 #include "LinearAlgebra.hpp"
 #include "Primitives.hpp"
 
@@ -98,5 +99,112 @@ namespace Smol
         }
 
         return true;
+    }
+
+    namespace detail{
+        inline constexpr Vec2 support(const OBB2D b, const Vec2 dir){
+            return b.center + (
+                dot(dir, b.halfAxes[0]) >= 0.0f ?
+                    b.halfAxes[0] : -b.halfAxes[0]
+            ) + (
+                dot(dir, b.halfAxes[1]) > 0.0f ?
+                    b.halfAxes[1] : -b.halfAxes[1]
+            );
+        }
+    }
+
+    struct SweepResult2D{
+        bool isHit = false;
+        bool startPenetrating = false;
+        // 0~1
+        f32 time;
+        Vec2 normal;
+        // position when enter
+        Vec2 location;
+        Vec2 impactPoint;
+        f32 distance = 0.0f;
+    };
+
+    inline constexpr SweepResult2D SweepOBB2D(
+        const OBB2D b0, const OBB2D b1,
+        // b1에 대한 b0의 상대 dPos
+        const Vec2 move,
+        const f32 epsilon = 0.0f
+    ){
+        using detail::project;
+
+        const std::array axes = {
+            perp(b0.halfAxes[0]), perp(b0.halfAxes[1]),
+            perp(b1.halfAxes[0]), perp(b1.halfAxes[1])
+        };
+
+        SweepResult2D r{
+            .isHit = false
+        };
+
+        f32 tEnter = 0.0f;
+        f32 tLeave = 1.0f;
+
+        i32 hitIndex = -1;
+        Vec2 hitAxis;
+
+        for(i32 i=0; i<axes.size(); ++i){
+            const Vec2 axis = axes[i];
+            const auto p0 = project(axis, b0);
+            const auto p1 = project(axis, b1);
+
+            const auto d = p1.center - p0.center;
+            const auto R = p0.radius + p1.radius + epsilon;
+            const auto speed = dot(move, axis);
+
+            const f32 e0 = d - R;
+            const f32 e1 = d + R;
+
+            // relative velocity is almost 0
+            if(abs(speed) < 1e-8f){
+                if(e0 > 0.0f || e1 < 0.0f)
+                    return r;
+                continue;
+            }
+
+            auto t0 = e0 / speed;
+            auto t1 = e1 / speed;
+            if(t0 > t1) std::swap(t0, t1);
+
+            if(t0 > tEnter){
+                tEnter = t0;
+                hitIndex = i;
+                hitAxis = axis;
+            }
+            if(t1 < tLeave){
+                tLeave = t1;
+            }
+
+            if(tEnter > tLeave)
+                return r;
+        }
+
+        r.isHit = true;
+
+        // already overlap
+        if(hitIndex < 0 || tEnter <= 0.0f){
+            r.startPenetrating = true;
+            r.time = 0.0f;
+
+            return r;
+        }
+
+        r.time = tEnter;
+        r.normal = dot(hitAxis, b0.center - b1.center) >= 0.0f ?
+            hitAxis : -hitAxis;
+        r.distance = norm(move) * r.time;
+
+        using detail::support;
+
+        const bool ownedByB0 = (hitIndex <= 1);
+        r.impactPoint = ownedByB0 ?
+            support(b1, r.normal) : support(b0, -r.normal);
+
+        return r;
     }
 }
