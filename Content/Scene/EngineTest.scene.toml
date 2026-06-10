@@ -27,7 +27,7 @@ scale = 5.0
 type = "ColliderComponent"
 scale = [3, 7]
 layer = 0b1
-mask = 0b0
+mask = 0b1
 
 [[actors]]
 type = "Actor"
@@ -42,7 +42,7 @@ sprite_scale = [8, 8]
 type = "ColliderComponent"
 scale = [3, 7]
 layer = 0b1
-mask = 0b1
+mask = 0b0
 
 [[actors]]
 type = "Actor"

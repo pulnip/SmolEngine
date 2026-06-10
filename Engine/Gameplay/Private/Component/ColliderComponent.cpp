@@ -52,19 +52,25 @@ namespace Smol
         ColliderComponent* other,
         const OverlapResult2D& result
     ){
-
+        for(const auto& callback: beginOverlapEvent){
+            callback(this, other->GetOwner(), other, result);
+        }
     }
 
     void ColliderComponent::NotifyStayOverlap(
         ColliderComponent* other,
         const OverlapResult2D& result
     ){
-
+        for(const auto& callback: stayOverlapEvent){
+            callback(this, other->GetOwner(), other, result);
+        }
     }
 
     void ColliderComponent::NotifyEndOverlap(
         ColliderComponent* other
     ){
-
+        for(const auto& callback: endOverlapEvent){
+            callback(this, other->GetOwner(), other);
+        }
     }
 }
