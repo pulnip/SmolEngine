@@ -5,7 +5,9 @@
 
 namespace Smol
 {
+    // 레이어(들)에 있는 물체와의 충돌 검사
     using CollisionLayer = u32;
+    // 충돌 검사 결과를 통지받을지 여부
     using CollisionMask = CollisionLayer;
     class Object;
 

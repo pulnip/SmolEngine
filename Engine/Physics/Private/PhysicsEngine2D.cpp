@@ -34,9 +34,9 @@ namespace Smol
         }
     }
 
-    Collider2D& PhysicsProxy::GetItem() noexcept{
+    Collider2D& PhysicsProxy::GetRef() noexcept{
         SMOL_ASSERT(engine != nullptr);
-        return engine->GetItem(handle);
+        return engine->GetRef(handle);
     }
 
     PhysicsEngine2D::PhysicsEngine2D(
@@ -57,7 +57,7 @@ namespace Smol
         SMOL_ASSERT(collider.object != nullptr);
         SMOL_ASSERT(collider.object->IsA("ColliderComponent"));
 
-        auto handle = colliders.push(collider);
+        auto handle = colliders.Push(collider);
         return PhysicsProxy(handle, *this);
     }
 
@@ -86,7 +86,7 @@ namespace Smol
                 const auto filterA = (A.mask & B.layer) != 0;
                 const auto filterB = (B.mask & A.layer) != 0;
 
-                if(!filterA || !filterB)
+                if(!filterA && !filterB)
                     continue;
 
                 const auto result = Collide(A.shape, B.shape);
@@ -120,8 +120,8 @@ namespace Smol
             if(curr.count(key))
                 continue;
 
-            auto a = colliders.get(key.a).object;
-            auto b = colliders.get(key.b).object;
+            auto a = colliders.GetRef(key.a).object;
+            auto b = colliders.GetRef(key.b).object;
             onExit(a, b);
         }
 
@@ -133,17 +133,17 @@ namespace Smol
         std::swap(pendingDestroy, destroyScratch);
 
         for(auto& handle: destroyScratch){
-            colliders.remove(handle);
+            colliders.Remove(handle);
         }
 
         destroyScratch.clear();
     }
 
-    Collider2D& PhysicsEngine2D::GetItem(Handle handle){
-        return colliders.get(handle);
+    Collider2D& PhysicsEngine2D::GetRef(Handle handle){
+        return colliders.GetRef(handle);
     }
 
     void PhysicsEngine2D::Unbind(Handle handle){
-        colliders.remove(handle);
+        colliders.Remove(handle);
     }
 }

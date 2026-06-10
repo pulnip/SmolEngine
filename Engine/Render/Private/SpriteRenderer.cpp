@@ -123,7 +123,7 @@ namespace Smol
     SpriteProxy SpriteRenderer::BindRenderItem(
         ResourceHandle resourceHandle
     ){
-        auto handle = renderItems.emplace(SpriteRenderItem{
+        auto handle = renderItems.Emplace(SpriteRenderItem{
             .handle = resourceHandle,
         });
 
@@ -131,11 +131,11 @@ namespace Smol
     }
 
     SpriteRenderItem& SpriteRenderer::GetRenderItem(Handle handle){
-        return renderItems.get(handle);
+        return renderItems.GetRef(handle);
     }
 
     void SpriteRenderer::UnbindRenderItem(Handle handle){
-        renderItems.remove(handle);
+        renderItems.Remove(handle);
     }
 
     void SpriteRenderer::Draw(RHICommandList& cmdList){
@@ -157,7 +157,7 @@ namespace Smol
                 RHIShaderStage::VertexShader
             );
 
-            auto& resource = spriteManager.Get(item.handle);
+            auto& resource = spriteManager.GetRef(item.handle);
 
             cmdList.SetTexture(
                 *resource.texture,

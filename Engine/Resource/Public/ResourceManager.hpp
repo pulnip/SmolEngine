@@ -43,7 +43,7 @@ namespace Smol
                 return it->second;
             }
 
-            auto handle = pool.reserve();
+            auto handle = pool.NewSlot();
             dedup[key] = handle;
             handleToKey[handle] = key;
 
@@ -63,13 +63,13 @@ namespace Smol
             loader.Poll(scratch);
 
             for(auto& [data, handle]: scratch){
-                pool.swap(handle, std::move(data));
+                pool.Swap(handle, std::move(data));
                 --pending;
             }
         }
 
-        auto& Get(this auto& self, Handle handle) noexcept{
-            return self.pool.get(handle);
+        auto& GetRef(this auto& self, Handle handle) noexcept{
+            return self.pool.GetRef(handle);
         }
     };
 }

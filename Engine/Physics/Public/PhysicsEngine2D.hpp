@@ -38,7 +38,7 @@ namespace Smol
 
             return isEngineValid && isHandleValid;
         }
-        Collider2D& GetItem() noexcept;
+        Collider2D& GetRef() noexcept;
     };
 
     class PhysicsEngine2D final{
@@ -101,7 +101,7 @@ namespace Smol
     private:
         friend class PhysicsProxy;
 
-        Collider2D& GetItem(Handle);
+        Collider2D& GetRef(Handle);
         void Unbind(Handle);
     };
 }

@@ -96,7 +96,7 @@ namespace Smol
 
     void World::manageActor(ActorRAII&& actor, Str name){
         auto ptr = actor.get();
-        auto handle = actors.emplace(std::move(actor));
+        auto handle = actors.Emplace(std::move(actor));
         ptr->MarkManaged(this, handle);
 
         handleMap[name] = handle;
@@ -120,14 +120,14 @@ namespace Smol
             return nullptr;
         }
 
-        return actors.get(it->second).get();
+        return actors.GetRef(it->second).get();
     }
 
     void World::MarkDestroy(Handle handle){
         if(!handle.IsValid()) [[unlikely]]
             return;
 
-        SMOL_ASSERT(actors.find(handle) != nullptr);
+        SMOL_ASSERT(actors.Find(handle) != nullptr);
         // double destroy is prevented by actor
         pendingDestory.push_back(handle);
     }
@@ -136,7 +136,7 @@ namespace Smol
         std::swap(pendingDestory, destroyScratch);
 
         for(auto& handle: destroyScratch){
-            actors.remove(handle);
+            actors.Remove(handle);
 
             auto it = handleToName.find(handle);
             SMOL_ASSERT(it != handleToName.end());

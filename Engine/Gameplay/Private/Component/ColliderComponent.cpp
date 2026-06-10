@@ -31,7 +31,7 @@ namespace Smol
         collider.transform = static_cast<Transform2D>(owner->GetTransform()) * transform;
 
         // Sync to PhysicsEngine
-        proxy.GetItem() = Collider2D{
+        proxy.GetRef() = Collider2D{
             .shape = collider,
             .layer = layer,
             .mask = mask,

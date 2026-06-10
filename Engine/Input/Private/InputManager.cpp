@@ -109,7 +109,7 @@ namespace Smol
     }
 
     void InputManager::UnbindAction(Handle handle){
-        callbacks.remove(handle);
+        callbacks.Remove(handle);
 
         auto it = handleToAction.find(handle);
         SMOL_ASSERT(it != handleToAction.end());
@@ -125,7 +125,7 @@ namespace Smol
         TriggerEvent event,
         Callback&& callback
     ){
-        auto handle = callbacks.emplace(std::move(callback));
+        auto handle = callbacks.Emplace(std::move(callback));
 
         ActionKey key{
             .actionName = Str(str),
@@ -146,6 +146,6 @@ namespace Smol
         const auto& handles = it->second;
         // fire action
         for(const auto& handle: handles)
-            callbacks.get(handle)(value);
+            callbacks.GetRef(handle)(value);
     }
 }

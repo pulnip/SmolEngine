@@ -70,7 +70,7 @@ namespace Smol
         SMOL_DECLARE_TRANSFERABLE(SlotMap)
 
         template<typename... Args>
-        Handle emplace(Args&&... args){
+        Handle Emplace(Args&&... args){
             auto freeIndex = acquireSlot();
             auto& slot = slots[freeIndex];
 
@@ -79,21 +79,21 @@ namespace Smol
             return Handle(freeIndex, slot.GetGeneration());
         }
 
-        Handle reserve(){
+        Handle NewSlot(){
             auto freeIndex = acquireSlot();
             auto& slot = slots[freeIndex];
 
             return Handle(freeIndex, slot.GetGeneration());
         }
 
-        Handle push(const T& t){
-            return emplace(T(t));
+        Handle Push(const T& t){
+            return Emplace(T(t));
         }
-        Handle push(T&& t){
-            return emplace(std::move(t));
+        Handle Push(T&& t){
+            return Emplace(std::move(t));
         }
 
-        bool remove(Handle handle) noexcept{
+        bool Remove(Handle handle) noexcept{
             auto index = handle.GetIndex();
             auto outOfIndex = index >= slots.size();
             if(outOfIndex)
@@ -110,7 +110,7 @@ namespace Smol
             return true;
         }
 
-        void clear() noexcept{
+        void Clear() noexcept{
             for(auto& slot: slots){
                 if(slot.IsUsing()){
                     slot.Reset();
@@ -124,25 +124,20 @@ namespace Smol
             }
         }
 
-        T* find(Handle handle) noexcept{
-            return const_cast<T*>(
-                static_cast<const SlotMap&>(*this).find(handle)
-            );
-        }
-        const T* find(Handle handle) const noexcept{
+        const T* Find(this auto& self, Handle handle) noexcept{
             auto index = handle.GetIndex();
-            auto outOfIndex = index >= slots.size();
+            auto outOfIndex = index >= self.slots.size();
             if(outOfIndex)
                 return nullptr;
 
-            auto& slot = slots[index];
+            auto& slot = self.slots[index];
             auto expiredGen = slot.GetGeneration() != handle.GetGeneration();
             if(expiredGen)
                 return nullptr;
 
             return &slot.GetData();
         }
-        auto& get(this auto& self, Handle handle) noexcept{
+        auto& GetRef(this auto& self, Handle handle) noexcept{
             auto index = handle.GetIndex();
             auto& slot = self.slots[index];
 
@@ -153,7 +148,7 @@ namespace Smol
             return slot.GetData();
         }
 
-        void swap(this auto& self, Handle handle, T&& data) noexcept{
+        void Swap(this auto& self, Handle handle, T&& data) noexcept{
             auto index = handle.GetIndex();
             auto& slot = self.slots[index];
 
@@ -165,7 +160,7 @@ namespace Smol
             slot.SwapData(std::move(data));
         }
 
-        void reserve(usize size){
+        void Reserve(usize size){
             if(size <= slots.size())
                 return;
             for(auto i=slots.size(); i<size; ++i)
@@ -173,10 +168,10 @@ namespace Smol
             slots.resize(size);
         }
 
-        usize size() const noexcept{
+        usize Size() const noexcept{
             return slots.size() - freeIndexes.size();
         }
-        usize capacity() const noexcept{
+        usize Capacity() const noexcept{
             return slots.size();
         }
 
