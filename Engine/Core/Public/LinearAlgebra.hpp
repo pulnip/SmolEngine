@@ -150,12 +150,6 @@ namespace Smol
 
         return std::atan2(siny_cosx, cosy_cosx);
     }
-    inline auto extractZRot(Vec4 quat) noexcept{
-        f32 sinz_cosx = 2*(quat.w*quat.z + quat.x*quat.y);
-        f32 cosz_cosx = 1 - 2*(quat.y*quat.y + quat.z*quat.z);
-
-        return std::atan2(sinz_cosx, cosz_cosx);
-    }
 
     inline auto extractYQuat(Vec4 quat) noexcept{
         return rotateY(extractYRot(quat));

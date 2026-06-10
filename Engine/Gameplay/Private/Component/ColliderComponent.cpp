@@ -1,12 +1,15 @@
 #include "Actor.hpp"
 #include "ColliderComponent.hpp"
 #include "Collider2D.hpp"
-#include "LinearAlgebra.hpp"
+#include "LogLocal.hpp"
+#include "Primitives.hpp"
 #include "World.hpp"
 
 namespace Smol
 {
     SMOL_COMPONENT(ColliderComponent)
+        .SetProperty("position", &ColliderComponent::transform, &Transform2D::position)
+        .SetProperty("scale", &ColliderComponent::transform, &Transform2D::scale)
     SMOL_COMPONENT_END(ColliderComponent)
 
     void ColliderComponent::OnAttach(){
@@ -22,12 +25,8 @@ namespace Smol
     }
 
     void ColliderComponent::Update(f32 dt){
-        const auto& transform = owner->GetTransform();
-        collider.transform = Transform2D{
-            .position = static_cast<Vec2>(transform.position),
-            .theta = extractZRot(transform.rotation),
-            .scale = static_cast<Vec2>(transform.scale)
-        };
+        const auto& t = owner->GetTransform();
+        collider.transform = static_cast<Transform2D>(owner->GetTransform()) * transform;
 
         // Sync to PhysicsEngine
         auto& item = proxy.GetItem();

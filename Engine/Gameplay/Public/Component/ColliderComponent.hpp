@@ -12,6 +12,8 @@ namespace Smol
         SMOL_COMPONENT_BODY(ColliderComponent)
 
     private:
+        // local transform of collider
+        Transform2D transform;
         RectCollider collider;
         PhysicsProxy proxy;
 

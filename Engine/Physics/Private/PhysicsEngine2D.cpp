@@ -83,13 +83,17 @@ namespace Smol
                 auto& B = *jt;
                 auto handleB = jt.MakeHandle();
 
+                const auto filterA = (A.mask & B.layer) != 0;
+                const auto filterB = (B.mask & A.layer) != 0;
+
+                if(!filterA || !filterB)
+                    continue;
+
                 const auto result = Collide(A.shape, B.shape);
                 if(!result.overlapping)
                     continue;
 
                 auto key = MakeKey(handleA, handleB);
-                const auto filterA = (A.mask & B.layer) != 0;
-                const auto filterB = (B.mask & A.layer) != 0;
 
                 curr.insert(key);
                 hits.push_back({

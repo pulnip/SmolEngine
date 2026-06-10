@@ -94,7 +94,7 @@ namespace Smol
             const std::span<const Vec2> subject,
             const std::array<Vec2, 4>& clip,
             // at least 8
-            std::array<Vec2, 8> out
+            std::array<Vec2, 8>& out
         ) noexcept{
             std::array<Vec2, 8> src, dst;
 
@@ -237,7 +237,7 @@ namespace Smol
             detail::corners(b1),
             buf
         );
-        auto poly = std::span(buf).subspan(n);
+        auto poly = std::span(buf).first(n);
 
         return {
             .overlapping = true,
