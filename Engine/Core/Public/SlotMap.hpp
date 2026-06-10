@@ -241,6 +241,11 @@ namespace Smol
                 return index != other.index;
             }
 
+            Handle MakeHandle(){
+                auto gen = (*slots)[index].GetGeneration();
+                return Handle(index, gen);
+            }
+
         private:
             void skipFree() noexcept{
                 while(index < slots->size() && !(*slots)[index].IsUsing())
@@ -305,6 +310,11 @@ namespace Smol
             bool operator!=(const ConstIterator& other) const noexcept{
                 SMOL_ASSERT(slots == other.slots);
                 return index != other.index;
+            }
+
+            Handle MakeHandle(){
+                auto gen = (*slots)[index].GetGeneration();
+                return Handle(index, gen);
             }
 
         private:

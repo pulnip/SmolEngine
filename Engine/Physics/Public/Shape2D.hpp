@@ -23,13 +23,16 @@ namespace Smol
         RectCollider
     >;
 
-    inline constexpr auto Collide(const RectCollider& r0, const RectCollider& r1, Vec2 move) noexcept{
-        return SweepOBB2D(r0, r1, move);
+    inline constexpr auto Collide(const RectCollider& r0, const RectCollider& r1) noexcept{
+        return OverlapOBB2DEx(r0, r1);
     }
 
-    inline SweepResult2D Collide(const Shape2D& c0, const Shape2D& c1, Vec2 move){
-        return std::visit([move](const auto& s0, const auto& s1){
-            return Collide(s0, s1, move);
-        }, c0, c1);
+    inline OverlapResult2D Collide(const Shape2D& c0, const Shape2D& c1){
+        return std::visit(
+            [](const auto& c0, const auto& c1){
+                return Collide(c0, c1);
+            },
+            c0, c1
+        );
     }
 }

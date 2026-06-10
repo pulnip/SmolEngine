@@ -9,7 +9,39 @@
 #include "World.hpp"
 
 namespace{
-    void OnContact(Smol::Object* a, Smol::Object* b, const Smol::SweepResult2D& hit){
+    void OnEnter(
+        Smol::Object* a, Smol::Object* b,
+        const Smol::OverlapResult2D& hit
+    ){
+        SMOL_ASSERT(a != nullptr);
+        SMOL_ASSERT(a->IsA("ColliderComponent"));
+        SMOL_ASSERT(b != nullptr);
+        SMOL_ASSERT(b->IsA("ColliderComponent"));
+
+        using namespace Smol;
+
+        auto* ca= static_cast<ColliderComponent*>(a);
+        auto* cb = static_cast<ColliderComponent*>(b);
+    }
+
+    void OnStay(
+        Smol::Object* a, Smol::Object* b,
+        const Smol::OverlapResult2D& hit
+    ){
+        SMOL_ASSERT(a != nullptr);
+        SMOL_ASSERT(a->IsA("ColliderComponent"));
+        SMOL_ASSERT(b != nullptr);
+        SMOL_ASSERT(b->IsA("ColliderComponent"));
+
+        using namespace Smol;
+
+        auto* ca= static_cast<ColliderComponent*>(a);
+        auto* cb = static_cast<ColliderComponent*>(b);
+    }
+
+    void OnExit(
+        Smol::Object* a, Smol::Object* b
+    ){
         SMOL_ASSERT(a != nullptr);
         SMOL_ASSERT(a->IsA("ColliderComponent"));
         SMOL_ASSERT(b != nullptr);
@@ -25,7 +57,7 @@ namespace{
 namespace Smol
 {
     World::World()
-        : physicsEngine(OnContact)
+        : physicsEngine(OnEnter, OnStay, OnExit)
     {}
 
     World::~World(){
@@ -34,7 +66,7 @@ namespace Smol
 
     World::World(EngineService service)
         : service(service)
-        , physicsEngine(OnContact)
+        , physicsEngine(OnEnter, OnStay, OnExit)
     {}
 
     Actor* World::SpawnActor(StrView type, StrView name){
