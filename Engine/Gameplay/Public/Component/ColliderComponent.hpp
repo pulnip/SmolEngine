@@ -15,6 +15,8 @@ namespace Smol
         // local transform of collider
         Transform2D transform;
         RectCollider collider;
+        CollisionLayer layer = 0b0;
+        CollisionMask mask = 0b0;
         PhysicsProxy proxy;
 
     public:

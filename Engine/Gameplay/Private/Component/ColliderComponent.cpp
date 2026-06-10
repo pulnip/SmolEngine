@@ -10,6 +10,8 @@ namespace Smol
     SMOL_COMPONENT(ColliderComponent)
         .SetProperty("position", &ColliderComponent::transform, &Transform2D::position)
         .SetProperty("scale", &ColliderComponent::transform, &Transform2D::scale)
+        .SetProperty("layer", &ColliderComponent::layer)
+        .SetProperty("mask", &ColliderComponent::mask)
     SMOL_COMPONENT_END(ColliderComponent)
 
     void ColliderComponent::OnAttach(){
@@ -18,8 +20,8 @@ namespace Smol
         auto& physics = owner->GetWorld()->GetPhysics();
         proxy = physics.BindCollider(Collider2D{
             .shape = collider,
-            .layer = 0b1,
-            .mask = 0b1,
+            .layer = layer,
+            .mask = mask,
             .object = this
         });
     }
@@ -29,8 +31,12 @@ namespace Smol
         collider.transform = static_cast<Transform2D>(owner->GetTransform()) * transform;
 
         // Sync to PhysicsEngine
-        auto& item = proxy.GetItem();
-        item.shape = collider;
+        proxy.GetItem() = Collider2D{
+            .shape = collider,
+            .layer = layer,
+            .mask = mask,
+            .object = this
+        };
     }
 
     ColliderComponent::~ColliderComponent(){
