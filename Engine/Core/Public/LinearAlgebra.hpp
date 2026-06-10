@@ -143,12 +143,27 @@ namespace Smol
             std::cos(half)
         };
     }
-    inline auto yaw(Vec4 quat) noexcept{
-        f32 siny_cosp = 2*(quat.w*quat.y + quat.x*quat.z);
-        f32 cosy_cosp = 1 - 2*(quat.y*quat.y + quat.x*quat.x);
-        f32 theta = std::atan2(siny_cosp, cosy_cosp);
-        return rotateY(theta);
+
+    inline auto extractYRot(Vec4 quat) noexcept{
+        f32 siny_cosx = 2*(quat.w*quat.y + quat.x*quat.z);
+        f32 cosy_cosx = 1 - 2*(quat.y*quat.y + quat.x*quat.x);
+
+        return std::atan2(siny_cosx, cosy_cosx);
     }
+    inline auto extractZRot(Vec4 quat) noexcept{
+        f32 sinz_cosx = 2*(quat.w*quat.z + quat.x*quat.y);
+        f32 cosz_cosx = 1 - 2*(quat.y*quat.y + quat.z*quat.z);
+
+        return std::atan2(sinz_cosx, cosz_cosx);
+    }
+
+    inline auto extractYQuat(Vec4 quat) noexcept{
+        return rotateY(extractYRot(quat));
+    }
+    inline auto extractZQuat(Vec4 quat) noexcept{
+        return rotateZ(extractZRot(quat));
+    }
+
     inline auto axisAngle(Vec3 axis, f32 radian) noexcept{
         auto half = radian / 2;
         f32 s = std::sin(half);

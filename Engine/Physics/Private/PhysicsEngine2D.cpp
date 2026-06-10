@@ -1,5 +1,6 @@
 #include <vector>
 #include "Assert.hpp"
+#include "Collider2D.hpp"
 #include "Geometry/Overlap2D.hpp"
 #include "Object.hpp"
 #include "Shape2D.hpp"
@@ -7,6 +8,37 @@
 
 namespace Smol
 {
+    PhysicsProxy::PhysicsProxy(PhysicsProxy&& other) noexcept
+        : handle(other.handle)
+        , engine(other.engine)
+    {
+        other.handle = Handle::InvalidHandle();
+        other.engine = nullptr;
+    }
+    PhysicsProxy& PhysicsProxy::operator=(PhysicsProxy&& other) noexcept{
+        handle = other.handle;
+        engine = other.engine;
+
+        other.handle = Handle::InvalidHandle();
+        other.engine = nullptr;
+
+        return *this;
+    }
+
+    PhysicsProxy::~PhysicsProxy(){
+        if(IsValid()){
+            engine->Unbind(handle);
+
+            handle = Handle::InvalidHandle();
+            engine = nullptr;
+        }
+    }
+
+    Collider2D& PhysicsProxy::GetItem() noexcept{
+        SMOL_ASSERT(engine != nullptr);
+        return engine->GetItem(handle);
+    }
+
     PhysicsEngine2D::PhysicsEngine2D(
         OnEnterCallback&& onEnter,
         OnStayCallback&& onStay,
@@ -21,11 +53,12 @@ namespace Smol
         SMOL_ASSERT(this->onExit != nullptr);
     }
 
-    PhysicsEngine2D::Handle PhysicsEngine2D::BindCollider(Collider2D collider){
+    PhysicsProxy PhysicsEngine2D::BindCollider(Collider2D collider){
         SMOL_ASSERT(collider.object != nullptr);
         SMOL_ASSERT(collider.object->IsA("ColliderComponent"));
 
-        return colliders.push(collider);
+        auto handle = colliders.push(collider);
+        return PhysicsProxy(handle, *this);
     }
 
     void PhysicsEngine2D::Update(){
@@ -100,5 +133,13 @@ namespace Smol
         }
 
         destroyScratch.clear();
+    }
+
+    Collider2D& PhysicsEngine2D::GetItem(Handle handle){
+        return colliders.get(handle);
+    }
+
+    void PhysicsEngine2D::Unbind(Handle handle){
+        colliders.remove(handle);
     }
 }

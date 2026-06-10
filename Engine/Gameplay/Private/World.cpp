@@ -11,7 +11,7 @@
 namespace{
     void OnEnter(
         Smol::Object* a, Smol::Object* b,
-        const Smol::OverlapResult2D& hit
+        const Smol::OverlapResult2D& result
     ){
         SMOL_ASSERT(a != nullptr);
         SMOL_ASSERT(a->IsA("ColliderComponent"));
@@ -20,13 +20,15 @@ namespace{
 
         using namespace Smol;
 
-        auto* ca= static_cast<ColliderComponent*>(a);
-        auto* cb = static_cast<ColliderComponent*>(b);
+        auto ca= static_cast<ColliderComponent*>(a);
+        auto cb = static_cast<ColliderComponent*>(b);
+
+        ca->NotifyBeginOverlap(cb, result);
     }
 
     void OnStay(
         Smol::Object* a, Smol::Object* b,
-        const Smol::OverlapResult2D& hit
+        const Smol::OverlapResult2D& result
     ){
         SMOL_ASSERT(a != nullptr);
         SMOL_ASSERT(a->IsA("ColliderComponent"));
@@ -35,8 +37,10 @@ namespace{
 
         using namespace Smol;
 
-        auto* ca= static_cast<ColliderComponent*>(a);
-        auto* cb = static_cast<ColliderComponent*>(b);
+        auto ca= static_cast<ColliderComponent*>(a);
+        auto cb = static_cast<ColliderComponent*>(b);
+
+        ca->NotifyStayOverlap(cb, result);
     }
 
     void OnExit(
@@ -49,8 +53,10 @@ namespace{
 
         using namespace Smol;
 
-        auto* ca= static_cast<ColliderComponent*>(a);
-        auto* cb = static_cast<ColliderComponent*>(b);
+        auto ca= static_cast<ColliderComponent*>(a);
+        auto cb = static_cast<ColliderComponent*>(b);
+
+        ca->NotifyEndOverlap(cb);
     }
 }
 

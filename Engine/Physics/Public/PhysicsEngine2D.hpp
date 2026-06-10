@@ -11,17 +11,41 @@
 
 namespace Smol
 {
-    enum class ContactPhase{
-        Enter,
-        Stay,
-        Exit
-    };
-
     class Object;
+    class PhysicsEngine2D;
 
-    class PhysicsEngine2D final{
+    class PhysicsProxy final{
+    public:
         using Handle = GenericHandle<Collider2D>;
 
+    private:
+        Handle handle = Handle::InvalidHandle();
+        PhysicsEngine2D* engine = nullptr;
+
+    public:
+        PhysicsProxy() noexcept = default;
+        ~PhysicsProxy();
+        SMOL_DECLARE_NON_COPYABLE(PhysicsProxy);
+        PhysicsProxy(PhysicsProxy&&) noexcept;
+        PhysicsProxy& operator=(PhysicsProxy&&) noexcept;
+
+        PhysicsProxy(Handle handle, PhysicsEngine2D& engine)
+            : handle(handle), engine(&engine){}
+
+        bool IsValid() const noexcept{
+            auto isEngineValid = engine != nullptr;
+            auto isHandleValid = handle.IsValid();
+
+            return isEngineValid && isHandleValid;
+        }
+        Collider2D& GetItem() noexcept;
+    };
+
+    class PhysicsEngine2D final{
+    public:
+        using Handle = PhysicsProxy::Handle;
+
+    private:
         struct PairKey{
             Handle a, b;
 
@@ -61,7 +85,7 @@ namespace Smol
 
         PhysicsEngine2D(OnEnterCallback&&, OnStayCallback&&, OnExitCallback&&) noexcept;
 
-        Handle BindCollider(Collider2D);
+        PhysicsProxy BindCollider(Collider2D);
 
         void Update();
 
@@ -73,5 +97,11 @@ namespace Smol
         std::vector<Handle> destroyScratch;
 
         void flushDestroy();
+
+    private:
+        friend class PhysicsProxy;
+
+        Collider2D& GetItem(Handle);
+        void Unbind(Handle);
     };
 }

@@ -96,6 +96,9 @@ namespace Smol
         SpriteRenderer* GetSpriteRenderer() const noexcept{
             return service.spriteRenderer;
         }
+        PhysicsEngine2D& GetPhysics() noexcept{
+            return physicsEngine;
+        }
 
     private:
         std::vector<Handle> destroyScratch;

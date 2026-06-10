@@ -95,6 +95,9 @@ namespace Smol
 
         void Destroy();
 
+        // for skip
+        bool IsWorldShutdown() const noexcept;
+
     protected:
         virtual void OnUpdate(f32){}
 
@@ -112,10 +115,6 @@ namespace Smol
         Handle handle = Handle::InvalidHandle();
 
         void MarkManaged(World* world, Handle handle);
-
-    protected:
-        // for skip
-        bool IsWorldShutdown() const noexcept;
     };
 }
 
