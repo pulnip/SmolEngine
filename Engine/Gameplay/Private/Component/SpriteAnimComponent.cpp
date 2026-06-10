@@ -44,9 +44,11 @@ namespace Smol
         // TODO. change later
         if(auto it = animations.find("walk"); it != animations.end()){
             auto& animation = it->second;
+            startRow = animation.startRow;
+            startCol = animation.startCol;
             item.offset = {
-                static_cast<float>(animation.startCol),
-                static_cast<float>(animation.startRow)
+                static_cast<float>(startCol),
+                static_cast<float>(startRow)
             };
             frameCount = animation.frameCount;
             framePerSeconds = animation.frameDurationMs / 1000.0f;
@@ -71,7 +73,10 @@ namespace Smol
         if(synced) return;
 
         auto& item = proxy.GetRenderItem();
-        item.offset = Vec2{static_cast<f32>(iframe), 0.0f};
+        item.offset = Vec2{
+            static_cast<f32>(startCol + iframe),
+            static_cast<f32>(startRow)
+        };
 
         synced = true;
     }

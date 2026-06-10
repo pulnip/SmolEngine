@@ -17,6 +17,8 @@ namespace Smol
     private:
         using Handle = GenericHandle<SpriteResource>;
         Handle handle;
+        u32 startRow = 0;
+        u32 startCol = 0;
         u32 frameCount = 1;
         f32 framePerSeconds = 0.16f;
 
