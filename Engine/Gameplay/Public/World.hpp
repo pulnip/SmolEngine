@@ -81,8 +81,6 @@ namespace Smol
         // Spawn user-defined Actor for engine
         Actor* SpawnActor(StrView type, StrView name);
 
-        void MarkDestroy(Handle);
-
         void Start();
 
         void Update(f32 deltaTime);
@@ -103,6 +101,17 @@ namespace Smol
         PhysicsEngine2D& GetPhysics() noexcept{
             return physicsEngine;
         }
+
+    private:
+        friend class Actor;
+
+        // Call Order
+        // 1. Actor::Destroy()
+        // 2. World::MarkDestroy()
+        // 3. Actor invalidates...
+        //     (1) its own handle
+        //     (2) pointer to world
+        void MarkDestroy(Handle);
 
     private:
         std::vector<Handle> destroyScratch;
