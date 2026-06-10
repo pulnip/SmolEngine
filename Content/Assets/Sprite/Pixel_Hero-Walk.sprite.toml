@@ -1,0 +1,16 @@
+[metadata]
+version = 0
+name = "Walk"
+type = "sprite"
+
+[sheet]
+image = "Assets/Sprite/Pixel_Hero-Walk.png"
+rows = 1
+columns = 6
+
+[[animations]]
+name = "walk"
+start_row = 0
+start_col = 0
+frame_count = 6
+frame_duration_ms = 160

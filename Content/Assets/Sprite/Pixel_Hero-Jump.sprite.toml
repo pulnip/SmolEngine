@@ -1,0 +1,16 @@
+[metadata]
+version = 0
+name = "Jump"
+type = "sprite"
+
+[sheet]
+image = "Assets/Sprite/Pixel_Hero-Jump.png"
+rows = 1
+columns = 8
+
+[[animations]]
+name = "walk"   # TODO. 현재 스프라이트 애니메이션이 walk라는 이름에서만 동작되기 때문에 walk로 작성, 기능 지원시 추후 수정 예정
+start_row = 0
+start_col = 0
+frame_count = 8
+frame_duration_ms = 160
