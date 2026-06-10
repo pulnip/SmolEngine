@@ -104,6 +104,8 @@ namespace Smol
     }
 
     void World::Update(f32 deltaTime){
+        physicsEngine.Update();
+
         for(auto& actor: actors){
             actor->Update(deltaTime);
         }
