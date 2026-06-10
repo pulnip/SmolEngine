@@ -49,6 +49,7 @@ PUBLIC
     Smol::Core
     "$<LINK_LIBRARY:WHOLE_ARCHIVE,Smol::Reflection>"
     Smol::Input
+    Smol::Physics
     Smol::Render
     Smol::Resource
 PRIVATE

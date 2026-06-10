@@ -38,6 +38,8 @@ namespace Smol
         Actor& operator=(Actor&&) noexcept;
         SMOL_DECLARE_NON_COPYABLE(Actor)
 
+        virtual void OnStart(){}
+
         void Update(f32);
 
         // Built-in Component, Called both engine and user
@@ -95,6 +97,9 @@ namespace Smol
 
         void Destroy();
 
+        // for skip
+        bool IsWorldShutdown() const noexcept;
+
     protected:
         virtual void OnUpdate(f32){}
 
@@ -112,10 +117,6 @@ namespace Smol
         Handle handle = Handle::InvalidHandle();
 
         void MarkManaged(World* world, Handle handle);
-
-    protected:
-        // for skip
-        bool IsWorldShutdown() const noexcept;
     };
 }
 

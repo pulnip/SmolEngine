@@ -1,4 +1,5 @@
 #include "ExampleActor.hpp"
+#include "ColliderComponent.hpp"
 #include "InputAction.hpp"
 #include "LogLocal.hpp"
 #include "MoveComponent.hpp"
@@ -6,6 +7,14 @@
 
 SMOL_ACTOR(ExampleActor, Smol::Pawn)
 SMOL_ACTOR_END(ExampleActor)
+
+void ExampleActor::OnStart(){
+    auto collider = GetComponent<Smol::ColliderComponent>();
+
+    collider->OnBeginOverlap(this, &ExampleActor::OnOverlapBegin);
+    collider->OnStayOverlap(this, &ExampleActor::OnOverlapStay);
+    collider->OnEndOverlap(this, &ExampleActor::OnOverlapEnd);
+}
 
 void ExampleActor::OnUpdate(float dt){
     // LOG_INFO("ExampleActor Update");
@@ -35,7 +44,7 @@ void ExampleActor::PossessedBy(Smol::CharacterController& controller){
 void ExampleActor::OnMoveStarted(Smol::InputValue v){
     auto dir = v.GetAxis3D();
 
-    LOG_INFO("Start Move to {}", dir);
+    LOG_DEBUG("Start Move to {}", dir);
 
     auto moveComponent = GetComponent<Smol::MoveComponent>();
     if(moveComponent != nullptr){
@@ -46,7 +55,7 @@ void ExampleActor::OnMoveStarted(Smol::InputValue v){
 void ExampleActor::OnMoveTriggered(Smol::InputValue v){
     auto dir = v.GetAxis3D();
 
-    LOG_INFO("Trigger Move to {}", dir);
+    LOG_DEBUG("Trigger Move to {}", dir);
 
     auto moveComponent = GetComponent<Smol::MoveComponent>();
     if(moveComponent != nullptr){
@@ -57,10 +66,33 @@ void ExampleActor::OnMoveTriggered(Smol::InputValue v){
 void ExampleActor::OnMoveFinished(Smol::InputValue v){
     auto dir = v.GetAxis3D();
 
-    LOG_INFO("Finish Move to {}", dir);
+    LOG_DEBUG("Finish Move to {}", dir);
 
     auto moveComponent = GetComponent<Smol::MoveComponent>();
     if(moveComponent != nullptr){
         moveComponent->SetDirection(Smol::zeros());
     }
+}
+
+void ExampleActor::OnOverlapBegin(
+    Smol::ColliderComponent*,
+    Smol::Actor*, Smol::ColliderComponent*,
+    const Smol::OverlapResult2D& result
+){
+    LOG_INFO(" Overlap Start. {}", result.contactPoint);
+}
+
+void ExampleActor::OnOverlapStay(
+    Smol::ColliderComponent*,
+    Smol::Actor*, Smol::ColliderComponent*,
+    const Smol::OverlapResult2D& result
+){
+    // LOG_INFO("Overlap Stay. {}", result.contactPoint);
+}
+
+void ExampleActor::OnOverlapEnd(
+    Smol::ColliderComponent*,
+    Smol::Actor*, Smol::ColliderComponent*
+){
+    LOG_INFO("Overlap End.");
 }

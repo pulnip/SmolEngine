@@ -1,6 +1,7 @@
 #include "AppConfig.hpp"
 #include "AppMainLoop.hpp"
 #include "CharacterController.hpp"
+#include "ColliderComponent.hpp"
 #include "CommandListPool.hpp"
 #include "InputComponent.hpp"
 #include "LogLocal.hpp"
@@ -54,6 +55,10 @@ namespace{
         else if(*type == "SpriteComponent"){
             auto component = createComponent<SpriteComponent>(actor, dom);
             component->OnAttach(dom, contentRoot);
+        }
+        else if(*type == "ColliderComponent"){
+            auto component = createComponent<ColliderComponent>(actor, dom);
+            component->OnAttach();
         }
         else{
             // user-defined Component
@@ -185,6 +190,8 @@ namespace Smol
 
     bool AppMainLoop::Initialize(){
         timer.Reset();
+
+        world.Start();
 
         return true;
     }

@@ -28,6 +28,8 @@ namespace Smol
         virtual void Update(f32){}
 
         void MarkManaged(Actor* owner) noexcept;
+
+        Actor* GetOwner() const noexcept{ return owner; }
     };
 
     template<typename Derived>

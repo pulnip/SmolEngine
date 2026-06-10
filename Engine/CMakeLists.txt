@@ -17,6 +17,7 @@ endif()
 add_subdirectory(Resource)
 # 3-0) Subsystem Layer
 add_subdirectory(Input)
+add_subdirectory(Physics)
 add_subdirectory(Render)
 # add_subdirectory(Scene)
 # 3-1) Gameplay Layer

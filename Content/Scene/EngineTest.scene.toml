@@ -1,0 +1,60 @@
+[metadata]
+version = 0
+name = "Example"
+type = "scene"
+
+[[actors]]
+type = "CharacterController"
+name = "PlayerController"
+[[actors.components]]
+type = "InputComponent"
+
+[[actors]]
+type = "ExampleActor"
+position = [5, 3, 0]
+name = "Player"
+possessed_by = "PlayerController"
+[[actors.components]]
+type = "SpriteAnimComponent"
+sprite = "Assets/Sprite/hollow_knight.sprite.toml"
+image_path = "Assets/Sprite/hollow_knight.png"
+sprite_scale = [8, 8]
+[[actors.components]]
+type = "MoveComponent"
+speed = 16
+scale = 5.0
+[[actors.components]]
+type = "ColliderComponent"
+scale = [3, 7]
+layer = 0b1
+mask = 0b1
+
+[[actors]]
+type = "Actor"
+position = [-12, 5, 0]
+name = "NPC"
+[[actors.components]]
+type = "SpriteComponent"
+sprite = "Assets/Sprite/hollow_knight.sprite.toml"
+image_path = "Assets/Sprite/hollow_knight.png"
+sprite_scale = [8, 8]
+[[actors.components]]
+type = "ColliderComponent"
+scale = [3, 7]
+layer = 0b1
+mask = 0b0
+
+[[actors]]
+type = "Actor"
+position = [12, 5, 0]
+name = "NPC2"
+[[actors.components]]
+type = "SpriteComponent"
+sprite = "Assets/Sprite/hollow_knight.sprite.toml"
+image_path = "Assets/Sprite/hollow_knight.png"
+sprite_scale = [8, 8]
+[[actors.components]]
+type = "ColliderComponent"
+scale = [3, 7]
+layer = 0b1
+mask = 0

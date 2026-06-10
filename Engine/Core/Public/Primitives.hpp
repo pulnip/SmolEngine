@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <format>
@@ -405,10 +406,44 @@ namespace Smol
         u32 x = 0, y = 0;
     };
 
+    struct Transform;
+
+    struct Transform2D{
+        Vec2 position;
+        f32 theta;
+        Vec2 scale;
+
+        constexpr operator Transform() const noexcept;
+    };
+
+    inline constexpr Transform2D operator*(Transform2D lhs, Transform2D rhs) noexcept{
+        return Transform2D{
+            .position = lhs.position + rhs.position,
+            .theta = lhs.theta + rhs.theta,
+            .scale = lhs.scale * rhs.scale
+        };
+    }
+
+    inline auto extractZRot(Vec4 quat) noexcept{
+        f32 sinz_cosx = 2*(quat.w*quat.z + quat.x*quat.y);
+        f32 cosz_cosx = 1 - 2*(quat.y*quat.y + quat.z*quat.z);
+
+        return std::atan2(sinz_cosx, cosz_cosx);
+    }
+
     struct Transform{
         Vec3 position;
         Vec4 rotation;
         Vec3 scale;
+
+        // Defined in LinearAlgebra.hpp
+        explicit constexpr operator Transform2D() const noexcept{
+            return Transform2D{
+                .position = static_cast<Vec2>(position),
+                .theta = extractZRot(rotation),
+                .scale = static_cast<Vec2>(scale)
+            };
+        }
     };
 }
 

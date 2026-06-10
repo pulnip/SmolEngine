@@ -4,7 +4,7 @@
 #include <vector>
 #include "Actor.hpp"
 #include "GenericHandle.hpp"
-#include "PtrUtil.hpp"
+#include "PhysicsEngine2D.hpp"
 #include "Resource.hpp"
 #include "Semantics.hpp"
 #include "SlotMap.hpp"
@@ -28,6 +28,8 @@ namespace Smol
         class Value;
     }
 
+    struct OverlapResult2D;
+
     class World final{
     private:
         using Handle = GenericHandle<ActorRAII>;
@@ -43,13 +45,14 @@ namespace Smol
 
         EngineService service;
 
+        PhysicsEngine2D physicsEngine;
+
     public:
         World();
         ~World();
-        SMOL_DECLARE_MOVE_ONLY(World)
+        SMOL_DECLARE_PINNED(World)
 
-        World(EngineService service)
-            : service(service){}
+        World(EngineService service);
 
         template<std::derived_from<Actor> T>
         T* SpawnActor(Str name = {}){
@@ -80,6 +83,8 @@ namespace Smol
 
         void MarkDestroy(Handle);
 
+        void Start();
+
         void Update(f32 deltaTime);
 
         Actor* FindActorByName(StrView name) const;
@@ -95,6 +100,9 @@ namespace Smol
         SpriteRenderer* GetSpriteRenderer() const noexcept{
             return service.spriteRenderer;
         }
+        PhysicsEngine2D& GetPhysics() noexcept{
+            return physicsEngine;
+        }
 
     private:
         std::vector<Handle> destroyScratch;
@@ -102,5 +110,9 @@ namespace Smol
         void manageActor(ActorRAII&& actor, Str name);
 
         void flushDestroy();
+
+        void OnEnter(Object*, Object*, const OverlapResult2D&);
+        void OnStay(Object*, Object*, const OverlapResult2D&);
+        void OnExit(Object*, Object*);
     };
 }
