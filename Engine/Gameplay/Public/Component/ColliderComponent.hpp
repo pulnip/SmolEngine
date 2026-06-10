@@ -109,6 +109,9 @@ namespace Smol
         }
 
     private:
+        RectCollider getWorldCollider() const;
+
+    private:
         friend class World;
 
         void NotifyBeginOverlap(ColliderComponent* other, const OverlapResult2D& result);

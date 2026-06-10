@@ -1,7 +1,6 @@
 #include "Actor.hpp"
 #include "ColliderComponent.hpp"
 #include "Collider2D.hpp"
-#include "LogLocal.hpp"
 #include "Primitives.hpp"
 #include "World.hpp"
 
@@ -19,7 +18,7 @@ namespace Smol
 
         auto& physics = owner->GetWorld()->GetPhysics();
         proxy = physics.BindCollider(Collider2D{
-            .shape = collider,
+            .shape = getWorldCollider(),
             .layer = layer,
             .mask = mask,
             .object = this
@@ -27,12 +26,9 @@ namespace Smol
     }
 
     void ColliderComponent::Update(f32 dt){
-        const auto& t = owner->GetTransform();
-        collider.transform = static_cast<Transform2D>(owner->GetTransform()) * transform;
-
         // Sync to PhysicsEngine
         proxy.GetRef() = Collider2D{
-            .shape = collider,
+            .shape = getWorldCollider(),
             .layer = layer,
             .mask = mask,
             .object = this
@@ -46,6 +42,16 @@ namespace Smol
             return;
 
         auto& physics = owner->GetWorld()->GetPhysics();
+    }
+
+    RectCollider ColliderComponent::getWorldCollider() const{
+        SMOL_ASSERT(owner != nullptr);
+        const auto& t = owner->GetTransform();
+
+        RectCollider c = collider;
+        c.transform = static_cast<Transform2D>(owner->GetTransform()) * transform;
+
+        return c;
     }
 
     void ColliderComponent::NotifyBeginOverlap(
