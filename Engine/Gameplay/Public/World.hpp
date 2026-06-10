@@ -28,6 +28,8 @@ namespace Smol
         class Value;
     }
 
+    struct OverlapResult2D;
+
     class World final{
     private:
         using Handle = GenericHandle<ActorRAII>;
@@ -81,6 +83,8 @@ namespace Smol
 
         void MarkDestroy(Handle);
 
+        void Start();
+
         void Update(f32 deltaTime);
 
         Actor* FindActorByName(StrView name) const;
@@ -106,5 +110,9 @@ namespace Smol
         void manageActor(ActorRAII&& actor, Str name);
 
         void flushDestroy();
+
+        void OnEnter(Object*, Object*, const OverlapResult2D&);
+        void OnStay(Object*, Object*, const OverlapResult2D&);
+        void OnExit(Object*, Object*);
     };
 }

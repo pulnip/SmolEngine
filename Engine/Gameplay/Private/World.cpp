@@ -8,62 +8,14 @@
 #include "PtrUtil.hpp"
 #include "World.hpp"
 
-namespace{
-    void OnEnter(
-        Smol::Object* a, Smol::Object* b,
-        const Smol::OverlapResult2D& result
-    ){
-        SMOL_ASSERT(a != nullptr);
-        SMOL_ASSERT(a->IsA("ColliderComponent"));
-        SMOL_ASSERT(b != nullptr);
-        SMOL_ASSERT(b->IsA("ColliderComponent"));
-
-        using namespace Smol;
-
-        auto ca= static_cast<ColliderComponent*>(a);
-        auto cb = static_cast<ColliderComponent*>(b);
-
-        ca->NotifyBeginOverlap(cb, result);
-    }
-
-    void OnStay(
-        Smol::Object* a, Smol::Object* b,
-        const Smol::OverlapResult2D& result
-    ){
-        SMOL_ASSERT(a != nullptr);
-        SMOL_ASSERT(a->IsA("ColliderComponent"));
-        SMOL_ASSERT(b != nullptr);
-        SMOL_ASSERT(b->IsA("ColliderComponent"));
-
-        using namespace Smol;
-
-        auto ca= static_cast<ColliderComponent*>(a);
-        auto cb = static_cast<ColliderComponent*>(b);
-
-        ca->NotifyStayOverlap(cb, result);
-    }
-
-    void OnExit(
-        Smol::Object* a, Smol::Object* b
-    ){
-        SMOL_ASSERT(a != nullptr);
-        SMOL_ASSERT(a->IsA("ColliderComponent"));
-        SMOL_ASSERT(b != nullptr);
-        SMOL_ASSERT(b->IsA("ColliderComponent"));
-
-        using namespace Smol;
-
-        auto ca= static_cast<ColliderComponent*>(a);
-        auto cb = static_cast<ColliderComponent*>(b);
-
-        ca->NotifyEndOverlap(cb);
-    }
-}
-
 namespace Smol
 {
     World::World()
-        : physicsEngine(OnEnter, OnStay, OnExit)
+        : physicsEngine(
+            [this](Object* a, Object* b, const OverlapResult2D& r){ OnEnter(a, b, r); },
+            [this](Object* a, Object* b, const OverlapResult2D& r){ OnStay(a, b, r); },
+            [this](Object* a, Object* b){ OnExit(a, b); }
+        )
     {}
 
     World::~World(){
@@ -72,7 +24,11 @@ namespace Smol
 
     World::World(EngineService service)
         : service(service)
-        , physicsEngine(OnEnter, OnStay, OnExit)
+        , physicsEngine(
+            [this](Object* a, Object* b, const OverlapResult2D& r){ OnEnter(a, b, r); },
+            [this](Object* a, Object* b, const OverlapResult2D& r){ OnStay(a, b, r); },
+            [this](Object* a, Object* b){ OnExit(a, b); }
+        )
     {}
 
     Actor* World::SpawnActor(StrView type, StrView name){
@@ -101,6 +57,12 @@ namespace Smol
 
         handleMap[name] = handle;
         handleToName[handle] = name;
+    }
+
+    void World::Start(){
+        for(auto& actor: actors){
+            actor->OnStart();
+        }
     }
 
     void World::Update(f32 deltaTime){
@@ -145,5 +107,55 @@ namespace Smol
             handleToName.erase(it);
         }
         destroyScratch.clear();
+    }
+
+    void World::OnEnter(
+        Smol::Object* a, Smol::Object* b,
+        const Smol::OverlapResult2D& result
+    ){
+        SMOL_ASSERT(a != nullptr);
+        SMOL_ASSERT(a->IsA("ColliderComponent"));
+        SMOL_ASSERT(b != nullptr);
+        SMOL_ASSERT(b->IsA("ColliderComponent"));
+
+        using namespace Smol;
+
+        auto ca= static_cast<ColliderComponent*>(a);
+        auto cb = static_cast<ColliderComponent*>(b);
+
+        ca->NotifyBeginOverlap(cb, result);
+    }
+
+    void World::OnStay(
+        Smol::Object* a, Smol::Object* b,
+        const Smol::OverlapResult2D& result
+    ){
+        SMOL_ASSERT(a != nullptr);
+        SMOL_ASSERT(a->IsA("ColliderComponent"));
+        SMOL_ASSERT(b != nullptr);
+        SMOL_ASSERT(b->IsA("ColliderComponent"));
+
+        using namespace Smol;
+
+        auto ca= static_cast<ColliderComponent*>(a);
+        auto cb = static_cast<ColliderComponent*>(b);
+
+        ca->NotifyStayOverlap(cb, result);
+    }
+
+    void World::OnExit(
+        Smol::Object* a, Smol::Object* b
+    ){
+        SMOL_ASSERT(a != nullptr);
+        SMOL_ASSERT(a->IsA("ColliderComponent"));
+        SMOL_ASSERT(b != nullptr);
+        SMOL_ASSERT(b->IsA("ColliderComponent"));
+
+        using namespace Smol;
+
+        auto ca= static_cast<ColliderComponent*>(a);
+        auto cb = static_cast<ColliderComponent*>(b);
+
+        ca->NotifyEndOverlap(cb);
     }
 }

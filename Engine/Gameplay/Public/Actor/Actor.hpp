@@ -38,6 +38,8 @@ namespace Smol
         Actor& operator=(Actor&&) noexcept;
         SMOL_DECLARE_NON_COPYABLE(Actor)
 
+        virtual void OnStart(){}
+
         void Update(f32);
 
         // Built-in Component, Called both engine and user
