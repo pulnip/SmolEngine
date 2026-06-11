@@ -2,6 +2,7 @@ smol_declare_module(Render)
 
 target_link_libraries(SmolRender
 PUBLIC
+    Smol::Canvas2D
     Smol::Core
     Smol::Resource
     Smol::RHI

@@ -174,6 +174,7 @@ namespace Smol
             &os.GetInputProvider()
         )
         , spriteRenderer(device, spriteManager)
+        , shapeRenderer(device)
         , world(EngineService{
             .spriteManager = &spriteManager,
             .inputManager = &inputManager,
@@ -230,6 +231,8 @@ namespace Smol
             .minDepth = 0, .maxDepth = 1
         });
         spriteRenderer.Draw(cmdList);
+
+        shapeRenderer.Draw(swapchain);
 
         cmdList.EndRenderPass();
         // End RenderPass for backbuffer

@@ -6,6 +6,7 @@
 #include "Resource.hpp"
 #include "ResourceManager.hpp"
 #include "RHIFWD.hpp"
+#include "ShapeRenderer.hpp"
 #include "SpriteRenderer.hpp"
 #include "Timer.hpp"
 #include "World.hpp"
@@ -22,6 +23,7 @@ namespace Smol
 
         InputManager inputManager;
         SpriteRenderer spriteRenderer;
+        ShapeRenderer shapeRenderer;
 
         World world;
 
