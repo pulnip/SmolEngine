@@ -25,7 +25,7 @@ PRIVATE
 )
 
 target_link_libraries(SmolApp
-INTERFACE
+PRIVATE
     "$<LINK_LIBRARY:WHOLE_ARCHIVE,MyGame>"
 )
 
