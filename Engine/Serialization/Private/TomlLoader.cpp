@@ -1,5 +1,5 @@
 #include <toml++/toml.hpp>
-#include "PathUtil.hpp"
+#include "StringUtil.hpp"
 #include "TomlLoader.hpp"
 
 namespace Smol

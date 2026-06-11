@@ -5,7 +5,6 @@
 #include "Assert.hpp"
 #include "ImageLoader.hpp"
 #include "LogLocal.hpp"
-#include "PathUtil.hpp"
 #include "StringUtil.hpp"
 
 namespace{
