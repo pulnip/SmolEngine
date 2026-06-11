@@ -1,8 +1,10 @@
 #pragma once
 
 #include <filesystem>
+#include <format>
 #include <functional>
 #include <unordered_map>
+#include <string>
 #include <vector>
 #include "Primitives.hpp"
 
@@ -22,4 +24,22 @@ namespace Smol
 
     Str readFileAsString(const std::filesystem::path&);
     std::vector<u8> readFileAsBinary(const std::filesystem::path&);
+
+    std::string toUTF8String(const std::filesystem::path& path);
+#ifdef _WIN32
+    std::wstring toUTF16String(std::string_view utf8Str);
+#endif
+
+    std::filesystem::path getExecutableDir();
+    std::filesystem::path getAbsolutePath(const std::filesystem::path&);
+
+    std::filesystem::path toPath(const char* utf8Str);
 }
+
+template<>
+struct std::formatter<std::filesystem::path>: std::formatter<std::string>{
+    inline auto format(const std::filesystem::path& p, auto& ctx) const{
+        auto u8str = Smol::toUTF8String(p);
+        return std::formatter<std::string>::format(u8str, ctx);
+    }
+};

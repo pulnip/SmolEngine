@@ -69,7 +69,7 @@ namespace Smol
                 throw std::runtime_error("No compatible DX11 adapter found");
             }
 
-            UINT deviceFlags = 0;
+            UINT deviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
         #if defined(_DEBUG) || !defined(NDEBUG)
             deviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
         #endif

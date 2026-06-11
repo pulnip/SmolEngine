@@ -4,6 +4,7 @@
 #include "ColliderComponent.hpp"
 #include "CommandListPool.hpp"
 #include "InputComponent.hpp"
+#include "LineRenderer.hpp"
 #include "LogLocal.hpp"
 #include "MoveComponent.hpp"
 #include "OS.hpp"
@@ -44,6 +45,9 @@ namespace{
 
         if(*type == "InputComponent"){
             createComponent<InputComponent>(actor, dom);
+        }
+        else if(*type == "LineRenderer"){
+            createComponent<LineRenderer>(actor, dom);
         }
         else if(*type == "MoveComponent"){
             createComponent<MoveComponent>(actor, dom);
@@ -174,10 +178,12 @@ namespace Smol
             &os.GetInputProvider()
         )
         , spriteRenderer(device, spriteManager)
+        , shapeRenderer(device)
         , world(EngineService{
             .spriteManager = &spriteManager,
             .inputManager = &inputManager,
             .spriteRenderer = &spriteRenderer,
+            .shapeRenderer = &shapeRenderer,
         })
     {
         const auto contentRoot = config.project.content_root;
@@ -230,6 +236,8 @@ namespace Smol
             .minDepth = 0, .maxDepth = 1
         });
         spriteRenderer.Draw(cmdList);
+
+        shapeRenderer.Draw(swapchain);
 
         cmdList.EndRenderPass();
         // End RenderPass for backbuffer

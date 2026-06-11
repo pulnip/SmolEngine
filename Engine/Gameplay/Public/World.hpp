@@ -15,12 +15,14 @@ namespace Smol
     template<Resource T>
     class ResourceManager;
     class IInputManager;
+    class ShapeRenderer;
     class SpriteRenderer;
 
     struct EngineService{
         ResourceManager<SpriteResource>* spriteManager = nullptr;
         IInputManager* inputManager = nullptr;
         SpriteRenderer* spriteRenderer = nullptr;
+        ShapeRenderer* shapeRenderer = nullptr;
     };
 
     namespace DOM
@@ -96,6 +98,9 @@ namespace Smol
         }
         IInputManager* GetInputManager() const noexcept{
             return service.inputManager;
+        }
+        ShapeRenderer* GetShapeRenderer() const noexcept{
+            return service.shapeRenderer;
         }
         SpriteRenderer* GetSpriteRenderer() const noexcept{
             return service.spriteRenderer;

@@ -30,6 +30,7 @@ if(RENDER_BACKEND STREQUAL "DX11")
     target_link_libraries(SmolApp
     PRIVATE
         Smol::DX11RHI
+        Smol::D2DCanvas
     )
 elseif(RENDER_BACKEND STREQUAL "Metal")
     target_link_libraries(SmolApp

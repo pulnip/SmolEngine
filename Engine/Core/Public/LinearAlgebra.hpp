@@ -402,4 +402,8 @@ namespace Smol
     inline constexpr f64 toRadian(f64 degree) noexcept{
         return degree * (std::numbers::pi / 180.0);
     }
+
+    inline constexpr f64 toDegree(f64 radian) noexcept{
+        return radian * (180.0 / std::numbers::pi);
+    }
 }

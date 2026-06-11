@@ -28,6 +28,8 @@ type = "ColliderComponent"
 scale = [3, 7]
 layer = 0b1
 mask = 0b1
+[[actors.components]]
+type = "LineRenderer"
 
 [[actors]]
 type = "Actor"

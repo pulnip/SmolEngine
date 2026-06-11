@@ -49,6 +49,7 @@ namespace Smol
     using ComponentRAII = RAII<Component>;
 
     class InputComponent;
+    class LineRenderer;
     class MoveComponent;
     class Rigidbody;
     class SpriteAnimComponent;
@@ -64,6 +65,7 @@ namespace Smol
         } ++index;
 
         COUNT_COMPONENT(InputComponent)
+        COUNT_COMPONENT(LineRenderer)
         COUNT_COMPONENT(MoveComponent)
         COUNT_COMPONENT(Rigidbody)
         COUNT_COMPONENT(SpriteAnimComponent)

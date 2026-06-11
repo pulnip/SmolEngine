@@ -1,6 +1,5 @@
 #include "Assert.hpp"
-#include "LinearAlgebra.hpp"
-#include "Primitives.hpp"
+#include "CameraConfig.hpp"
 #include "ResourceManager.hpp"
 #include "RHICommandList.hpp"
 #include "RHIDefinitions.hpp"
@@ -17,27 +16,6 @@ namespace{
         Smol::Vec2 uvScale;
         Smol::Vec2 offset;
     };
-
-    // TODO. CameraComponent
-    constexpr Smol::Vec3 camPos(0.0f, 0.0f, -1.0f);
-    const auto camRot = Smol::unitQuat();
-    const auto view = Smol::viewMat(camPos, camRot);
-
-    constexpr auto aspect = 800.0f/600.0f;
-    constexpr auto fovY = Smol::toRadian(50.0f);
-    constexpr auto nearZ = 0.1f;
-    constexpr auto farZ = 100.0f;
-    // perspective projection template
-    const auto ppProj = Smol::perspective(fovY, aspect, nearZ, farZ);
-    // for perspective <-> orthographic convert
-    constexpr auto focusDist = 30.0f;
-    const auto halfH = focusDist * std::tanf(0.5f * fovY);
-    const auto ogProj = Smol::orthographic(
-        2.0f*halfH*aspect,
-        2.0f*halfH,
-        nearZ,
-        farZ
-    );
 
     auto pack(const Smol::SpriteRenderItem& item){
         using namespace Smol;

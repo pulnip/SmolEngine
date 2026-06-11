@@ -1,6 +1,7 @@
 #include "ExampleActor.hpp"
 #include "ColliderComponent.hpp"
 #include "InputAction.hpp"
+#include "LineRenderer.hpp"
 #include "LogLocal.hpp"
 #include "MoveComponent.hpp"
 #include "Primitives.hpp"
@@ -17,6 +18,29 @@ void ExampleActor::OnStart(){
 }
 
 void ExampleActor::OnUpdate(float dt){
+    using namespace Smol;
+
+    auto renderer = GetComponent<Smol::LineRenderer>();
+    std::vector<Vec3> lines1 = {
+        Vec3{0, 0},
+        Vec3{2, 0},
+        Vec3{4, 2},
+        Vec3{6, 2},
+        Vec3{8, 4},
+        Vec3{10, 4}
+    };
+
+    std::vector<Vec3> lines2 = {
+        Vec3{-10, -2},
+        Vec3{-8, 0},
+        Vec3{-6, 0},
+        Vec3{-4, 2},
+        Vec3{-2, 2},
+        Vec3{-0, 4}
+    };
+
+    renderer->DrawLine(lines1, Colors::Blue);
+    renderer->DrawLine(lines2);
     // LOG_INFO("ExampleActor Update");
 }
 
