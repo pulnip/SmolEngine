@@ -48,13 +48,14 @@ namespace Smol
 
     using ComponentRAII = RAII<Component>;
 
-    class InputComponent;
     class LineRenderer;
+    class InputComponent;
     class MoveComponent;
     class Rigidbody;
     class SpriteAnimComponent;
     class SpriteComponent;
 
+    // Component Type Index = Component Update Order
     template<typename T>
     consteval auto GetComponentTypeIndex(){
         u32 index = 0;
@@ -64,8 +65,11 @@ namespace Smol
             return index; \
         } ++index;
 
-        COUNT_COMPONENT(InputComponent)
+        // LineRenderer must be updated before every updates;
+        // it flushes committed lines
         COUNT_COMPONENT(LineRenderer)
+
+        COUNT_COMPONENT(InputComponent)
         COUNT_COMPONENT(MoveComponent)
         COUNT_COMPONENT(Rigidbody)
         COUNT_COMPONENT(SpriteAnimComponent)
