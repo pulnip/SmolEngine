@@ -1,13 +1,32 @@
-add_subdirectory(Example)
+file(GLOB ALL_HEADERS
+    "Sample/*.hpp"
+    "*.hpp"
+)
 
-add_library(MyGame INTERFACE)
+file(GLOB ALL_SOURCES
+    "Sample/*.cpp"
+    "*.cpp"
+)
+
+add_library(MyGame STATIC)
+
+target_sources(MyGame
+PUBLIC
+    ${ALL_HEADERS}
+PRIVATE
+    ${ALL_SOURCES}
+)
 
 target_link_libraries(MyGame
-INTERFACE
-    "$<LINK_LIBRARY:WHOLE_ARCHIVE,ExampleLib>"
+PUBLIC
+    Smol::Gameplay
+PRIVATE
+    Smol::Log
 )
 
 target_link_libraries(SmolApp
-PRIVATE
-    MyGame
+INTERFACE
+    "$<LINK_LIBRARY:WHOLE_ARCHIVE,MyGame>"
 )
+
+add_subdirectory(Example)

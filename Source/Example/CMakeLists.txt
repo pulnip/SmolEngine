@@ -26,3 +26,8 @@ PUBLIC
 PRIVATE
     Smol::Log
 )
+
+target_link_libraries(SmolApp
+PRIVATE
+    "$<LINK_LIBRARY:WHOLE_ARCHIVE,ExampleLib>"
+)
