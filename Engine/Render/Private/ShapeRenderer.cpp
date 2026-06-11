@@ -1,6 +1,5 @@
 #include "CameraConfig.hpp"
 #include "Canvas2D.hpp"
-#include "LineProxy.hpp"
 #include "ShapeRenderer.hpp"
 
 namespace
@@ -41,10 +40,8 @@ namespace Smol
 
     ShapeRenderer::~ShapeRenderer() = default;
 
-    LineProxy ShapeRenderer::BindLine(std::span<const Vec3> points, Color color){
-        auto handle = lines.Emplace(points, color);
-
-        return LineProxy(handle, *this);
+    void ShapeRenderer::SubmitLine(std::span<const Vec3> points, Color color){
+        lines.emplace_back(points, color);
     }
 
     void ShapeRenderer::Draw(RHISwapchain& swapchain){
@@ -59,13 +56,6 @@ namespace Smol
         }
 
         canvas->End();
-    }
-
-    LineRenderItem& ShapeRenderer::Get(LineHandle handle){
-        return lines.GetRef(handle);
-    }
-
-    void ShapeRenderer::Unbind(LineHandle handle){
-        lines.Remove(handle);
+        lines.clear();
     }
 }
