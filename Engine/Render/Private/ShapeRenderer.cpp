@@ -1,5 +1,6 @@
 #include "CameraConfig.hpp"
 #include "Canvas2D.hpp"
+#include "LineProxy.hpp"
 #include "ShapeRenderer.hpp"
 
 namespace
@@ -16,6 +17,20 @@ namespace
             0.5f * screenHeight - viewPos.y * viewToScreen,
         };
     }
+
+    void fillLine2D(
+        const std::span<const Smol::Vec3> line3d,
+        std::vector<Smol::Vec2>& line2d
+    ){
+        using namespace Smol;
+
+        line2d.clear();
+        line2d.reserve(line3d.size());
+
+        for(const auto& point: line3d){
+            line2d.push_back(worldToScreen(point));
+        }
+    }
 }
 
 namespace Smol
@@ -26,17 +41,31 @@ namespace Smol
 
     ShapeRenderer::~ShapeRenderer() = default;
 
+    LineProxy ShapeRenderer::BindLine(std::span<const Vec3> points, Color color){
+        auto handle = lines.Emplace(points, color);
+
+        return LineProxy(handle, *this);
+    }
+
     void ShapeRenderer::Draw(RHISwapchain& swapchain){
         canvas->Begin(swapchain);
 
-        // TODO.
-        auto a = worldToScreen(Vec3{0, 10, 0});
-        auto b = worldToScreen(Vec3{15, 5, 0});
+        std::vector<Vec2> line2d;
 
-        canvas->Line(a, b, StrokeStyle{
-            .width = 1
-        });
+        for(const auto& item: lines){
+            fillLine2D(item.points, line2d);
+
+            canvas->Polyline(line2d, item.style);
+        }
 
         canvas->End();
+    }
+
+    LineRenderItem& ShapeRenderer::Get(LineHandle handle){
+        return lines.GetRef(handle);
+    }
+
+    void ShapeRenderer::Unbind(LineHandle handle){
+        lines.Remove(handle);
     }
 }
