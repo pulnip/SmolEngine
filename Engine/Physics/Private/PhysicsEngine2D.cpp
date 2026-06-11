@@ -120,9 +120,13 @@ namespace Smol
             if(curr.count(key))
                 continue;
 
-            auto a = colliders.GetRef(key.a).object;
-            auto b = colliders.GetRef(key.b).object;
-            onExit(a, b);
+            auto a = colliders.Find(key.a);
+            auto b = colliders.Find(key.b);
+
+            // Check if its component already destroyed
+            if(a != nullptr && b != nullptr){
+                onExit(a->object, b->object);
+            }
         }
 
         prev = std::move(curr);
