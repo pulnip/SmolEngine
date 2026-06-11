@@ -80,7 +80,7 @@ function(smol_declare_private_interface NAME)
 endfunction()
 
 function(smol_declare_interface NAME)
-    cmake_parse_arguments(ARG "" "DIRECTORY" "" ${ARGN})
+    cmake_parse_arguments(ARG "" "DIRECTORY" "DEPENDS" ${ARGN})
 
     add_library(Smol${NAME} INTERFACE)
 
@@ -101,6 +101,7 @@ function(smol_declare_interface NAME)
     target_link_libraries(Smol${NAME}
     INTERFACE
         SmolProjectInterface
+        ${ARG_DEPENDS}
     )
 
     add_library(Smol::${NAME} ALIAS Smol${NAME})
