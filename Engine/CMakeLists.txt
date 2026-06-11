@@ -2,6 +2,10 @@
 add_subdirectory(Core)
 
 # 2-0) Infrastructure Layer
+add_subdirectory(Canvas2D)
+if(RENDER_BACKEND STREQUAL "DX11")
+    add_subdirectory(D2DCanvas)
+endif()
 add_subdirectory(Log)
 add_subdirectory(Platform)
 add_subdirectory(Reflection)

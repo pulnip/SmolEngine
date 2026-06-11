@@ -20,6 +20,7 @@ i32 main(i32, CStr[]){
 
     try{
         auto device = Smol::CreateDevice();
+
         OS os(config.runtime, *device);
         AppMainLoop mainLoop(config, os, *device);
 
