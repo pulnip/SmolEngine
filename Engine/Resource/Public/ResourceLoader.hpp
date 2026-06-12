@@ -8,6 +8,9 @@
 namespace Smol
 {
     template<Resource T>
+    class ResourceManager;
+
+    template<Resource T>
     class ResourceLoader{
     public:
         using Request = typename T::Request;
@@ -21,7 +24,7 @@ namespace Smol
     public:
         SMOL_DECLARE_INTERFACE_NOEXCEPT(ResourceLoader)
 
-        virtual void Submit(const Request&, Handle) = 0;
+        virtual void Submit(const Request&, Handle, ResourceManager<T>&) = 0;
         virtual void Poll(std::vector<Completion>&) = 0;
     };
 }

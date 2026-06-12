@@ -11,7 +11,6 @@ namespace Smol
     concept ResourceRequest = requires(T t){
         typename T::Key;
         typename T::KeyHash;
-        { t.key() } -> std::same_as<typename T::Key>;
     };
 
     template<typename T>
@@ -33,8 +32,6 @@ namespace Smol
         Key path;
         Size2D sheetSize;
         std::unordered_map<Str, SpriteAnimation> animations;
-
-        Key key() const noexcept{ return path; }
     };
 
     struct SpriteResource{

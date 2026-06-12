@@ -20,16 +20,18 @@ namespace Smol
 
         SpriteProxy proxy;
 
+        Vec2 spriteScale = Vec2{1, 1};
+
     public:
         SpriteComponent() = default;
         virtual ~SpriteComponent() = default;
         SMOL_DECLARE_PINNED(SpriteComponent)
 
-        void OnAttach(
-            const DOM::Value&,
-            const std::filesystem::path&
-        );
+        void OnAttach(StrView key);
 
         void Update(f32) override;
+
+    private:
+        void syncToRenderer();
     };
 }

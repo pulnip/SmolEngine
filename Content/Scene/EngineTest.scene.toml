@@ -4,34 +4,69 @@ name = "EngineTest"
 type = "scene"
 
 [[actors]]
-prefab = "DefaultController"
+type = "CharacterController"
 name = "PlayerController"
+[[actors.components]]
+type = "InputComponent"
 
 [[actors]]
-prefab = "ExampleActor"
+type = "ExampleActor"
+position = [5, 3, 0]
 name = "Player"
+possessed_by = "PlayerController"
+[[actors.components]]
+type = "SpriteAnimComponent"
+sprite = "hollow_knight"
+sprite_scale = [8, 8]
+[[actors.components]]
+type = "MoveComponent"
+speed = 16
+[[actors.components]]
+type = "ColliderComponent"
+scale = [3, 7]
+layer = 0b1
+mask = 0b1
+[[actors.components]]
+type = "LineRenderer"
 
 [[actors]]
-prefab = "NPC"
+type = "Actor"
 name = "NPC1"
 position = [-12, 5, 0]
 [[actors.components]]
+type = "SpriteComponent"
+sprite = "hollow_knight"
+sprite_scale = [8, 8]
+[[actors.components]]
+type = "ColliderComponent"
+scale = [3, 7]
+layer = 0b1
+mask = 0b0
 debugFlag = false
 
 [[actors]]
-prefab = "NPC"
+type = "Actor"
 name = "NPC2"
 position = [12, 3, 0]
+[[actors.components]]
+type = "SpriteComponent"
+sprite = "hollow_knight"
+sprite_scale = [8, 8]
+[[actors.components]]
+type = "ColliderComponent"
+scale = [3, 7]
+layer = 0b1
+mask = 0b0
 
-[[actor]]
+[[actors]]
 type = "Actor"
 name = "NPC3"
 position = [-1, -8, 0]
-[[actor.components]]
+[[actors.components]]
 type = "SpriteComponent"
-name = "hollow_knight"
+sprite = "hollow_knight"
 sprite_scale = [8, 8]
-[[actor.components]]
+[[actors.components]]
 type = "ColliderComponent"
 scale = [3, 7]
 layer = 0b1

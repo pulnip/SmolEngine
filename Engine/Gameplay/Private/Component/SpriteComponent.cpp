@@ -3,45 +3,39 @@
 #include "ResourceManager.hpp"
 #include "RHITexture.hpp"
 #include "SpriteComponent.hpp"
-#include "SpriteConfig.hpp"
 #include "SpriteRenderer.hpp"
 #include "World.hpp"
 
 namespace Smol
 {
     SMOL_COMPONENT(SpriteComponent)
+        .SetProperty("sprite_scale", &SpriteComponent::spriteScale)
     SMOL_COMPONENT_END(SpriteComponent)
 
-    void SpriteComponent::OnAttach(
-        const DOM::Value& dom,
-        const std::filesystem::path& contentRoot
-    ){
+    void SpriteComponent::OnAttach(StrView key){
         SMOL_ASSERT(!handle.IsValid());
-        const auto request = createSpriteRequest(dom, contentRoot);
 
         auto world = owner->GetWorld();
         auto spriteManager = world->GetSpriteManager();
         auto spriteRenderer = world->GetSpriteRenderer();
 
-        handle = spriteManager->Load(request);
+        handle = spriteManager->Find(key);
+        SMOL_ASSERT(handle.IsValid());
+
         proxy = spriteRenderer->BindRenderItem(handle);
         SMOL_ASSERT(proxy.IsValid());
 
         // Initialize RenderItem
-        auto& item = proxy.GetRenderItem();
-        item.transform = owner->GetTransform();
-
-        auto spriteScale = dom.get<Vec2>("sprite_scale")
-            .value_or(Vec2(1, 1));
-        item.spriteScale = toVec3(spriteScale, 1.0f);
-
-        const auto& size = request.sheetSize;
-        item.uvScale = {1.0f/size.x, 1.0f/size.y};
-        item.offset = {0, 0};
+        syncToRenderer();
     }
 
     void SpriteComponent::Update(f32){
+        syncToRenderer();
+    }
+
+    void SpriteComponent::syncToRenderer(){
         auto& item = proxy.GetRenderItem();
         item.transform = owner->GetTransform();
+        item.spriteScale = toVec3(spriteScale, 1.0f);
     }
 }

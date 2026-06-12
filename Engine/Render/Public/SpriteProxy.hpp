@@ -20,8 +20,6 @@ namespace Smol
         };
         Vec3 spriteScale = ones();
 
-        // for 8 * 8 sprite, [1/8, 1/8]
-        Vec2 uvScale{.x = 1.0f, .y = 1.0f};
         // [cols, rows]
         Vec2 offset{.x = 0, .y = 0};
 

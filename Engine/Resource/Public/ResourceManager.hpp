@@ -35,23 +35,31 @@ namespace Smol
             : initThread(std::this_thread::get_id())
             , loader(loader){}
 
-        Handle Load(const Request& request){
-            SMOL_ASSERT(initThread == std::this_thread::get_id());
-            auto key = request.key();
-
+        Handle Find(StrView key) const noexcept{
             if(auto it = dedup.find(key); it != dedup.end()){
                 return it->second;
             }
 
-            auto handle = pool.NewSlot();
+            return Handle::InvalidHandle();
+        }
+
+        Handle Load(StrView key, const Request& request){
+            SMOL_ASSERT(initThread == std::this_thread::get_id());
+            auto handle = Find(key);
+            if(handle.IsValid()){
+                return handle;
+            }
+
+            handle = pool.Push({});
             dedup[key] = handle;
             handleToKey[handle] = key;
 
             ++pending;
-            loader.Submit(request, handle);
+            loader.Submit(request, handle, *this);
 
             return handle;
         }
+
     private:
         std::vector<Completion> scratch;
 

@@ -16,7 +16,7 @@ namespace Smol
     public:
         ImmediateResourceLoader(RHIDevice&, std::filesystem::path root = "Content/");
 
-        void Submit(const Request&, Handle);
-        void Poll(std::vector<Completion>&);
+        void Submit(const Request&, Handle, ResourceManager<SpriteResource>&) override;
+        void Poll(std::vector<Completion>&) override{}
     };
 }

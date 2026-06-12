@@ -1,9 +1,7 @@
-#include <filesystem>
-#include <unordered_map>
+#include "DOM.hpp"
 #include "LogLocal.hpp"
-#include "Primitives.hpp"
-#include "SpriteConfig.hpp"
-#include "Resource.hpp"
+#include "ResourceRegistry.hpp"
+#include "RHITexture.hpp"
 #include "TomlLoader.hpp"
 
 namespace{
@@ -43,6 +41,34 @@ namespace{
         Smol::TomlMetadata metadata;
         Smol::SpriteRequest data;
     };
+
+    Smol::SpriteRequest createSpriteRequest(
+        const Smol::DOM::Value& dom,
+        const std::filesystem::path& contentRoot
+    ){
+        using namespace Smol;
+
+        // use sprite meta file
+        auto sprite = dom.get<Str>("file");
+        if(sprite.has_value()){
+            auto path = contentRoot / *sprite;
+            auto config = loadTomlFile<SpriteConfig>(path);
+
+            return config.data;
+        }
+
+        // fallback, use just image
+        auto imagePath = dom.get<Str>("image_path");
+        if(imagePath.has_value()){
+            return SpriteRequest{
+                .path = *imagePath,
+                .sheetSize = {1, 1}
+            };
+        }
+
+        LOG_ERROR("key \"file\" or \"image_path\" not found");
+        return SpriteRequest{};
+    }
 }
 
 namespace Smol
@@ -68,26 +94,36 @@ namespace Smol
         }
     };
 
-    SpriteRequest createSpriteRequest(const DOM::Value& dom, const std::filesystem::path& contentRoot){
-        // use sprite meta file
-        auto sprite = dom.get<Str>("sprite");
-        if(sprite.has_value()){
-            auto path = contentRoot / *sprite;
-            auto config = loadTomlFile<SpriteConfig>(path);
+    ResourceRegistry::ResourceRegistry(
+        const DOM::Value& manifest,
+        const std::filesystem::path& contentRoot,
+        RAII<SpriteLoader>&& spriteLoader
+    )
+        : spriteLoader(std::move(spriteLoader))
+        , spriteManager(*(this->spriteLoader))
+    {
+        auto metadata = TomlTraits<TomlMetadata>::from(manifest);
+        SMOL_ASSERT(metadata.type == "resources");
 
-            return config.data;
-        }
+        manifest.forEach("sprites", [&](const DOM::Value& node){
+            auto name = node.get<Str>("name");
+            if(!name.has_value()){
+                LOG_ERROR("No resource identifier");
+                return;
+            }
 
-        // fallback, use just image
-        auto imagePath = dom.get<Str>("image_path");
-        if(imagePath.has_value()){
-            return SpriteRequest{
-                .path = *imagePath,
-                .sheetSize = {1, 1}
-            };
-        }
+            auto file = node.get<Str>("file");
+            if(!file.has_value()){
+                LOG_ERROR("No resource path in: {}", *name);
+                return;
+            }
 
-        LOG_ERROR("key \"sprite\" or \"image_path\" not found");
-        return SpriteRequest{};
+            auto request = createSpriteRequest(node, contentRoot);
+            spriteManager.Load(*name, request);
+        });
+    }
+
+    void ResourceRegistry::DrainAllCompletions(){
+        spriteManager.DrainCompletions();
     }
 }
