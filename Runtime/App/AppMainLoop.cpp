@@ -184,8 +184,9 @@ namespace Smol
         , widgetRenderer(os.GetWindow().GetWindow(), device)
         , widget(Checkbox{
             .label = "Debug",
-            .onChanged = [](UIContext&, bool v){
+            .onChanged = [&world = world](UIContext&, bool v){
                 LOG_WARN("Checked! {}", v);
+                world.SetDebugState(v);
             },
             .v = false
         })

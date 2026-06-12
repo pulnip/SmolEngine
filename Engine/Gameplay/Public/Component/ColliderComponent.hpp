@@ -38,6 +38,8 @@ namespace Smol
         CollisionMask mask = 0b0;
         PhysicsProxy proxy;
 
+        bool debugFlag = true;
+
     public:
         ColliderComponent() = default;
         virtual ~ColliderComponent();

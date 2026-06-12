@@ -1,7 +1,9 @@
 #include "Actor.hpp"
 #include "ColliderComponent.hpp"
+#include "Canvas2D.hpp"
 #include "Collider2D.hpp"
 #include "Primitives.hpp"
+#include "ShapeRenderer.hpp"
 #include "World.hpp"
 
 namespace Smol
@@ -11,6 +13,7 @@ namespace Smol
         .SetProperty("scale", &ColliderComponent::transform, &Transform2D::scale)
         .SetProperty("layer", &ColliderComponent::layer)
         .SetProperty("mask", &ColliderComponent::mask)
+        .SetProperty("debugFlag", &ColliderComponent::debugFlag)
     SMOL_COMPONENT_END(ColliderComponent)
 
     void ColliderComponent::OnAttach(){
@@ -33,6 +36,12 @@ namespace Smol
             .mask = mask,
             .object = this
         };
+
+        auto world = owner->GetWorld();
+        auto debugState = world->GetDebugState();
+        if(debugState && debugFlag){
+            world->GetShapeRenderer()->SubmitOBB2D(getWorldCollider(), Colors::Red);
+        }
     }
 
     ColliderComponent::~ColliderComponent(){

@@ -3,6 +3,7 @@
 #include <span>
 #include <vector>
 #include "Canvas2D.hpp"
+#include "Geometry/Overlap2D.hpp"
 #include "Primitives.hpp"
 #include "RHIFWD.hpp"
 #include "Semantics.hpp"
@@ -39,6 +40,9 @@ namespace Smol
         SMOL_DECLARE_PINNED(ShapeRenderer)
 
         void SubmitLine(std::span<const Vec3>, Color color);
+
+        // Debug Collider
+        void SubmitOBB2D(OBB2D, Color color);
 
         // Notice. Draw at last
         void Draw(RHISwapchain&);

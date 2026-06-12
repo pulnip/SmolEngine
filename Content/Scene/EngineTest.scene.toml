@@ -45,6 +45,7 @@ type = "ColliderComponent"
 scale = [3, 7]
 layer = 0b1
 mask = 0b0
+debugFlag = false
 
 [[actors]]
 type = "Actor"

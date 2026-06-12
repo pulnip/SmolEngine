@@ -49,6 +49,8 @@ namespace Smol
 
         PhysicsEngine2D physicsEngine;
 
+        bool debugState = false;
+
     public:
         World();
         ~World();
@@ -105,6 +107,13 @@ namespace Smol
         }
         PhysicsEngine2D& GetPhysics() noexcept{
             return physicsEngine;
+        }
+
+        void SetDebugState(bool isDebugging) noexcept{
+            debugState = isDebugging;
+        }
+        bool GetDebugState() noexcept{
+            return debugState;
         }
 
     private:

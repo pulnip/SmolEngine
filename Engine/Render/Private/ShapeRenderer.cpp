@@ -44,6 +44,27 @@ namespace Smol
         lines.emplace_back(points, color);
     }
 
+    void ShapeRenderer::SubmitOBB2D(OBB2D obb, Color color){
+        Vec3 c = obb.center;
+        Vec3 x = obb.halfAxes[0];
+        Vec3 y = obb.halfAxes[1];
+
+        std::array line{
+            // Bottom - Left
+            c - x - y,
+            // Top - Left
+            c - x + y,
+            // Top - Right
+            c + x + y,
+            // Bottom - Right
+            c + x - y,
+            // Closed form
+            c - x - y
+        };
+
+        lines.emplace_back(line, color);
+    }
+
     void ShapeRenderer::Draw(RHISwapchain& swapchain){
         canvas->Begin(swapchain);
 
