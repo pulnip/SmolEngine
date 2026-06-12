@@ -7,7 +7,7 @@ type = "prefabs"
 type = "Actor"
 [[actor.components]]
 type = "SpriteComponent"
-name = "hollow_knight"
+sprite = "hollow_knight"
 sprite_scale = [8, 8]
 [[actor.components]]
 type = "ColliderComponent"

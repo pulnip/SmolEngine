@@ -21,7 +21,7 @@ always_on_top = false
 content_root = "Content/"
 
 [boot]
-resource_manifest = "Default.resource.toml"
-prefab_manifest = "Default.prefab.toml"
+resource_manifest = "Default.resources.toml"
+prefab_manifest = "Default.prefabs.toml"
 default_input = "Input/Default.input.toml"
 startup_scene = "Scene/Default.scene.toml"
