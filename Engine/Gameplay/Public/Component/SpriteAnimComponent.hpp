@@ -24,6 +24,8 @@ namespace Smol
 
         SpriteProxy proxy;
 
+        Vec2 spriteScale = Vec2{1, 1};
+
         f32 elapsedTime = 0.0f;
 
         // if someone called setter of member variable below,
@@ -36,10 +38,7 @@ namespace Smol
         virtual ~SpriteAnimComponent() = default;
         SMOL_DECLARE_PINNED(SpriteAnimComponent)
 
-        void OnAttach(
-            const DOM::Value&,
-            const std::filesystem::path&
-        );
+        void OnAttach(StrView key);
 
         void Update(f32) override;
 

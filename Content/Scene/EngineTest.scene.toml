@@ -1,6 +1,6 @@
 [metadata]
 version = 0
-name = "Example"
+name = "EngineTest"
 type = "scene"
 
 [[actors]]
@@ -16,13 +16,11 @@ name = "Player"
 possessed_by = "PlayerController"
 [[actors.components]]
 type = "SpriteAnimComponent"
-sprite = "Assets/Sprite/hollow_knight.sprite.toml"
-image_path = "Assets/Sprite/hollow_knight.png"
+sprite = "hollow_knight"
 sprite_scale = [8, 8]
 [[actors.components]]
 type = "MoveComponent"
 speed = 16
-scale = 5.0
 [[actors.components]]
 type = "ColliderComponent"
 scale = [3, 7]
@@ -33,12 +31,11 @@ type = "LineRenderer"
 
 [[actors]]
 type = "Actor"
+name = "NPC1"
 position = [-12, 5, 0]
-name = "NPC"
 [[actors.components]]
 type = "SpriteComponent"
-sprite = "Assets/Sprite/hollow_knight.sprite.toml"
-image_path = "Assets/Sprite/hollow_knight.png"
+sprite = "hollow_knight"
 sprite_scale = [8, 8]
 [[actors.components]]
 type = "ColliderComponent"
@@ -49,15 +46,28 @@ debugFlag = false
 
 [[actors]]
 type = "Actor"
-position = [12, 5, 0]
 name = "NPC2"
+position = [12, 3, 0]
 [[actors.components]]
 type = "SpriteComponent"
-sprite = "Assets/Sprite/hollow_knight.sprite.toml"
-image_path = "Assets/Sprite/hollow_knight.png"
+sprite = "hollow_knight"
 sprite_scale = [8, 8]
 [[actors.components]]
 type = "ColliderComponent"
 scale = [3, 7]
 layer = 0b1
-mask = 0
+mask = 0b0
+
+[[actors]]
+type = "Actor"
+name = "NPC3"
+position = [-1, -8, 0]
+[[actors.components]]
+type = "SpriteComponent"
+sprite = "hollow_knight"
+sprite_scale = [8, 8]
+[[actors.components]]
+type = "ColliderComponent"
+scale = [3, 7]
+layer = 0b1
+mask = 0b0

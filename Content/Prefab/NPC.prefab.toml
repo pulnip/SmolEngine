@@ -1,0 +1,16 @@
+[metadata]
+version = 0
+name = "NPC"
+type = "prefabs"
+
+[actor]
+type = "Actor"
+[[actor.components]]
+type = "SpriteComponent"
+sprite = "hollow_knight"
+sprite_scale = [8, 8]
+[[actor.components]]
+type = "ColliderComponent"
+scale = [3, 7]
+layer = 0b1
+mask = 0b0

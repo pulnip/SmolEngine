@@ -37,23 +37,25 @@ int main(void){
     ResourceManager<SpriteResource> resourceManager(resourceLoader);
     SpriteRenderer renderer(*device, resourceManager);
 
-    auto handle = resourceManager.Load(SpriteRequest{
-        .path = IMAGE_PATH,
-        .sheetSize = {16, 16},
-        .animations = {
-            {
-                "walk",
-                SpriteAnimation{
-                    .startRow = 0,
-                    .startCol = 0,
-                    .frameCount = 8,
-                    .frameDurationMs = 160
+    auto handle = resourceManager.Load(
+        IMAGE_PATH,
+        SpriteRequest{
+            .path = IMAGE_PATH,
+            .sheetSize = {16, 16},
+            .animations = {
+                {
+                    "walk",
+                    SpriteAnimation{
+                        .startRow = 0,
+                        .startCol = 0,
+                        .frameCount = 8,
+                        .frameDurationMs = 160
+                    }
                 }
             }
         }
-    });
+    );
     auto proxy = renderer.BindRenderItem(handle);
-    proxy.GetRenderItem().uvScale = {.x = 1.0f/16, .y = 1.0f/16};
 
     resourceManager.DrainCompletions();
 

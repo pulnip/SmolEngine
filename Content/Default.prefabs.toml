@@ -1,0 +1,16 @@
+[metadata]
+version = 0
+name = "Default"
+type = "prefabs"
+
+[[prefabs]]
+name = "DefaultController"
+file = "Prefab/DefaultController.prefab.toml"
+
+[[prefabs]]
+type = "ExampleActor"
+file = "Prefab/ExampleActor.prefab.toml"
+
+[[prefabs]]
+name = "NPC"
+file = "Prefab/NPC.prefab.toml"

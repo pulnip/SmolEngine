@@ -17,7 +17,7 @@ namespace{
         Smol::Vec2 offset;
     };
 
-    auto pack(const Smol::SpriteRenderItem& item){
+    auto pack(const Smol::SpriteRenderItem& item, const Smol::Size2D& size){
         using namespace Smol;
 
         auto model = modelMat(
@@ -28,7 +28,7 @@ namespace{
 
         return SpriteConstants{
             .mvp = mvp(model, view, ogProj),
-            .uvScale = item.uvScale,
+            .uvScale = {1.0f/size.x, 1.0f/size.y},
             .offset = item.offset
         };
     }
@@ -127,7 +127,9 @@ namespace Smol
         );
 
         for(auto& item: renderItems){
-            auto c = pack(item);
+            auto& resource = spriteManager.GetRef(item.handle);
+
+            auto c = pack(item, resource.sheetSize);
             cmdList.SetBytes(
                 &c,
                 vs.spriteConstants,
@@ -135,7 +137,6 @@ namespace Smol
                 RHIShaderStage::VertexShader
             );
 
-            auto& resource = spriteManager.GetRef(item.handle);
 
             cmdList.SetTexture(
                 *resource.texture,

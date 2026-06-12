@@ -4,49 +4,39 @@
 #include "ResourceManager.hpp"
 #include "RHITexture.hpp"
 #include "SpriteAnimComponent.hpp"
-#include "SpriteConfig.hpp"
 #include "SpriteRenderer.hpp"
 #include "World.hpp"
 
 namespace Smol
 {
     SMOL_COMPONENT(SpriteAnimComponent)
+        .SetProperty("sprite_scale", &SpriteAnimComponent::spriteScale)
     SMOL_COMPONENT_END(SpriteAnimComponent)
 
-    void SpriteAnimComponent::OnAttach(
-        const DOM::Value& dom,
-        const std::filesystem::path& contentRoot
-    ){
+    void SpriteAnimComponent::OnAttach(StrView key){
         SMOL_ASSERT(!handle.IsValid());
-
-        const auto request = createSpriteRequest(dom, contentRoot);
 
         auto world = owner->GetWorld();
         auto spriteManager = world->GetSpriteManager();
         auto spriteRenderer = world->GetSpriteRenderer();
 
-        handle = spriteManager->Load(request);
+        handle = spriteManager->Find(key);
+        SMOL_ASSERT(handle.IsValid());
+
         proxy = spriteRenderer->BindRenderItem(handle);
         SMOL_ASSERT(proxy.IsValid());
 
         // Initialize RenderItem
-        auto& item = proxy.GetRenderItem();
-        item.transform = owner->GetTransform();
+        synced = false;
+        syncToRenderer();
 
-        auto spriteScale = dom.get<Vec2>("sprite_scale")
-            .value_or(Vec2(1, 1));
-        item.spriteScale = toVec3(spriteScale, 1.0f);
-
-        const auto& size = request.sheetSize;
-        item.uvScale = {1.0f/size.x, 1.0f/size.y};
-
-        const auto& animations = request.animations;
+        const auto& animations = spriteManager->GetRef(handle).animations;
         // TODO. change later
         if(auto it = animations.find("walk"); it != animations.end()){
             auto& animation = it->second;
             startRow = animation.startRow;
             startCol = animation.startCol;
-            item.offset = {
+            proxy.GetRenderItem().offset = {
                 static_cast<float>(startCol),
                 static_cast<float>(startRow)
             };
@@ -58,21 +48,22 @@ namespace Smol
     void SpriteAnimComponent::Update(f32 dt){
         elapsedTime += std::min(dt, framePerSeconds);
 
-        auto& item = proxy.GetRenderItem();
-        item.transform = owner->GetTransform();
-
         if(elapsedTime > framePerSeconds){
             elapsedTime -= framePerSeconds;
             nextFrame();
         }
 
         syncToRenderer();
+
     }
 
     void SpriteAnimComponent::syncToRenderer(){
+        auto& item = proxy.GetRenderItem();
+        item.transform = owner->GetTransform();
+        item.spriteScale = toVec3(spriteScale, 1.0f);
+
         if(synced) return;
 
-        auto& item = proxy.GetRenderItem();
         item.offset = Vec2{
             static_cast<f32>(startCol + iframe),
             static_cast<f32>(startRow)

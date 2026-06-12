@@ -1,0 +1,8 @@
+[metadata]
+version = 0
+name = "Default"
+type = "resources"
+
+[[sprites]]
+name = "hollow_knight"
+file = "Assets/Sprite/hollow_knight.sprite.toml"

@@ -6,4 +6,5 @@ PUBLIC
     Smol::RHI
 PRIVATE
     Smol::Serialization
+    Smol::Log
 )
