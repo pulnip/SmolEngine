@@ -13,8 +13,10 @@ namespace Smol
     };
 
     struct BootConfig{
-        Str statup_scene;
+        Str resource_manifest;
+        Str prefab_manifest;
         Str default_input;
+        Str statup_scene;
     };
 
     struct AppConfig{

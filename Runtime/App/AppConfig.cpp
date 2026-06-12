@@ -15,9 +15,13 @@ namespace Smol
             .value_or("Content/");
 
         // Boot Config
-        auto startup_scene = root.get<Str>("boot.startup_scene")
+        auto resource_manifest = root.get<Str>("boot.resource_manifest")
+            .value_or(Str{});
+        auto prefab_manifest = root.get<Str>("boot.prefab_manifest")
             .value_or(Str{});
         auto default_input = root.get<Str>("boot.default_input")
+            .value_or(Str{});
+        auto startup_scene = root.get<Str>("boot.startup_scene")
             .value_or(Str{});
 
         return AppConfig{
@@ -27,8 +31,10 @@ namespace Smol
                 .content_root = content_root
             },
             .boot = BootConfig{
-                .statup_scene = startup_scene,
-                .default_input = default_input
+                .resource_manifest = resource_manifest,
+                .prefab_manifest = prefab_manifest,
+                .default_input = default_input,
+                .statup_scene = startup_scene
             }
         };
     }
