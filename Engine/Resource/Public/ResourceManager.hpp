@@ -63,7 +63,7 @@ namespace Smol
             loader.Poll(scratch);
 
             for(auto& [data, handle]: scratch){
-                pool.Swap(handle, std::move(data));
+                pool.Fulfill(handle, std::move(data));
                 --pending;
             }
         }

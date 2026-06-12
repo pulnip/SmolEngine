@@ -44,8 +44,12 @@ namespace Smol
                 return self.data.value();
             }
 
-            void SwapData(T&& data) noexcept{
-                this->data = std::move(data);
+            T Release() noexcept{
+                SMOL_ASSERT(IsUsing());
+                T t = std::move(*data);
+                Reset();
+
+                return t;
             }
 
             usize GetGeneration() const noexcept{
@@ -148,7 +152,7 @@ namespace Smol
             return slot.GetData();
         }
 
-        void Swap(this auto& self, Handle handle, T&& data) noexcept{
+        void Fulfill(this auto& self, Handle handle, T&& data) noexcept{
             auto index = handle.GetIndex();
             auto& slot = self.slots[index];
 
@@ -157,7 +161,19 @@ namespace Smol
                 slot.GetGeneration() == handle.GetGeneration()
             );
 
-            slot.SwapData(std::move(data));
+            slot.EmplaceData(std::move(data));
+        }
+
+        T Release(Handle handle) noexcept{
+            auto index = handle.GetIndex();
+            auto& slot = slots[index];
+
+            SMOL_ASSERT(
+                index < slots.size() &&
+                slot.GetGeneration() == handle.GetGeneration()
+            );
+
+            return slot.Release();
         }
 
         void Reserve(usize size){

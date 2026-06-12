@@ -94,6 +94,11 @@ namespace Smol
         handle = Handle::InvalidHandle();
     }
 
+    bool Actor::IsValid() const noexcept{
+        SMOL_ASSERT((world != nullptr) == (handle.IsValid()));
+        return world != nullptr && handle.IsValid();
+    }
+
     void Actor::MarkManaged(World* world, Handle handle){
         SMOL_ASSERT(this->world == nullptr);
         this->world = world;

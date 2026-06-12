@@ -97,6 +97,10 @@ namespace Smol
 
         void Destroy();
 
+        // Check if Actor is Marked as Destroyed
+        // or Actor is NOT Managed by World
+        bool IsValid() const noexcept;
+
         // for skip
         bool IsWorldShutdown() const noexcept;
 
