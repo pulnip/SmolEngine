@@ -59,6 +59,9 @@ namespace Smol
         const InputProvider& GetInputProvider() noexcept{
             return inputProvider;
         }
+        const Window& GetWindow() noexcept{
+            return window;
+        }
 
     private:
         bool ProcessEvents();
@@ -199,5 +202,9 @@ namespace Smol
 
     const InputProvider& OS::GetInputProvider() const noexcept{
         return impl->GetInputProvider();
+    }
+
+    const Window& OS::GetWindow() const noexcept{
+        return impl->GetWindow();
     }
 }

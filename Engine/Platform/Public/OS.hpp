@@ -8,6 +8,7 @@ namespace Smol
 {
     class MainLoop;
     class InputProvider;
+    class Window;
 
     struct RuntimeConfig;
 
@@ -28,6 +29,7 @@ namespace Smol
         inline static OS* Get(){ return singleton; }
 
         const InputProvider& GetInputProvider() const noexcept;
+        const Window& GetWindow() const noexcept;
     };
 
     // direct access to ptr is unsafe, but handy helper
