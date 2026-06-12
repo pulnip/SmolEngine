@@ -1,0 +1,20 @@
+[metadata]
+version = 0
+name = "ExampleActor"
+type = "prefabs"
+
+[actor]
+type = "ExampleActor"
+[[actor.components]]
+type = "SpriteAnimComponent"
+sprite_scale = [8, 8]
+[[actor.components]]
+type = "MoveComponent"
+speed = 16
+[[actor.components]]
+type = "ColliderComponent"
+scale = [3, 7]
+layer = 0b1
+mask = 0b1
+[[actor.components]]
+type = "LineRenderer"
