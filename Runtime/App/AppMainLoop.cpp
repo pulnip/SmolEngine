@@ -3,6 +3,7 @@
 #include "CharacterController.hpp"
 #include "ColliderComponent.hpp"
 #include "CommandListPool.hpp"
+#include "ImmediateResourceLoader.hpp"
 #include "InputComponent.hpp"
 #include "LineRenderer.hpp"
 #include "LogLocal.hpp"
@@ -54,11 +55,23 @@ namespace{
         }
         else if(*type == "SpriteAnimComponent"){
             auto component = createComponent<SpriteAnimComponent>(actor, dom);
-            component->OnAttach(dom, contentRoot);
+            auto sprite = dom.get<Str>("sprite");
+            if(!sprite.has_value()){
+                LOG_ERROR("no \"sprite\" in [[actors.component]] (type=SpriteAnimComponent)");
+            }
+            else{
+                component->OnAttach(*sprite);
+            }
         }
         else if(*type == "SpriteComponent"){
             auto component = createComponent<SpriteComponent>(actor, dom);
-            component->OnAttach(dom, contentRoot);
+            auto sprite = dom.get<Str>("sprite");
+            if(!sprite.has_value()){
+                LOG_ERROR("no \"sprite\" in [[actors.component]] (type=SpriteComponent)");
+            }
+            else{
+                component->OnAttach(*sprite);
+            }
         }
         else if(*type == "ColliderComponent"){
             auto component = createComponent<ColliderComponent>(actor, dom);
@@ -160,7 +173,6 @@ namespace{
             });
         });
     }
-
 }
 
 namespace Smol
@@ -172,14 +184,16 @@ namespace Smol
         OS& os,
         RHIDevice& device
     )
-        : resourceLoader(device, config.project.content_root)
-        , spriteManager(resourceLoader)
-        // TODO. use toml later
+        : resourceRegistry(
+            parseTomlFile(config.resourceManifest()),
+            config.project.content_root,
+            std::make_unique<ImmediateResourceLoader>(device, config.project.content_root)
+        )
         , inputManager(
             loadTomlFile<InputConfig>(config.defaultInputPath()),
             &os.GetInputProvider()
         )
-        , spriteRenderer(device, spriteManager)
+        , spriteRenderer(device, resourceRegistry.GetSpriteManager())
         , shapeRenderer(device)
         , widgetRenderer(os.GetWindow().GetWindow(), device)
         , widget(Checkbox{
@@ -191,7 +205,7 @@ namespace Smol
             .v = false
         })
         , world(EngineService{
-            .spriteManager = &spriteManager,
+            .spriteManager = &resourceRegistry.GetSpriteManager(),
             .inputManager = &inputManager,
             .spriteRenderer = &spriteRenderer,
             .shapeRenderer = &shapeRenderer,
@@ -202,7 +216,7 @@ namespace Smol
 
         createActors(world, dom, contentRoot);
 
-        spriteManager.DrainCompletions();
+        resourceRegistry.DrainAllCompletions();
     }
 
     bool AppMainLoop::Initialize(){

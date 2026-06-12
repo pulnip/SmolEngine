@@ -26,11 +26,17 @@ namespace Smol
         ProjectConfig project;
         BootConfig boot;
 
-        auto startupScenePath() const{
-            return project.content_root / boot.statup_scene;
+        auto resourceManifest() const{
+            return project.content_root / boot.resource_manifest;
+        }
+        auto prefabManifest() const{
+            return project.content_root / boot.prefab_manifest;
         }
         auto defaultInputPath() const{
             return project.content_root / boot.default_input;
+        }
+        auto startupScenePath() const{
+            return project.content_root / boot.statup_scene;
         }
     };
 
