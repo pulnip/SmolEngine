@@ -9,7 +9,7 @@ namespace Smol
 
     class Window{
     public:
-        SMOL_DECLARE_INTERFACE_NOEXCEPT(Window)
+        SMOL_DECLARE_INTERFACE(Window)
 
         virtual void* GetWindow() const noexcept = 0;
         virtual u32 GetWidth() const noexcept = 0;

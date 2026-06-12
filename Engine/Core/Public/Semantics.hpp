@@ -59,7 +59,3 @@
     Type() = default; \
     virtual ~Type() = default; \
     SMOL_DECLARE_PINNED(Type)
-#define SMOL_DECLARE_INTERFACE_NOEXCEPT(Type) \
-    Type() noexcept = default; \
-    virtual ~Type() = default; \
-    SMOL_DECLARE_PINNED(Type)

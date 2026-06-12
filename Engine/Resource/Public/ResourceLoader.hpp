@@ -19,7 +19,7 @@ namespace Smol
         };
 
     public:
-        SMOL_DECLARE_INTERFACE_NOEXCEPT(ResourceLoader)
+        SMOL_DECLARE_INTERFACE(ResourceLoader)
 
         virtual void Submit(const Request&, Handle) = 0;
         virtual void Poll(std::vector<Completion>&) = 0;

@@ -35,7 +35,7 @@ namespace Smol
 
     class Canvas2D{
     public:
-        SMOL_DECLARE_INTERFACE_NOEXCEPT(Canvas2D)
+        SMOL_DECLARE_INTERFACE(Canvas2D)
 
         virtual void Begin(RHISwapchain&) = 0;
         virtual void End() = 0;
