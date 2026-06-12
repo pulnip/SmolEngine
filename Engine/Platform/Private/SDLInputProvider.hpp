@@ -25,5 +25,6 @@ namespace Smol
 
         // Process Event
         void OnPlatformEvent(const SDL_KeyboardEvent& event) noexcept;
+        void OnPlatformEvent(const SDL_MouseButtonEvent& event) noexcept;
     };
 }

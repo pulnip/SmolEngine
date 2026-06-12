@@ -206,4 +206,17 @@ namespace Smol
             std::unreachable();
         }
     }
+
+    void SDLInputProvider::OnPlatformEvent(const SDL_MouseButtonEvent& event) noexcept{
+        switch(event.type){
+        case SDL_EVENT_MOUSE_MOTION:
+            break;
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            break;
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+            break;
+        default:
+            std::unreachable();
+        }
+    }
 }

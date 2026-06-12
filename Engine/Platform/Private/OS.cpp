@@ -153,15 +153,25 @@ namespace Smol
         SDL_Event event;
         while(SDL_PollEvent(&event)){
             ImGui_ImplSDL3_ProcessEvent(&event);
-            switch(event.type){
-            case SDL_EVENT_QUIT: [[unlikely]]
+            if(SDL_EVENT_QUIT == event.type) [[unlikely]]{
                 keepRunning = false;
                 break;
+            }
+
+            switch(event.type){
             // Keyboard Event
             case SDL_EVENT_KEY_DOWN:
                 [[fallthrough]];
             case SDL_EVENT_KEY_UP:
                 inputProvider.OnPlatformEvent(event.key);
+                break;
+            // Mouse Event
+            case SDL_EVENT_MOUSE_MOTION:
+                [[fallthrough]];
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                [[fallthrough]];
+            case SDL_EVENT_MOUSE_BUTTON_UP:
+                inputProvider.OnPlatformEvent(event.button);
                 break;
             }
 
