@@ -11,3 +11,6 @@ build/
 .vs/
 x64/
 *.vcxproj.user
+
+# Dear ImGui
+imgui.ini

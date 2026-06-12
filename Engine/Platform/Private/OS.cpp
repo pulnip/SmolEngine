@@ -1,6 +1,7 @@
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
+#include <imgui_impl_sdl3.h>
 #include "CommandListPool.hpp"
 #include "FramePacer.hpp"
 #include "MainLoop.hpp"
@@ -151,7 +152,7 @@ namespace Smol
 
         SDL_Event event;
         while(SDL_PollEvent(&event)){
-            // ImGui_ImplSDL3_ProcessEvent(&event);
+            ImGui_ImplSDL3_ProcessEvent(&event);
             switch(event.type){
             case SDL_EVENT_QUIT: [[unlikely]]
                 keepRunning = false;

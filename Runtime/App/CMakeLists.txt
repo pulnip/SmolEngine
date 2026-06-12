@@ -24,6 +24,7 @@ PRIVATE
     Smol::Render
     Smol::Resource
     # Smol::Scene
+    Smol::UI
 )
 
 if(RENDER_BACKEND STREQUAL "DX11")

@@ -9,6 +9,8 @@
 #include "ShapeRenderer.hpp"
 #include "SpriteRenderer.hpp"
 #include "Timer.hpp"
+#include "Widget.hpp"
+#include "WidgetRenderer.hpp"
 #include "World.hpp"
 
 namespace Smol
@@ -24,6 +26,9 @@ namespace Smol
         InputManager inputManager;
         SpriteRenderer spriteRenderer;
         ShapeRenderer shapeRenderer;
+        WidgetRenderer widgetRenderer;
+
+        Widget widget;
 
         World world;
 

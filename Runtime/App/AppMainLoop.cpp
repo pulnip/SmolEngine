@@ -13,10 +13,10 @@
 #include "RHIDevice.hpp"
 #include "RHITexture.hpp"
 #include "RHISwapchain.hpp"
-#include "ResourceManager.hpp"
 #include "SpriteComponent.hpp"
 #include "SpriteAnimComponent.hpp"
 #include "TomlLoader.hpp"
+#include "Window.hpp"
 
 namespace{
     template<std::derived_from<Smol::Component> T>
@@ -165,6 +165,8 @@ namespace{
 
 namespace Smol
 {
+    struct UIContext{};
+
     AppMainLoop::AppMainLoop(
         const AppConfig& config,
         OS& os,
@@ -179,6 +181,14 @@ namespace Smol
         )
         , spriteRenderer(device, spriteManager)
         , shapeRenderer(device)
+        , widgetRenderer(os.GetWindow().GetWindow(), device)
+        , widget(Checkbox{
+            .label = "Debug",
+            .onChanged = [](UIContext&, bool v){
+                LOG_WARN("Checked! {}", v);
+            },
+            .v = false
+        })
         , world(EngineService{
             .spriteManager = &spriteManager,
             .inputManager = &inputManager,
@@ -238,6 +248,15 @@ namespace Smol
         spriteRenderer.Draw(cmdList);
 
         shapeRenderer.Draw(swapchain);
+
+        UIContext uiContext{};
+        widgetRenderer.Draw(
+            "Root Widget",
+            widget,
+            uiContext,
+            cmdList,
+            &swapchain
+        );
 
         cmdList.EndRenderPass();
         // End RenderPass for backbuffer
