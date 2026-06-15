@@ -21,8 +21,8 @@ void PlayerCharacter::PossessedBy(Smol::CharacterController& controller){
     //BindAction("Jump", Smol::TriggerEvent::Started, this, &PlayerCharacter::OnJump);
 
     //TODO. Content/Input/Example.input.toml에 action 추가하기
-    BindAction("Jump", Smol::TriggerEvent::Triggered, this, &PlayerCharacter::OnBowAim);
-    BindAction("OnBowAim", Smol::TriggerEvent::Finished, this, &PlayerCharacter::OnBowRelease);
+    BindAction("OnBowAim", Smol::TriggerEvent::Triggered, this, &PlayerCharacter::OnBowAim);
+    BindAction("Jump", Smol::TriggerEvent::Finished, this, &PlayerCharacter::OnBowRelease);
 }
 
 void PlayerCharacter::OnUpdate(float dt){

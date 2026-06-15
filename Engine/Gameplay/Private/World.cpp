@@ -60,9 +60,9 @@ namespace Smol
     }
 
     void World::Start(){
-        for(auto& actor: actors){
-            actor->OnStart();
-        }
+        // for(auto& actor: actors){
+        //     actor->OnStart();
+        // }
     }
 
     void World::Update(f32 deltaTime){

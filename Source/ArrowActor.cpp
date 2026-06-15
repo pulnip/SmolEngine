@@ -2,6 +2,9 @@
 #include <utility>
 
 #include "ArrowActor.hpp"
+#include "SpriteAnimComponent.hpp"
+#include "SpriteComponent.hpp"
+#include "ColliderComponent.hpp"
 #include "LinearAlgebra.hpp"
 #include "LogGame.hpp"
 #include "World.hpp"
@@ -26,13 +29,20 @@ SMOL_ACTOR_END(ArrowActor)
 
 ArrowActor::ArrowActor()
 {
-    //AddComponent<Smol::SpriteComponent>();
-
-    //AddComponent<ElementalComponent>();
 
 }
 
 void ArrowActor::OnStart(){
+    AddComponent<Smol::SpriteComponent>();
+    Smol::SpriteComponent* spriteComp = GetComponent<Smol::SpriteComponent>();
+    spriteComp->OnAttach("Basic_Arrow");
+
+    AddComponent<Smol::ColliderComponent>()->OnAttach();
+    Smol::ColliderComponent* colliderComp = GetComponent<Smol::ColliderComponent>();
+    colliderComp->OnBeginOverlap(this, &ArrowActor::OnOverlapBegin);
+
+    AddComponent<ElementalComponent>();
+
     ElementalComponent* elementalComp = GetComponent<ElementalComponent>();
     elementalComp->OnFire = [this](Actor* IgnitedActor){
         // 붙어 있는 불이 있을 경우
