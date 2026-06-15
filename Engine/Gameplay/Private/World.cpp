@@ -47,6 +47,8 @@ namespace Smol
         auto ptr = actor.get();
         manageActor(std::move(actor), Str(name));
 
+        ptr->OnStart();
+
         return ptr;
     }
 
