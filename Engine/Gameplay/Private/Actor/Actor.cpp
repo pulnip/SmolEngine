@@ -82,7 +82,7 @@ namespace Smol
     }
 
     void Actor::Destroy(){
-        if(world == nullptr) [[unlikely]]{
+        if(!handle.IsValid()) [[unlikely]]{
             return;
         }
 
@@ -90,7 +90,6 @@ namespace Smol
         world->MarkDestroy(handle);
 
         // Guarantee Actor is not Destroyed twice
-        world = nullptr;
         handle = Handle::InvalidHandle();
     }
 

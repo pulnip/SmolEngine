@@ -110,6 +110,14 @@ namespace Smol
             endOverlapEvent.Remove(handle);
         }
 
+        void SetLayer(CollisionLayer layer){
+            this->layer = layer;
+        }
+
+        void SetMask(CollisionMask mask){
+            this->mask = mask;
+        }
+
     private:
         RectCollider getWorldCollider() const;
 

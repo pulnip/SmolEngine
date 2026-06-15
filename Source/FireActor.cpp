@@ -28,6 +28,9 @@ void FireActor::OnStart(){
     colliderComp->OnBeginOverlap(this, &FireActor::OnOverlapBegin);
     colliderComp->OnEndOverlap(this, &FireActor::OnOverlapEnd);
 
+    colliderComp->SetLayer(0b1);
+    colliderComp->SetMask(0b1);
+
     AddComponent<ElementalComponent>();
     ElementalComponent* elementalComp = GetComponent<ElementalComponent>();
     if (nullptr == elementalComp)
@@ -67,7 +70,7 @@ void FireActor::OnUpdate(float dt){
 void FireActor::OnOverlapBegin(Smol::ColliderComponent* overlappedComponent,
     Smol::Actor* otherActor, Smol::ColliderComponent* otherComp,
     const Smol::OverlapResult2D& result){
-    LOG_INFO(" Overlap Start. {}", result.contactPoint);
+    LOG_INFO(" Overlap Start. {}", otherActor->GetClassName());
 
     ElementalComponent* curElementalComp = GetComponent<ElementalComponent>();
     if (nullptr == curElementalComp)
@@ -85,11 +88,8 @@ void FireActor::OnOverlapBegin(Smol::ColliderComponent* overlappedComponent,
     otherElementalComp->ApplyHeat(curElementalComp->GetCurrentTemperature());
 
     // 오버랩이 유지되는 동안 연소 시간이 감소하도록 추적합니다.
-    auto found = std::find(
-        overlappingElementalComps.begin(),
-        overlappingElementalComps.end(),
-        otherElementalComp
-    );
+    auto found = std::find(overlappingElementalComps.begin(),
+        overlappingElementalComps.end(), otherElementalComp);
     if (found == overlappingElementalComps.end())
     {
         overlappingElementalComps.push_back(otherElementalComp);
@@ -108,11 +108,8 @@ void FireActor::OnOverlapEnd(
     }
 
     // 대상이 오버랩에서 벗어나면 연소 시간 감소를 중단합니다.
-    auto found = std::find(
-        overlappingElementalComps.begin(),
-        overlappingElementalComps.end(),
-        otherElementalComp
-    );
+    auto found = std::find(overlappingElementalComps.begin(),
+        overlappingElementalComps.end(),otherElementalComp);
 
     if (found != overlappingElementalComps.end())
     {

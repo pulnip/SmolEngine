@@ -31,11 +31,11 @@ sprite_scale = [8, 8]
 type = "MoveComponent"
 speed = 16
 scale = 5.0
-[[actors.components]]
-type = "ColliderComponent"
-scale = [3, 7]
-layer = 0b1
-mask = 0b1
+# [[actors.components]]
+# type = "ColliderComponent"
+# scale = [3, 7]
+# layer = 0b1
+# mask = 0b1
 [[actors.components]]
 type = "BowComponent"
 [[actors.components]]
@@ -50,21 +50,21 @@ type = "SpriteComponent"
 sprite = "Pixel_Hero-Idle"
 sprite_scale = [8, 8]
 
-[[actors]]
-type = "ArrowActor"
-position = [0, 0, 0]
-name = "ElementalActor"
-[[actors.components]]
-type = "SpriteComponent"
-sprite = "Basic_Arrow"
-sprite_scale = [3, 3]
-[[actors.components]]
-type = "ColliderComponent"
-scale = [3, 3]
-layer = 0b1
-mask = 0b1
-[[actors.components]]
-type = "ElementalComponent"
+# [[actors]]
+# type = "ArrowActor"
+# position = [0, 0, 0]
+# name = "ElementalActor"
+# [[actors.components]]
+# type = "SpriteComponent"
+# sprite = "Basic_Arrow"
+# sprite_scale = [3, 3]
+# [[actors.components]]
+# type = "ColliderComponent"
+# scale = [3, 3]
+# layer = 0b0
+# mask = 0b1
+# [[actors.components]]
+# type = "ElementalComponent"
 
 [[actors]]
 type = "FireActor"

@@ -56,12 +56,12 @@ void PlayerCharacter::EndMove(Smol::InputValue v){
 }
 
 void PlayerCharacter::OnJump(Smol::InputValue v){
-    LOG_INFO("OnJump");
+    //LOG_INFO("OnJump");
 
 }
 
 void PlayerCharacter::OnBowAim(Smol::InputValue v){
-    LOG_INFO("OnBowAim");
+    //LOG_INFO("OnBowAim");
 
     BowComponent* bowComp = GetComponent<BowComponent>();
     if (nullptr == bowComp)
@@ -101,7 +101,7 @@ void PlayerCharacter::EndBowAim(Smol::InputValue v){
 }
 
 void PlayerCharacter::OnBowShoot(Smol::InputValue v){
-    LOG_INFO("OnBowShoot");
+    //LOG_INFO("OnBowShoot");
 
     BowComponent* bowComp = GetComponent<BowComponent>();
     if (nullptr == bowComp)

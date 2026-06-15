@@ -12,7 +12,7 @@ constexpr CStr APP_CONFIG_PATH = "Config/Default.app.toml";
 
 i32 main(i32, CStr[]){
 #if defined(_DEBUG) || !defined(NDEBUG)
-    SetLogLevel(LogLevel::Warn);
+    SetLogLevel(LogLevel::Trace);
 #else
     SetLogLevel(LogLevel::Error);
 #endif

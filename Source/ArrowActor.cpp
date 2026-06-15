@@ -41,6 +41,9 @@ void ArrowActor::OnStart(){
     Smol::ColliderComponent* colliderComp = GetComponent<Smol::ColliderComponent>();
     colliderComp->OnBeginOverlap(this, &ArrowActor::OnOverlapBegin);
 
+    colliderComp->SetLayer(0b1);
+    colliderComp->SetMask(0b0);
+
     AddComponent<ElementalComponent>();
 
     ElementalComponent* elementalComp = GetComponent<ElementalComponent>();
@@ -130,7 +133,7 @@ void ArrowActor::BeginTrajectory(Smol::f32 pointInterval){
 }
 
 void ArrowActor::OnOverlapBegin(Smol::ColliderComponent*, Smol::Actor*, Smol::ColliderComponent*, const Smol::OverlapResult2D& result){
-    LOG_INFO(" Overlap Start. {}", result.contactPoint);
+    // LOG_INFO(" Overlap Start. {}", result.contactPoint);
 
     ElementalComponent* elementalComponent = GetComponent<ElementalComponent>();
     if (nullptr == elementalComponent)
