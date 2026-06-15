@@ -25,7 +25,7 @@ name = "Player"
 possessed_by = "PlayerController"
 [[actors.components]]
 type = "SpriteAnimComponent"
-sprite = "Pixel_Hero-Idle"
+sprite = "Pixel_Hero"
 sprite_scale = [8, 8]
 [[actors.components]]
 type = "MoveComponent"
@@ -41,14 +41,14 @@ type = "BowComponent"
 [[actors.components]]
 type = "LineRenderer"
 
-[[actors]]
-type = "Actor"
-position = [-2, 5, 0]
-name = "NPC"
-[[actors.components]]
-type = "SpriteComponent"
-sprite = "Pixel_Hero-Idle"
-sprite_scale = [8, 8]
+# [[actors]]
+# type = "Actor"
+# position = [-2, 5, 0]
+# name = "NPC"
+# [[actors.components]]
+# type = "SpriteComponent"
+# sprite = "Pixel_Hero-Idle"
+# sprite_scale = [8, 8]
 
 # [[actors]]
 # type = "ArrowActor"
@@ -68,7 +68,7 @@ sprite_scale = [8, 8]
 
 [[actors]]
 type = "FireActor"
-position = [0, 0, 0]
+position = [5, 0, 0]
 name = "FireActor1"
 [[actors.components]]
 type = "SpriteComponent"

@@ -12,8 +12,12 @@ name = "hollow_knight"
 file = "Assets/Sprite/hollow_knight.sprite.toml"
 
 [[sprites]]
-name = "Pixel_Hero-Idle"
-file = "Assets/Sprite/Pixel_Hero-Idle.sprite.toml"
+name = "Pixel_Hero"
+file = "Assets/Sprite/Pixel_Hero.sprite.toml"
+
+[[sprites]]
+name = "Bow"
+file = "Assets/Sprite/Bow.toml"
 
 [[sprites]]
 name = "Basic_Arrow"

@@ -1,15 +1,15 @@
 [metadata]
 version = 0
-name = "Walk"
+name = "Bow"
 type = "sprite"
 
 [sheet]
-image = "Assets/Sprite/Pixel_Hero-Walk.png"
+image = "Assets/Sprite/Pixel_Hero-Bow.png"
 rows = 1
 columns = 6
 
 [[animations]]
-name = "walk"
+name = "Bow"
 start_row = 0
 start_col = 0
 frame_count = 6

@@ -13,9 +13,11 @@ public:
     void OnUpdate(float) override;
 
 private:
+    void StartMove(Smol::InputValue);
     void OnMove(Smol::InputValue);
     void EndMove(Smol::InputValue);
     void OnJump(Smol::InputValue);
+    void StartBowAim(Smol::InputValue);
     void OnBowAim(Smol::InputValue);
     void EndBowAim(Smol::InputValue);
     void OnBowShoot(Smol::InputValue);

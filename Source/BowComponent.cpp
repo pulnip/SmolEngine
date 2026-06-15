@@ -62,7 +62,3 @@ std::vector<Smol::Vec3> BowComponent::BuildTrajectory(Smol::Vec3 direction, cons
 
     return Points;
 }
-
-void BowComponent::SetAiming(bool isAiming){
-    bIsAiming = isAiming;
-}

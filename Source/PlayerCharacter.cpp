@@ -10,6 +10,7 @@
 #include "BowComponent.hpp"
 #include "Primitives.hpp"
 #include "LogGame.hpp"
+#include "SpriteAnimComponent.hpp"
 #include "World.hpp"
 
 SMOL_ACTOR(PlayerCharacter, Smol::Pawn)
@@ -19,6 +20,7 @@ void PlayerCharacter::PossessedBy(Smol::CharacterController& controller){
     Super::PossessedBy(controller);
 
     // 이동 입력에 대한 콜백 함수 바인딩
+    BindAction("Move", Smol::TriggerEvent::Started, this, &PlayerCharacter::StartMove);
     BindAction("Move", Smol::TriggerEvent::Triggered, this, &PlayerCharacter::OnMove);
     BindAction("Move", Smol::TriggerEvent::Finished, this, &PlayerCharacter::EndMove);
 
@@ -26,6 +28,7 @@ void PlayerCharacter::PossessedBy(Smol::CharacterController& controller){
     BindAction("Jump", Smol::TriggerEvent::Started, this, &PlayerCharacter::OnJump);
 
     BindAction("MajorAction", Smol::TriggerEvent::Started, this, &PlayerCharacter::OnBowShoot);
+    BindAction("AssistAction", Smol::TriggerEvent::Started, this, &PlayerCharacter::StartBowAim);
     BindAction("AssistAction", Smol::TriggerEvent::Triggered, this, &PlayerCharacter::OnBowAim);
     BindAction("AssistAction", Smol::TriggerEvent::Finished, this, &PlayerCharacter::EndBowAim);
 }
@@ -34,9 +37,25 @@ void PlayerCharacter::OnUpdate(float dt){
 
 }
 
-void PlayerCharacter::OnMove(Smol::InputValue v){
-    // 입력 방향으로 이동 방향 설정
+void PlayerCharacter::StartMove(Smol::InputValue v){
+    BowComponent* bowComp = GetComponent<BowComponent>();
+    bool bIsAiming = bowComp->GetIsAiming();
+    if (bIsAiming){
+        return;
+    }
 
+    Smol::SpriteAnimComponent* spriteAnimComp = GetComponent<Smol::SpriteAnimComponent>();
+    spriteAnimComp->SetAnimation("walk");
+}
+
+void PlayerCharacter::OnMove(Smol::InputValue v){
+    BowComponent* bowComp = GetComponent<BowComponent>();
+    bool bIsAiming = bowComp->GetIsAiming();
+    if (bIsAiming){
+        return;
+    }
+
+    // 입력 방향으로 이동 방향 설정
     Smol::Vec3 dir = v.GetAxis3D();
 
     // LOG_INFO("OnMove to {}", dir);
@@ -48,16 +67,33 @@ void PlayerCharacter::OnMove(Smol::InputValue v){
 }
 
 void PlayerCharacter::EndMove(Smol::InputValue v){
+    BowComponent* bowComp = GetComponent<BowComponent>();
+    bool bIsAiming = bowComp->GetIsAiming();
+    if (bIsAiming){
+        return;
+    }
+
     // 이동 방향 기본값으로 초기화
     Smol::MoveComponent* moveComponent = GetComponent<Smol::MoveComponent>();
     if(moveComponent != nullptr){
         moveComponent->SetDirection(Smol::zeros());
     }
+
+    Smol::SpriteAnimComponent* spriteAnimComp = GetComponent<Smol::SpriteAnimComponent>();
+    spriteAnimComp->SetAnimation("idle");
 }
 
 void PlayerCharacter::OnJump(Smol::InputValue v){
     //LOG_INFO("OnJump");
 
+}
+
+void PlayerCharacter::StartBowAim(Smol::InputValue v){
+    BowComponent* bowComp = GetComponent<BowComponent>();
+    bowComp->SetIsAiming(true);
+
+    Smol::SpriteAnimComponent* spriteAnimComp = GetComponent<Smol::SpriteAnimComponent>();
+    spriteAnimComp->SetAnimation("aim");
 }
 
 void PlayerCharacter::OnBowAim(Smol::InputValue v){
@@ -85,8 +121,6 @@ void PlayerCharacter::OnBowAim(Smol::InputValue v){
     auto renderer = GetComponent<Smol::LineRenderer>();
 
     renderer->DrawLine(drawTrajectory);
-
-    bowComp->SetAiming(true);
 }
 
 void PlayerCharacter::EndBowAim(Smol::InputValue v){
@@ -97,7 +131,7 @@ void PlayerCharacter::EndBowAim(Smol::InputValue v){
         return;
     }
 
-    bowComp->SetAiming(false);
+    bowComp->SetIsAiming(false);
 }
 
 void PlayerCharacter::OnBowShoot(Smol::InputValue v){
