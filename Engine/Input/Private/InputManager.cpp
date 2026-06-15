@@ -1,10 +1,10 @@
-#include <cstdio>
 #include <span>
 #include <utility>
 #include "Assert.hpp"
 #include "HashUtil.hpp"
 #include "InputManager.hpp"
 #include "InputProvider.hpp"
+#include "LinearAlgebra.hpp"
 #include "VariantUtil.hpp"
 
 namespace{
@@ -96,10 +96,12 @@ namespace Smol
                         }
                     },
                     [&](const MouseButton& button){
-                        if(provider->IsKeyDown(button)){
+                        Vec3 dpos = provider->GetMouseDPos();
+                        bool isMouseMove = normSquared(dpos) > 1e-3f;
+
+                        if(provider->IsKeyDown(button) && isMouseMove){
                             anyKeyHeld = true;
 
-                            Vec3 dpos = provider->GetMouseDPos();
                             value += ::Apply(binding.modifiers, dpos);
                         }
                     }
