@@ -23,4 +23,11 @@ namespace Smol
         Unknown
     };
     constexpr auto NUM_KEY = static_cast<usize>(KeyCode::Unknown);
+
+    enum class MouseButton{
+        LButton, RButton,
+        // Sentinel
+        Unknown
+    };
+    constexpr auto NUM_MOUSE_BUTTON = static_cast<usize>(MouseButton::Unknown);
 }
