@@ -409,9 +409,9 @@ namespace Smol
     struct Transform;
 
     struct Transform2D{
-        Vec2 position;
-        f32 theta;
-        Vec2 scale;
+        Vec2 position = Vec2{0.0f, 0.0f};
+        f32 theta = 0.0f;
+        Vec2 scale = Vec2{1.0f, 1.0f};
 
         constexpr operator Transform() const noexcept;
     };

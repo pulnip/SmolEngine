@@ -55,12 +55,11 @@ namespace Smol
 
     RectCollider ColliderComponent::getWorldCollider() const{
         SMOL_ASSERT(owner != nullptr);
-        const auto& t = owner->GetTransform();
+        auto ownerTransform = static_cast<Transform2D>(owner->GetTransform());
 
-        RectCollider c = collider;
-        c.transform = static_cast<Transform2D>(owner->GetTransform()) * transform;
-
-        return c;
+        return RectCollider{
+            .transform = ownerTransform * transform
+        };
     }
 
     void ColliderComponent::NotifyBeginOverlap(
