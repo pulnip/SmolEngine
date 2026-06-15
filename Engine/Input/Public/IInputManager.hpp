@@ -15,5 +15,7 @@ namespace Smol
         [[nodiscard]]
         virtual InputAction BindAction(StrView action, TriggerEvent, Callback&&) = 0;
         virtual void UnbindAction(Handle) = 0;
+
+        virtual Vec2 GetMousePos() const noexcept = 0;
     };
 }

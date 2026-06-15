@@ -4,12 +4,14 @@
 #include "HashUtil.hpp"
 #include "InputManager.hpp"
 #include "InputProvider.hpp"
+#include "LinearAlgebra.hpp"
+#include "VariantUtil.hpp"
 
 namespace{
-    auto Apply(std::span<const Smol::InputModifier> modifiers){
+    auto Apply(std::span<const Smol::InputModifier> modifiers, Smol::Vec3 initValue){
         using namespace Smol;
 
-        auto value = InputValue(unitX());
+        auto value = InputValue(initValue);
 
         for(auto& modifier: modifiers)
             value = Apply(modifier, value);
@@ -46,13 +48,28 @@ namespace Smol
             auto value = InputValue(zeros());
 
             for(const auto& binding: action.mappings){
-                if(provider->IsKeyPressed(binding.keyCode)){
-                    anyKeyPressed = true;
-                    ++action.count;
+                std::visit(overload{
+                    [&](const KeyCode& keyCode){
+                        if(provider->IsKeyPressed(keyCode)){
+                            anyKeyPressed = true;
+                            ++action.count;
 
-                    // Additive Blending
-                    value += ::Apply(binding.modifiers);
-                }
+                            // Additive Blending
+                            // (1, 0, 0) for keyboard
+                            value += ::Apply(binding.modifiers, unitX());
+                        }
+                    },
+                    [&](const MouseButton& button){
+                        if(provider->IsKeyPressed(button)){
+                            anyKeyPressed = true;
+                            ++action.count;
+
+                            // dpos for mouse
+                            Vec3 dpos = provider->GetMouseDPos();
+                            value += ::Apply(binding.modifiers, dpos);
+                        }
+                    }
+                }, binding.cond);
             }
 
             const auto isActionStarted = isReadyToStart && anyKeyPressed;
@@ -70,11 +87,25 @@ namespace Smol
             auto value = InputValue(zeros());
 
             for(const auto& binding: action.mappings){
-                if(provider->IsKeyDown(binding.keyCode)){
-                    anyKeyHeld = true;
+                std::visit(overload{
+                    [&](const KeyCode& keyCode){
+                        if(provider->IsKeyDown(keyCode)){
+                            anyKeyHeld = true;
 
-                    value += ::Apply(binding.modifiers);
-                }
+                            value += ::Apply(binding.modifiers, unitX());
+                        }
+                    },
+                    [&](const MouseButton& button){
+                        Vec3 dpos = provider->GetMouseDPos();
+                        bool isMouseMove = normSquared(dpos) > 1e-3f;
+
+                        if(provider->IsKeyDown(button) && isMouseMove){
+                            anyKeyHeld = true;
+
+                            value += ::Apply(binding.modifiers, dpos);
+                        }
+                    }
+                }, binding.cond);
             }
 
             if(anyKeyHeld)
@@ -91,12 +122,26 @@ namespace Smol
             auto value = InputValue(zeros());
 
             for(const auto& binding: action.mappings){
-                if(provider->IsKeyReleased(binding.keyCode)){
-                    anyKeyReleased = true;
-                    --action.count;
+                std::visit(overload{
+                    [&](const KeyCode& keyCode){
+                        if(provider->IsKeyReleased(keyCode)){
+                            anyKeyReleased = true;
+                            --action.count;
 
-                    value += ::Apply(binding.modifiers);
-                }
+                            value += ::Apply(binding.modifiers, unitX());
+                        }
+                    },
+                    [&](const MouseButton& button){
+                        if(provider->IsKeyReleased(button)){
+                            anyKeyReleased = true;
+                            --action.count;
+
+                            Vec3 dpos = provider->GetMouseDPos();
+                            value += ::Apply(binding.modifiers, dpos);
+                        }
+                    }
+                }, binding.cond);
+
             }
 
             const auto isActionFinished = action.count == 0 && anyKeyReleased;
@@ -106,6 +151,10 @@ namespace Smol
                     .event = TriggerEvent::Finished
                 }, value);
         }
+    }
+
+    Vec2 InputManager::GetMousePos() const noexcept{
+        return provider->GetMousePos();
     }
 
     void InputManager::UnbindAction(Handle handle){

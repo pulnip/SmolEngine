@@ -36,3 +36,11 @@ action = "Jump"
 triggers = [
     {type = "Pressed"}
 ]
+
+[[context.mappings]]
+key = "LeftMouseButton"
+action = "MajorAction"
+
+[[context.mappings]]
+key = "LeftMouseButton"
+action = "AssistAction"

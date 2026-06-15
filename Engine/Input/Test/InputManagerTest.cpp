@@ -20,7 +20,7 @@ static InputManager& GetInputManager(){
                 .name = "Action",
                 .mappings = {
                     KeyBinding{
-                        .keyCode = A
+                        .cond = A
                     },
                 }
             }

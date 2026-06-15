@@ -55,6 +55,8 @@ namespace Smol
         InputAction BindAction(StrView action, TriggerEvent, Callback&&) override;
         void UnbindAction(Handle) override;
 
+        Vec2 GetMousePos() const noexcept override;
+
     private:
         void handleActionStarted();
         void handleActionTriggered();

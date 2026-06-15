@@ -5,15 +5,9 @@
 #include "DX11Definitions.hpp"
 #include "EnumUtil.hpp"
 #include "PtrUtil.hpp"
+#include "VariantUtil.hpp"
 #include "DX11Buffer.hpp"
 #include "DX11Util.hpp"
-
-namespace{
-    template<class... Ts>
-    struct overload: Ts...{
-        using Ts::operator()...;
-    };
-}
 
 namespace Smol
 {

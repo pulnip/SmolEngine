@@ -6,6 +6,7 @@
 
 namespace Smol
 {
+    // Does not handle mouse for now
     class MockInputProvider final: public InputProvider{
     private:
         std::bitset<NUM_KEY> heldState;
@@ -20,6 +21,10 @@ namespace Smol
             auto ordKey = static_cast<usize>(keyCode);
 
             return heldState.test(ordKey);
+        }
+
+        bool IsKeyDown(MouseButton) const noexcept override{
+            return false;
         }
 
         void NewFrame() noexcept{

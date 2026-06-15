@@ -146,6 +146,17 @@ namespace{
             return Unknown;
         }
     }
+
+    inline Smol::MouseButton convert(Uint8 mouseIndex){
+        using enum Smol::MouseButton;
+
+        switch(mouseIndex){
+        case SDL_BUTTON_LEFT:  return LButton;
+        case SDL_BUTTON_RIGHT: return RButton;
+        default:
+            return Unknown;
+        }
+    }
 }
 
 namespace Smol
@@ -168,6 +179,13 @@ namespace Smol
                 SDL_GetError()
             ));
         }
+
+        Vec2 mousePos;
+        SDL_GetMouseState(&mousePos.x, &mousePos.y);
+
+        SetCurrentMousePos(mousePos);
+        // call twice for init mouse.dpos
+        SetCurrentMousePos(mousePos);
     }
 
     SDLInputProvider::~SDLInputProvider(){
@@ -182,6 +200,29 @@ namespace Smol
         auto sdlCode = convert(keyCode);
 
         return heldState[sdlCode];
+    }
+
+    bool SDLInputProvider::IsKeyDown(MouseButton button) const noexcept{
+        auto ordKey = static_cast<usize>(button);
+
+        return mouseHeldState.test(ordKey);
+    }
+
+    void SDLInputProvider::NewFrame() noexcept{
+        InputProvider::ConsumeEdge();
+        mouseHeldState.reset();
+
+        Vec2 mousePos;
+        auto buttons = SDL_GetMouseState(&mousePos.x, &mousePos.y);
+
+        SetCurrentMousePos(mousePos);
+
+        if(buttons & SDL_BUTTON_MASK(SDL_BUTTON_LEFT)){
+            mouseHeldState.set(static_cast<usize>(MouseButton::LButton));
+        }
+        if(buttons & SDL_BUTTON_MASK(SDL_BUTTON_RIGHT)){
+            mouseHeldState.set(static_cast<usize>(MouseButton::RButton));
+        }
     }
 
     void SDLInputProvider::OnPlatformEvent(const SDL_KeyboardEvent& event) noexcept{
@@ -203,6 +244,28 @@ namespace Smol
         } break;
         default:
             // Input Provider should handle specific case
+            std::unreachable();
+        }
+    }
+
+    void SDLInputProvider::OnPlatformEvent(const SDL_MouseButtonEvent& event) noexcept{
+        switch(event.type){
+        case SDL_EVENT_MOUSE_MOTION:
+            break;
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            [[fallthrough]];
+        case SDL_EVENT_MOUSE_BUTTON_UP: {
+
+            auto mouseButton = convert(event.button);
+            if(mouseButton == MouseButton::Unknown)
+                break;
+
+            if(event.down)
+                PressKey(mouseButton);
+            else
+                ReleaseKey(mouseButton);
+        } break;
+        default:
             std::unreachable();
         }
     }

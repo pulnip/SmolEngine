@@ -111,7 +111,26 @@ namespace Smol
             return it->second;
         }
 
-        LOG_ERROR("Unknown KeyCode: {}", str);
+        return Unknown;
+    }
+
+    template<>
+    CStr EnumTraits<MouseButton>::name = "MouseButton";
+
+    template<>
+    MouseButton EnumTraits<MouseButton>::convert(StrView str){
+        using enum MouseButton;
+
+        static StringHashMap<MouseButton> map = {
+            {"LEFTMOUSEBUTTON", LButton},
+            {"RIGHTMOUSEBUTTON", RButton}
+        };
+
+        auto upper = toUpper(str);
+        if(auto it = map.find(upper); it != map.end()){
+            return it->second;
+        }
+
         return Unknown;
     }
 
@@ -129,12 +148,31 @@ namespace Smol
 
             if(!key || !action) return;
 
-            raw[*action].emplace_back(
-                KeyBinding{
-                    .keyCode = EnumTraits<KeyCode>::convert(*key),
-                    .modifiers = gatherModifiers(node)
-                }
-            );
+            auto keyCode = EnumTraits<KeyCode>::convert(*key);
+            if(keyCode != KeyCode::Unknown){
+                raw[*action].emplace_back(
+                    KeyBinding{
+                        .cond = keyCode,
+                        .modifiers = gatherModifiers(node)
+                    }
+                );
+
+                return;
+            }
+
+            auto mouseButton = EnumTraits<MouseButton>::convert(*key);
+            if(mouseButton != MouseButton::Unknown){
+                raw[*action].emplace_back(
+                    KeyBinding{
+                        .cond = mouseButton,
+                        .modifiers = gatherModifiers(node)
+                    }
+                );
+
+                return;
+            }
+
+            LOG_ERROR("Unknown KeyCode: {}", *key);
         });
 
         return InputConfig{
