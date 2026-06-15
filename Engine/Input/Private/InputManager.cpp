@@ -96,13 +96,10 @@ namespace Smol
                         }
                     },
                     [&](const MouseButton& button){
-                        Vec3 dpos = provider->GetMouseDPos();
-                        bool isMouseMove = normSquared(dpos) > 1e-3f;
-
-                        if(provider->IsKeyDown(button) && isMouseMove){
+                        if(provider->IsKeyDown(button)){
                             anyKeyHeld = true;
 
-                            value += ::Apply(binding.modifiers, dpos);
+                            value += ::Apply(binding.modifiers, provider->GetMouseDPos());
                         }
                     }
                 }, binding.cond);
