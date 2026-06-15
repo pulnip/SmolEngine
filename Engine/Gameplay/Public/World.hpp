@@ -41,6 +41,7 @@ namespace Smol
         // for runtime Actor Creation
         StringHashMap<usize> nameSeed;
 
+        std::vector<Actor*> pendingStart;
         std::vector<Handle> pendingDestory;
 
         bool isShutdown = false;
@@ -79,13 +80,13 @@ namespace Smol
             auto ptr = actor.get();
             manageActor(std::move(actor), Str(name));
 
+            pendingStart.emplace_back(ptr);
+
             return ptr;
         }
 
         // Spawn user-defined Actor for engine
         Actor* SpawnActor(StrView type, StrView name);
-
-        void Start();
 
         void Update(f32 deltaTime);
 
@@ -137,5 +138,7 @@ namespace Smol
         void OnEnter(Object*, Object*, const OverlapResult2D&);
         void OnStay(Object*, Object*, const OverlapResult2D&);
         void OnExit(Object*, Object*);
+
+    private:
     };
 }
