@@ -2,13 +2,14 @@
 #include "LogLocal.hpp"
 #include "ResourceRegistry.hpp"
 #include "RHITexture.hpp"
+#include "StringUtil.hpp"
 #include "TomlLoader.hpp"
 
 namespace{
-    std::unordered_map<Smol::Str, Smol::SpriteAnimation> gatherAnimations(const Smol::DOM::Value& node){
+    Smol::StringHashMap<Smol::SpriteAnimation> gatherAnimations(const Smol::DOM::Value& node){
         using namespace Smol;
 
-        std::unordered_map<Str, SpriteAnimation> animations;
+        StringHashMap<SpriteAnimation> animations;
 
         node.forEach("animations", [&animations](const DOM::Value& node){
             auto name = node.get<Str>("name");

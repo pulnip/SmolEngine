@@ -42,6 +42,8 @@ namespace Smol
 
         void Update(f32) override;
 
+        void SetAnimation(StrView anim);
+
     private:
         void syncToRenderer();
         void nextFrame() noexcept;
