@@ -17,7 +17,8 @@ private:
     void EndMove(Smol::InputValue);
     void OnJump(Smol::InputValue);
     void OnBowAim(Smol::InputValue);
-    void OnBowRelease(Smol::InputValue);
+    void EndBowAim(Smol::InputValue);
+    void OnBowShoot(Smol::InputValue);
 
 private:
     //TODO. 활 컴포넌트 추가

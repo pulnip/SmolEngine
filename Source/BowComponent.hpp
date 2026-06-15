@@ -13,11 +13,15 @@ public:
 
     void Update(Smol::f32) override;
 
-    //TODO. <활 발사>
-    void EndAim(Smol::Vec3 direction);
+    // <활 발사>
+    void Shoot(Smol::Vec3 direction);
 
-    std::vector<Smol::Vec3> BuildTrajectory(Smol::Vec3 direction);
+    std::vector<Smol::Vec3> BuildTrajectory(Smol::Vec3 direction, const int sampleCount = 10);
+
+    void SetAiming(bool isAiming);
 
 private:
-    Smol::Vec3 arrowVelocity = Smol::Vec3(3);
+    float arrowVelocity = 15.f;
+
+    bool bIsAiming = false;
 };

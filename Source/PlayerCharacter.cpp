@@ -1,11 +1,16 @@
+#include <cmath>
+
 #include "PlayerCharacter.hpp"
 #include "CharacterController.hpp"
+#include "IInputManager.hpp"
 #include "InputAction.hpp"
+#include "LinearAlgebra.hpp"
 #include "MoveComponent.hpp"
 #include "LineRenderer.hpp"
 #include "BowComponent.hpp"
 #include "Primitives.hpp"
 #include "LogGame.hpp"
+#include "World.hpp"
 
 SMOL_ACTOR(PlayerCharacter, Smol::Pawn)
 SMOL_ACTOR_END(PlayerCharacter)
@@ -18,11 +23,11 @@ void PlayerCharacter::PossessedBy(Smol::CharacterController& controller){
     BindAction("Move", Smol::TriggerEvent::Finished, this, &PlayerCharacter::EndMove);
 
     //TODO. 점프
-    //BindAction("Jump", Smol::TriggerEvent::Started, this, &PlayerCharacter::OnJump);
+    BindAction("Jump", Smol::TriggerEvent::Started, this, &PlayerCharacter::OnJump);
 
-    //TODO. Content/Input/Example.input.toml에 action 추가하기
-    BindAction("OnBowAim", Smol::TriggerEvent::Triggered, this, &PlayerCharacter::OnBowAim);
-    BindAction("Jump", Smol::TriggerEvent::Finished, this, &PlayerCharacter::OnBowRelease);
+    BindAction("MajorAction", Smol::TriggerEvent::Started, this, &PlayerCharacter::OnBowShoot);
+    BindAction("AssistAction", Smol::TriggerEvent::Triggered, this, &PlayerCharacter::OnBowAim);
+    BindAction("AssistAction", Smol::TriggerEvent::Finished, this, &PlayerCharacter::EndBowAim);
 }
 
 void PlayerCharacter::OnUpdate(float dt){
@@ -65,17 +70,38 @@ void PlayerCharacter::OnBowAim(Smol::InputValue v){
         return;
     }
 
-    //TODO. 마우스 위치의 방향으로 변경 예정
     Smol::Vec3 direction = Smol::Vec3(1.f, 0.f, 0.f);
+    if (const Smol::IInputManager* inputManager = GetWorld()->GetInputManager())
+    {
+        const Smol::Vec2 mousePos = inputManager->GetMousePos();
+        const Smol::Vec3 actorPos = GetTransform().position;
+
+        const Smol::Vec3 toMouse = mousePos - Smol::Vec2(actorPos.x, actorPos.y);
+
+        direction = Smol::normalize(toMouse);
+    }
     std::vector<Smol::Vec3> drawTrajectory = bowComp->BuildTrajectory(direction);
 
     auto renderer = GetComponent<Smol::LineRenderer>();
 
-     renderer->DrawLine(drawTrajectory);
+    renderer->DrawLine(drawTrajectory);
+
+    bowComp->SetAiming(true);
 }
 
-void PlayerCharacter::OnBowRelease(Smol::InputValue v){
-    LOG_INFO("OnBowRelease");
+void PlayerCharacter::EndBowAim(Smol::InputValue v){
+    BowComponent* bowComp = GetComponent<BowComponent>();
+    if (nullptr == bowComp)
+    {
+        LOG_WARN("Game", "nullptr");
+        return;
+    }
+
+    bowComp->SetAiming(false);
+}
+
+void PlayerCharacter::OnBowShoot(Smol::InputValue v){
+    LOG_INFO("OnBowShoot");
 
     BowComponent* bowComp = GetComponent<BowComponent>();
     if (nullptr == bowComp)
@@ -85,6 +111,15 @@ void PlayerCharacter::OnBowRelease(Smol::InputValue v){
     }
 
     Smol::Vec3 direction = Smol::Vec3(1.f, 0.f, 0.f);
-    bowComp->EndAim(direction);
-}
+    if (const Smol::IInputManager* inputManager = GetWorld()->GetInputManager())
+    {
+        const Smol::Vec2 mousePos = inputManager->GetMousePos();
+        const Smol::Vec3 actorPos = GetTransform().position;
 
+        const Smol::Vec3 toMouse = mousePos - Smol::Vec2(actorPos.x, actorPos.y);
+
+        direction = Smol::normalize(toMouse);
+    }
+
+    bowComp->Shoot(direction);
+}

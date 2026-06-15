@@ -3,6 +3,7 @@
 #include "FireActor.hpp"
 #include "ElementalComponent.hpp"
 #include "ColliderComponent.hpp"
+#include "SpriteComponent.hpp"
 #include "LogGame.hpp"
 
 SMOL_ACTOR(FireActor)
@@ -13,11 +14,12 @@ FireActor::FireActor(){
 }
 
 void FireActor::OnStart(){
-    ElementalComponent* elementalComp = GetComponent<ElementalComponent>();
-    if (nullptr == elementalComp)
-    {
-        return;
-    }
+    AddComponent<Smol::SpriteComponent>();
+    Smol::SpriteComponent* spriteComp = GetComponent<Smol::SpriteComponent>();
+    spriteComp->OnAttach("Fire");
+
+    AddComponent<Smol::ColliderComponent>()->OnAttach();
+
     Smol::ColliderComponent* colliderComp = GetComponent<Smol::ColliderComponent>();
     if (nullptr == colliderComp)
     {
@@ -25,6 +27,14 @@ void FireActor::OnStart(){
     }
     colliderComp->OnBeginOverlap(this, &FireActor::OnOverlapBegin);
     colliderComp->OnEndOverlap(this, &FireActor::OnOverlapEnd);
+
+    AddComponent<ElementalComponent>();
+    ElementalComponent* elementalComp = GetComponent<ElementalComponent>();
+    if (nullptr == elementalComp)
+    {
+        return;
+    }
+    elementalComp->InitProperty(100.f, 10000.f);
 }
 
 void FireActor::OnUpdate(float dt){

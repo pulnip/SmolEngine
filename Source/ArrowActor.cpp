@@ -5,10 +5,10 @@
 #include "SpriteAnimComponent.hpp"
 #include "SpriteComponent.hpp"
 #include "ColliderComponent.hpp"
+#include "ElementalComponent.hpp"
 #include "LinearAlgebra.hpp"
 #include "LogGame.hpp"
 #include "World.hpp"
-#include "ElementalComponent.hpp"
 #include "FireActor.hpp"
 
 namespace
@@ -45,8 +45,6 @@ void ArrowActor::OnStart(){
 
     ElementalComponent* elementalComp = GetComponent<ElementalComponent>();
     elementalComp->OnFire = [this](Actor* IgnitedActor){
-        // 붙어 있는 불이 있을 경우
-
         // 붙어 있는 불이 없을 경우
         FireActor* fire = GetWorld()->SpawnActor<FireActor>();
         if (fire == nullptr){
@@ -54,9 +52,14 @@ void ArrowActor::OnStart(){
             return;
         }
 
+        // 더이상 불을 생성하지 않도록 한다
+        ElementalComponent* elementalComp = GetComponent<ElementalComponent>();
+        elementalComp->OnFire = nullptr;
+
         //TODO. Attach this
-        //fire->SetTargetActor(this);
+        fire->GetTransform().position = this->GetTransform().position;
     };
+    elementalComp->InitProperty(30.f, 50.f);
 }
 
 void ArrowActor::OnUpdate(float dt){
