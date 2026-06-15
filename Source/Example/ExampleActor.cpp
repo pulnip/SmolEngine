@@ -5,16 +5,22 @@
 #include "LogLocal.hpp"
 #include "MoveComponent.hpp"
 #include "Primitives.hpp"
+#include "SpriteAnimComponent.hpp"
 
 SMOL_ACTOR(ExampleActor, Smol::Pawn)
 SMOL_ACTOR_END(ExampleActor)
 
 void ExampleActor::OnStart(){
-    auto collider = GetComponent<Smol::ColliderComponent>();
+    using namespace Smol;
 
-    collider->OnBeginOverlap(this, &ExampleActor::OnOverlapBegin);
-    collider->OnStayOverlap(this, &ExampleActor::OnOverlapStay);
-    collider->OnEndOverlap(this, &ExampleActor::OnOverlapEnd);
+    if(auto c = GetComponent<ColliderComponent>()){
+        c->OnBeginOverlap(this, &ExampleActor::OnOverlapBegin);
+        c->OnStayOverlap(this, &ExampleActor::OnOverlapStay);
+        c->OnEndOverlap(this, &ExampleActor::OnOverlapEnd);
+    }
+    else{
+        LOG_WARN("No ColliderComponent at ExampleActor");
+    }
 }
 
 void ExampleActor::OnUpdate(float dt){
@@ -61,59 +67,89 @@ void ExampleActor::OnMouseMove(Smol::InputValue v){
 }
 
 void ExampleActor::OnMoveStarted(Smol::InputValue v){
+    using namespace Smol;
+
+    if(auto c = GetComponent<SpriteAnimComponent>()){
+        c->SetAnimation("walk");
+    }
+    else{
+        LOG_WARN("No SpriteAnimComponent in ExampleActor");
+    }
+
     auto dir = v.GetAxis3D();
 
     LOG_DEBUG("Start Move to {}", dir);
 
-    auto moveComponent = GetComponent<Smol::MoveComponent>();
-    if(moveComponent != nullptr){
-        moveComponent->SetDirection(dir);
+    if(auto c = GetComponent<MoveComponent>()){
+        c->SetDirection(dir);
+    }
+    else{
+        LOG_WARN("No MoveComponent in ExampleActor");
     }
 }
 
 void ExampleActor::OnMoveTriggered(Smol::InputValue v){
-    auto dir = v.GetAxis3D();
-
     using namespace Smol;
 
-    auto renderer = GetComponent<Smol::LineRenderer>();
-    std::vector<Vec3> lines1 = {
-        Vec3{0, 0},
-        Vec3{2, 0},
-        Vec3{4, 2},
-        Vec3{6, 2},
-        Vec3{8, 4},
-        Vec3{10, 4}
-    };
-
-    std::vector<Vec3> lines2 = {
-        Vec3{-10, -2},
-        Vec3{-8, 0},
-        Vec3{-6, 0},
-        Vec3{-4, 2},
-        Vec3{-2, 2},
-        Vec3{-0, 4}
-    };
-
-    renderer->DrawLine(lines1, Colors::Blue);
-    renderer->DrawLine(lines2);
+    auto dir = v.GetAxis3D();
 
     LOG_DEBUG("Trigger Move to {}", dir);
 
-    auto moveComponent = GetComponent<Smol::MoveComponent>();
-    if(moveComponent != nullptr){
-        moveComponent->SetDirection(dir);
+    /*
+    if(auto c = GetComponent<LineRenderer>()){
+        static std::vector<Vec3> lines1 = {
+            Vec3{0, 0},
+            Vec3{2, 0},
+            Vec3{4, 2},
+            Vec3{6, 2},
+            Vec3{8, 4},
+            Vec3{10, 4}
+        };
+
+        static std::vector<Vec3> lines2 = {
+            Vec3{-10, -2},
+            Vec3{-8, 0},
+            Vec3{-6, 0},
+            Vec3{-4, 2},
+            Vec3{-2, 2},
+            Vec3{-0, 4}
+        };
+
+        c->DrawLine(lines1, Colors::Blue);
+        c->DrawLine(lines2);
+    }
+    else{
+        LOG_WARN("No LineRenderer in ExampleActor");
+    }
+    */
+
+    if(auto c = GetComponent<MoveComponent>()){
+        c->SetDirection(dir);
+    }
+    else{
+        LOG_WARN("No MoveComponent in ExampleActor");
     }
 }
 
 void ExampleActor::OnMoveFinished(Smol::InputValue v){
+    using namespace Smol;
+
     auto dir = v.GetAxis3D();
 
     LOG_DEBUG("Finish Move to {}", dir);
 
-    auto moveComponent = GetComponent<Smol::MoveComponent>();
-    if(moveComponent != nullptr){
-        moveComponent->SetDirection(Smol::zeros());
+    if(auto c = GetComponent<SpriteAnimComponent>()){
+        c->SetAnimation("idle");
+    }
+    else{
+        LOG_WARN("No SpriteAnimComponent in ExampleActor");
+    }
+
+    if(auto c = GetComponent<MoveComponent>()){
+        c->SetDirection(zeros());
+    }
+    else{
+        LOG_WARN("No MoveComponent in ExampleActor");
     }
 }
 

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <filesystem>
-#include <unordered_map>
 #include "Primitives.hpp"
 #include "RHIFWD.hpp"
+#include "StringUtil.hpp"
 
 namespace Smol
 {
@@ -31,7 +31,7 @@ namespace Smol
 
         Key path;
         Size2D sheetSize;
-        std::unordered_map<Str, SpriteAnimation> animations;
+        StringHashMap<SpriteAnimation> animations;
     };
 
     struct SpriteResource{
@@ -39,7 +39,7 @@ namespace Smol
 
         RHITextureRAII texture;
         Size2D sheetSize;
-        std::unordered_map<Str, SpriteAnimation> animations;
+        StringHashMap<SpriteAnimation> animations;
     };
     static_assert(Resource<SpriteResource>);
 }
