@@ -445,6 +445,30 @@ namespace Smol
             };
         }
     };
+
+    inline constexpr Vec4 quat(Vec4 lhs, Vec4 rhs) noexcept{
+        return Vec4{
+            lhs.w*rhs.x + lhs.x*rhs.w + lhs.y*rhs.z - lhs.z*rhs.y,
+            lhs.w*rhs.y - lhs.x*rhs.z + lhs.y*rhs.w + lhs.z*rhs.x,
+            lhs.w*rhs.z + lhs.x*rhs.y - lhs.y*rhs.x + lhs.z*rhs.w,
+            lhs.w*rhs.w - lhs.x*rhs.x - lhs.y*rhs.y - lhs.z*rhs.z
+        };
+    }
+    inline constexpr Vec4 conjugate(Vec4 q) noexcept{
+        return {-q.x, -q.y, -q.z, q.w};
+    }
+
+    inline constexpr auto rotate(Vec4 v, Vec4 q) noexcept{
+        return quat(quat(q, v), conjugate(q));
+    }
+
+    inline constexpr Transform operator*(Transform lhs, Transform rhs) noexcept{
+        return Transform{
+            .position = lhs.position + rhs.position,
+            .rotation = rotate(lhs.rotation, rhs.rotation),
+            .scale = lhs.scale * rhs.scale,
+        };
+    }
 }
 
 template<>

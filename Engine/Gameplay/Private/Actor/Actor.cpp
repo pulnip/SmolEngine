@@ -61,6 +61,21 @@ namespace Smol
         }
     }
 
+    Actor* Actor::GetParent() const noexcept{
+        return parent.IsValid() ?
+            world->TryGetActor(parent) :
+            nullptr;
+    }
+
+    Transform Actor::GetWorldTransform() const noexcept{
+        auto p = GetParent();
+        SMOL_ASSERT(parent.IsValid() == (p != nullptr));
+
+        return p != nullptr ?
+            p->GetWorldTransform() * transform :
+            transform;
+    }
+
     Component* Actor::AddComponent(StrView type){
         auto object = ClassRegistry::Create(type);
         auto component = uniqueCast<Component>(object);

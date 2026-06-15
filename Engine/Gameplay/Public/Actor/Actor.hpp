@@ -22,7 +22,9 @@ namespace Smol
         std::array<ComponentRAII, NUM_BUILTIN_COMPONENTS> builtinComponents;
         std::unordered_map<Component::TypeID, ComponentRAII> userdefinedComponents;
 
-        std::vector<ActorRAII> children;
+        using Handle = GenericHandle<ActorRAII>;
+        Handle parent = Handle::InvalidHandle();
+        std::vector<GenericHandle<Actor>> children;
 
     private:
         Transform transform{
@@ -75,6 +77,9 @@ namespace Smol
         World* GetWorld() const noexcept{ return world; }
         auto& GetTransform(this auto& self) noexcept{ return self.transform; }
 
+        Actor* GetParent() const noexcept;
+        Transform GetWorldTransform() const noexcept;
+
         template<typename T>
             requires (!IsBuiltinComponent<T>())
         T* GetComponent(){
@@ -117,7 +122,6 @@ namespace Smol
         // Handle for prevent double free
         // That means, Actor is managed by world
         // If Actor not destroyed at World, Handle is valid.
-        using Handle = GenericHandle<ActorRAII>;
         Handle handle = Handle::InvalidHandle();
 
         void MarkManaged(World* world, Handle handle);
