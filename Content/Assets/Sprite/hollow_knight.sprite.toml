@@ -9,6 +9,13 @@ rows = 16
 columns = 16
 
 [[animations]]
+name = "idle"
+start_row = 0
+start_col = 0
+frame_count = 1
+frame_duration_ms = 0
+
+[[animations]]
 name = "walk"
 start_row = 0
 start_col = 0

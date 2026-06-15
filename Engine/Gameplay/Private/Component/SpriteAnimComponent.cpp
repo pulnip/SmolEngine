@@ -30,19 +30,7 @@ namespace Smol
         synced = false;
         syncToRenderer();
 
-        const auto& animations = spriteManager->GetRef(handle).animations;
-        // TODO. change later
-        if(auto it = animations.find("walk"); it != animations.end()){
-            auto& animation = it->second;
-            startRow = animation.startRow;
-            startCol = animation.startCol;
-            proxy.GetRenderItem().offset = {
-                static_cast<float>(startCol),
-                static_cast<float>(startRow)
-            };
-            frameCount = animation.frameCount;
-            framePerSeconds = animation.frameDurationMs / 1000.0f;
-        }
+        SetAnimation("idle");
     }
 
     void SpriteAnimComponent::Update(f32 dt){
@@ -54,7 +42,24 @@ namespace Smol
         }
 
         syncToRenderer();
+    }
 
+    void SpriteAnimComponent::SetAnimation(StrView anim){
+        auto world = owner->GetWorld();
+        auto spriteManager = world->GetSpriteManager();
+        const auto& animations = spriteManager->GetRef(handle).animations;
+
+        if(auto it = animations.find(anim); it != animations.end()){
+            auto& animation = it->second;
+            startRow = animation.startRow;
+            startCol = animation.startCol;
+            proxy.GetRenderItem().offset = {
+                static_cast<float>(startCol),
+                static_cast<float>(startRow)
+            };
+            frameCount = animation.frameCount;
+            framePerSeconds = animation.frameDurationMs / 1000.0f;
+        }
     }
 
     void SpriteAnimComponent::syncToRenderer(){

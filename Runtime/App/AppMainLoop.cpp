@@ -222,8 +222,6 @@ namespace Smol
     bool AppMainLoop::Initialize(){
         timer.Reset();
 
-        world.Start();
-
         return true;
     }
 

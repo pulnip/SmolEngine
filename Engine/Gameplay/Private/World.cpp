@@ -47,7 +47,7 @@ namespace Smol
         auto ptr = actor.get();
         manageActor(std::move(actor), Str(name));
 
-        ptr->OnStart();
+        pendingStart.emplace_back(ptr);
 
         return ptr;
     }
@@ -61,13 +61,12 @@ namespace Smol
         handleToName[handle] = name;
     }
 
-    void World::Start(){
-        for(auto& actor: actors){
+    void World::Update(f32 deltaTime){
+        for(auto& actor: pendingStart){
             actor->OnStart();
         }
-    }
+        pendingStart.clear();
 
-    void World::Update(f32 deltaTime){
         physicsEngine.Update();
 
         for(auto& actor: actors){
