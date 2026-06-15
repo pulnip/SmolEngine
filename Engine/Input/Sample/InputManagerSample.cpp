@@ -25,13 +25,13 @@ static InputManager& GetInputManager(){
                 .name = "Move",
                 .mappings = {
                     KeyBinding{
-                        .keyCode = W,
+                        .cond = W,
                         .modifiers = {
                             SwizzleModifier(ZYX)
                         }
                     },
                     KeyBinding{
-                        .keyCode = A,
+                        .cond = A,
                         .modifiers = {
                             NegateModifier(
                                 true,
@@ -41,7 +41,7 @@ static InputManager& GetInputManager(){
                         }
                     },
                     KeyBinding{
-                        .keyCode = S,
+                        .cond = S,
                         .modifiers = {
                             SwizzleModifier(ZYX),
                             NegateModifier(
@@ -52,7 +52,7 @@ static InputManager& GetInputManager(){
                         }
                     },
                     KeyBinding{
-                        .keyCode = D
+                        .cond = D
                     }
                 },
                 .count = 0
@@ -61,7 +61,7 @@ static InputManager& GetInputManager(){
                 .name = "Jump",
                 .mappings = {
                     KeyBinding{
-                        .keyCode = Space
+                        .cond = Space
                     },
                 },
                 .count = 0

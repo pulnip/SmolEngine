@@ -39,8 +39,26 @@ void ExampleActor::PossessedBy(Smol::CharacterController& controller){
         "Move", TriggerEvent::Finished,
         this, &ExampleActor::OnMoveFinished
     );
+
+    BindAction(
+        "MajorAction", TriggerEvent::Started,
+        this, &ExampleActor::OnMouseClicked
+    );
+    BindAction(
+        "MajorAction", TriggerEvent::Triggered,
+        this, &ExampleActor::OnMouseMove
+    );
 }
 
+void ExampleActor::OnMouseClicked(Smol::InputValue v){
+    LOG_DEBUG("Mouse Clicked");
+}
+
+void ExampleActor::OnMouseMove(Smol::InputValue v){
+    auto dpos = v.GetAxis2D();
+
+    LOG_DEBUG("Mouse Move. dps = {}", dpos);
+}
 
 void ExampleActor::OnMoveStarted(Smol::InputValue v){
     auto dir = v.GetAxis3D();

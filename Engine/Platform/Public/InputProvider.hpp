@@ -55,6 +55,9 @@ namespace Smol
         Vec2 GetMousePos() const noexcept{
             return mouse.pos;
         }
+        Vec2 GetMouseDPos() const noexcept{
+            return mouse.dpos;
+        }
 
     protected:
         void ConsumeEdge() noexcept{

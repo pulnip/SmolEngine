@@ -210,6 +210,7 @@ namespace Smol
 
     void SDLInputProvider::NewFrame() noexcept{
         InputProvider::ConsumeEdge();
+        mouseHeldState.reset();
 
         Vec2 mousePos;
         auto buttons = SDL_GetMouseState(&mousePos.x, &mousePos.y);

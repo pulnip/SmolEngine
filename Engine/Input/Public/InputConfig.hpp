@@ -1,5 +1,6 @@
 #pragma once
 
+#include <variant>
 #include <vector>
 #include "InputModifier.hpp"
 #include "KeyCode.hpp"
@@ -11,7 +12,7 @@ namespace Smol
     using ActionName = Str;
     struct KeyBinding{
         // fire condition
-        KeyCode keyCode;
+        std::variant<KeyCode, MouseButton> cond;
         std::vector<InputModifier> modifiers;
     };
     using KeyBindings = std::vector<KeyBinding>;

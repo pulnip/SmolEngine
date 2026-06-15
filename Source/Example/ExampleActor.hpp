@@ -19,6 +19,9 @@ public:
     void PossessedBy(Smol::CharacterController&) override;
 
 private:
+    void OnMouseClicked(Smol::InputValue);
+    void OnMouseMove(Smol::InputValue);
+
     void OnMoveStarted(Smol::InputValue);
     void OnMoveTriggered(Smol::InputValue);
     void OnMoveFinished(Smol::InputValue);
