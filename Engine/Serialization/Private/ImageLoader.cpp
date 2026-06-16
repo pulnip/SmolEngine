@@ -37,21 +37,20 @@ namespace Smol
     ImageData loadImage(const std::filesystem::path& path, ImageFormat desiredFormat){
         auto bin = readFileAsBinary(path);
 
-        int width = 0, height = 0, channels = 0;
+        int width = 0, height = 0, _ = 0;
         auto data = stbi_load_from_memory(
             bin.data(), static_cast<int>(bin.size()),
-            &width, &height, &channels,
+            &width, &height, &_,
             ::convert(desiredFormat)
         );
 
-        SMOL_ASSERT(toChannels(desiredFormat) == channels);
         if(data == nullptr){
             LOG_ERROR("Image load Failed: {} - {}",
                 path, stbi_failure_reason()
             );
         }
 
-        auto size = width * height * channels;
+        auto size = width * height * toChannels(desiredFormat);
         ImageBlob blob(size);
         std::memcpy(blob.data(), data, size);
 
