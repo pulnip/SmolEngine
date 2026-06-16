@@ -47,6 +47,7 @@ namespace Smol
         void OnAttach();
 
         void Update(f32 dt) override;
+        void Destroy() override;
 
         using BeginOverlapHandle = GenericHandle<BeginOverlapCallback>;
         using StayOverlapHandle = GenericHandle<StayOverlapCallback>;
