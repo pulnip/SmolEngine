@@ -164,13 +164,15 @@ namespace Smol
             }
         }
 
-        propagateDestroy();
+        if(handle.IsValid()){
+            propagateDestroy();
 
-        SMOL_ASSERT(handle.IsValid());
-        world->MarkDestroy(handle);
+            world->MarkDestroy(handle);
+            // Guarantee Actor is not Destroyed twice
+            handle = Handle::InvalidHandle();
 
-        // Guarantee Actor is not Destroyed twice
-        handle = Handle::InvalidHandle();
+            OnDestroy();
+        }
     }
 
     void Actor::propagateDestroy(){

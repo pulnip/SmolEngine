@@ -51,7 +51,8 @@ namespace Smol
         // Called on the middle of frame
         // Notice! Actor update should be treated as Unodered
         virtual void OnUpdate(f32){}
-        // Called when Exit current frame (Just before Actual destroy)
+        // Called when right after Destroy
+        // Notice, not on exit current frame
         virtual void OnDestroy(){}
 
     public:
