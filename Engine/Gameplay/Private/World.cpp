@@ -109,6 +109,9 @@ namespace Smol
         std::swap(pendingDestory, destroyScratch);
 
         for(auto& handle: destroyScratch){
+            SMOL_ASSERT(handle.IsValid());
+            actors.GetRef(handle)->OnDestroy();
+
             actors.Remove(handle);
 
             auto it = handleToName.find(handle);

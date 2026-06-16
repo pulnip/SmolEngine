@@ -41,10 +41,20 @@ namespace Smol
         Actor& operator=(Actor&&) noexcept;
         SMOL_DECLARE_NON_COPYABLE(Actor)
 
-        virtual void OnStart(){}
+    public:
+        // Actor lifetime Callback
 
         void Update(f32);
 
+        // Called when Enter next frame
+        virtual void OnStart(){}
+        // Called on the middle of frame
+        // Notice! Actor update should be treated as Unodered
+        virtual void OnUpdate(f32){}
+        // Called when Exit current frame (Just before Actual destroy)
+        virtual void OnDestroy(){}
+
+    public:
         // Built-in Component, Called both engine and user
         template<BuiltinComponent T>
         T* AddComponent(){
@@ -115,9 +125,6 @@ namespace Smol
 
         // for skip
         bool IsWorldShutdown() const noexcept;
-
-    protected:
-        virtual void OnUpdate(f32){}
 
     private:
         // Used by self
