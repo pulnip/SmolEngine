@@ -8,6 +8,10 @@ name = "BG_Grasslands"
 file = "Assets/Sprite/BG_Grasslands.toml"
 
 [[sprites]]
+name = "BG_Temple"
+file = "Assets/Sprite/BG_Temple.toml"
+
+[[sprites]]
 name = "hollow_knight"
 file = "Assets/Sprite/hollow_knight.sprite.toml"
 
@@ -26,6 +30,10 @@ file = "Assets/Sprite/Torch.toml"
 [[sprites]]
 name = "Bush"
 file = "Assets/Sprite/Bush.toml"
+
+[[sprites]]
+name = "MetalBox"
+file = "Assets/Sprite/MetalBox.toml"
 
 [[sprites]]
 name = "Basic_Arrow"

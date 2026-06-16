@@ -9,7 +9,7 @@ position = [0, 0, 0]
 name = "BackGround"
 [[actors.components]]
 type = "SpriteComponent"
-sprite = "BG_Grasslands"
+sprite = "BG_Temple"
 sprite_scale = [38, 28]
 
 [[actors]]
