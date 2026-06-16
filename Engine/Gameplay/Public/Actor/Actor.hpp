@@ -36,7 +36,7 @@ namespace Smol
 
     public:
         Actor() = default;
-        virtual ~Actor() = default;
+        virtual ~Actor();
         Actor(Actor&&) noexcept;
         Actor& operator=(Actor&&) noexcept;
         SMOL_DECLARE_NON_COPYABLE(Actor)
@@ -62,8 +62,13 @@ namespace Smol
             auto c = std::make_unique<T>();
             c->MarkManaged(this);
 
+            auto ptr = c.get();
+            // Notice. previous component destroyed when Add duplicated component
             builtinComponents[index] = std::move(c);
-            return static_cast<T*>(builtinComponents[index].get());
+
+            static_cast<Component*>(ptr)->Init();
+
+            return ptr;
         }
 
         // User-defined Component, but Called by engine
@@ -77,12 +82,12 @@ namespace Smol
             auto c = std::make_unique<T>(std::forward<Args>(args)...);
             c->MarkManaged(this);
 
-            auto [it, ret] = userdefinedComponents.try_emplace(typeID, std::move(c));
-            if(!ret){
-                return nullptr;
-            }
+            auto ptr = c.get();
+            userdefinedComponents[typeID] = std::move(c);
 
-            return static_cast<T*>(it->second.get());
+            static_cast<Component*>(ptr)->Init();
+
+            return ptr;
         }
 
         World* GetWorld() const noexcept{ return world; }

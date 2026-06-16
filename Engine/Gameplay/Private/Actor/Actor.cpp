@@ -14,6 +14,22 @@ namespace Smol
         .SetProperty("scale", &Actor::transform, &Transform::scale)
     SMOL_OBJECT_END(Actor)
 
+    Actor::~Actor(){
+        for(auto& component: builtinComponents){
+            if(component == nullptr)
+                continue;
+
+            component->Destroy();
+        }
+
+        for(auto& [_, component]: userdefinedComponents){
+            SMOL_ASSERT(component != nullptr);
+
+            component->Destroy();
+        }
+
+    }
+
     Actor::Actor(Actor&& other) noexcept
         : builtinComponents(std::move(other.builtinComponents))
         , userdefinedComponents(std::move(other.userdefinedComponents))
@@ -119,19 +135,17 @@ namespace Smol
         auto object = ClassRegistry::Create(type);
         auto component = uniqueCast<Component>(object);
         if(component == nullptr) [[unlikely]]{
-            LOG_WARN("Actor type {} not exist", type);
+            LOG_WARN("Component type {} not exist", type);
             return nullptr;
         }
+        component->MarkManaged(this);
 
         auto typeID = component->GetTypeID();
         auto ptr = component.get();
+        userdefinedComponents[typeID] = std::move(component);
 
-        auto [it, ret] = userdefinedComponents.try_emplace(typeID, std::move(component));
-        if(!ret){
-            return nullptr;
-        }
+        static_cast<Component*>(ptr)->Init();
 
-        ptr->MarkManaged(this);
         return ptr;
     }
 
