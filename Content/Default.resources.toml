@@ -4,5 +4,21 @@ name = "Default"
 type = "resources"
 
 [[sprites]]
+name = "BG_Grasslands"
+file = "Assets/Sprite/BG_Grasslands.toml"
+
+[[sprites]]
 name = "hollow_knight"
 file = "Assets/Sprite/hollow_knight.sprite.toml"
+
+[[sprites]]
+name = "Pixel_Hero-Idle"
+file = "Assets/Sprite/Pixel_Hero-Idle.sprite.toml"
+
+[[sprites]]
+name = "Basic_Arrow"
+file = "Assets/Sprite/Basic_Arrow.toml"
+
+[[sprites]]
+name = "Fire"
+file = "Assets/Sprite/Fire.sprite.toml"

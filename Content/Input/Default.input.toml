@@ -42,5 +42,5 @@ key = "LeftMouseButton"
 action = "MajorAction"
 
 [[context.mappings]]
-key = "LeftMouseButton"
+key = "RightMouseButton"
 action = "AssistAction"

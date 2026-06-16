@@ -33,7 +33,6 @@ namespace Smol
 
         // local transform of collider
         Transform2D transform;
-        RectCollider collider;
         CollisionLayer layer = 0b0;
         CollisionMask mask = 0b0;
         PhysicsProxy proxy;
@@ -108,6 +107,14 @@ namespace Smol
         }
         void UnbindEndOverlap(EndOverlapHandle handle){
             endOverlapEvent.Remove(handle);
+        }
+
+        void SetLayer(CollisionLayer layer){
+            this->layer = layer;
+        }
+
+        void SetMask(CollisionMask mask){
+            this->mask = mask;
         }
 
     private:

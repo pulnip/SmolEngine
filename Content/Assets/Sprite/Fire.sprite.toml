@@ -1,0 +1,16 @@
+[metadata]
+version = 0
+name = "Fire"
+type = "sprite"
+
+[sheet]
+image = "Assets/Sprite/Fire.png"
+rows = 1
+columns = 1
+
+[[animations]]
+name = "Fire"
+start_row = 0
+start_col = 0
+frame_count = 1
+frame_duration_ms = 160
