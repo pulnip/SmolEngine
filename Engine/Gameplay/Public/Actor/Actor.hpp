@@ -134,6 +134,7 @@ namespace Smol
     private:
         // Used by self
         void updateComponents(f32);
+        void propagateDestroy();
 
     private:
         // Related to World
