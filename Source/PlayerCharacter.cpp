@@ -11,6 +11,9 @@
 #include "SpriteAnimComponent.hpp"
 #include "World.hpp"
 
+// Temporal Header
+#include "CameraConfig.hpp"
+
 SMOL_ACTOR(PlayerCharacter, Smol::Pawn)
 SMOL_ACTOR_END(PlayerCharacter)
 
@@ -117,7 +120,7 @@ void PlayerCharacter::OnBowAim(Smol::InputValue v){
     Smol::Vec3 direction = Smol::Vec3(1.f, 0.f, 0.f);
     if (const Smol::IInputManager* inputManager = GetWorld()->GetInputManager())
     {
-        const Smol::Vec2 mousePos = inputManager->GetMousePos();
+        const Smol::Vec2 mousePos = Smol::ScreenToWorld2D(inputManager->GetMousePos());
         const Smol::Vec3 actorPos = GetTransform().position;
 
         const Smol::Vec3 toMouse = mousePos - Smol::Vec2(actorPos.x, actorPos.y);
@@ -155,7 +158,7 @@ void PlayerCharacter::OnBowShoot(Smol::InputValue v){
     Smol::Vec3 direction = Smol::Vec3(1.f, 0.f, 0.f);
     if (const Smol::IInputManager* inputManager = GetWorld()->GetInputManager())
     {
-        const Smol::Vec2 mousePos = inputManager->GetMousePos();
+        const Smol::Vec2 mousePos = Smol::ScreenToWorld2D(inputManager->GetMousePos());
         const Smol::Vec3 actorPos = GetTransform().position;
 
         const Smol::Vec3 toMouse = mousePos - Smol::Vec2(actorPos.x, actorPos.y);
