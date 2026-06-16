@@ -109,21 +109,24 @@ namespace Smol
     }
 
     void World::flushDestroy(){
-        std::swap(pendingDestory, destroyScratch);
+        while(!pendingDestory.empty()){
+            std::swap(pendingDestory, destroyScratch);
 
-        for(auto& handle: destroyScratch){
-            SMOL_ASSERT(handle.IsValid());
-            actors.GetRef(handle)->OnDestroy();
+            for(auto& handle: destroyScratch){
+                SMOL_ASSERT(handle.IsValid());
+                actors.GetRef(handle)->OnDestroy();
 
-            actors.Remove(handle);
+                actors.Remove(handle);
 
-            auto it = handleToName.find(handle);
-            SMOL_ASSERT(it != handleToName.end());
+                auto it = handleToName.find(handle);
+                SMOL_ASSERT(it != handleToName.end());
 
-            handleMap.erase(it->second);
-            handleToName.erase(it);
+                handleMap.erase(it->second);
+                handleToName.erase(it);
+            }
+
+            destroyScratch.clear();
         }
-        destroyScratch.clear();
     }
 
     void World::OnEnter(
