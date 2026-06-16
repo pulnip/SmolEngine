@@ -42,6 +42,8 @@ namespace Smol
         StringHashMap<usize> nameSeed;
 
         std::vector<Actor*> pendingStart;
+        std::vector<Actor*> startScratch;
+
         std::vector<Handle> pendingDestory;
 
         bool isShutdown = false;

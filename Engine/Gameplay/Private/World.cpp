@@ -62,10 +62,11 @@ namespace Smol
     }
 
     void World::Update(f32 deltaTime){
-        for(auto& actor: pendingStart){
+        std::swap(startScratch, pendingStart);
+        for(auto& actor: startScratch){
             actor->OnStart();
         }
-        pendingStart.clear();
+        startScratch.clear();
 
         physicsEngine.Update();
 
