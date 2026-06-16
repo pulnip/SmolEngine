@@ -1,4 +1,5 @@
 #include "PlayerCharacter.hpp"
+#include "BowActor.hpp"
 #include "CharacterController.hpp"
 #include "IInputManager.hpp"
 #include "InputAction.hpp"
@@ -127,6 +128,8 @@ void PlayerCharacter::OnBowAim(Smol::InputValue v){
 
         direction = Smol::normalize(toMouse);
     }
+
+    bowComp->SetBowDirection(direction);
     std::vector<Smol::Vec3> drawTrajectory = bowComp->BuildTrajectory(direction);
 
     auto renderer = GetComponent<Smol::LineRenderer>();

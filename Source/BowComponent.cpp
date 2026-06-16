@@ -8,12 +8,19 @@
 #include "ArrowActor.hpp"
 #include "LogGame.hpp"
 #include "SpriteComponent.hpp"
+#include "BowActor.hpp"
 
 SMOL_COMPONENT(BowComponent)
     .SetProperty("ArrowVelocity", &BowComponent::arrowVelocity)
 SMOL_COMPONENT_END(BowComponent)
 
 BowComponent::~BowComponent() = default;
+
+void BowComponent::Init(){
+    auto world = owner->GetWorld();
+    bow = world->SpawnActor<BowActor>();
+    //bow->AttachTo(owner, false);
+}
 
 void BowComponent::Update(Smol::f32 dt){
 
@@ -42,7 +49,7 @@ void BowComponent::Shoot(Smol::Vec3 direction){
 std::vector<Smol::Vec3> BowComponent::BuildTrajectory(Smol::Vec3 direction, const int sampleCount){
     //TODO.
     // 임시 변수
-    Smol::Vec3 startPos = Smol::Vec3(owner->GetTransform().position);
+    Smol::Vec3 startPos = Smol::Vec3(owner->GetTransform().position + (direction * 1));
     Smol::Vec3 gravity = Smol::Vec3(0, -9.8f, 0);   // 1unit이 1cm일 경우 -980.f가 적절
 
     // 계산할 위치 수 및 위치 간격
@@ -61,4 +68,19 @@ std::vector<Smol::Vec3> BowComponent::BuildTrajectory(Smol::Vec3 direction, cons
     }
 
     return Points;
+}
+
+void BowComponent::SetBowDirection(Smol::Vec3 direction){
+    if (bow == nullptr){
+        return;
+    }
+
+    const Smol::f32 lenSq = direction.x * direction.x + direction.y * direction.y;
+    if (lenSq <= 0.0001f){
+        return;
+    }
+
+    const Smol::f32 angle = std::atan2(direction.y, direction.x);
+
+    bow->GetTransform().rotation = Smol::rotateZ(angle);
 }

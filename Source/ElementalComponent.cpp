@@ -17,9 +17,10 @@ void ElementalComponent::Update(Smol::f32 dt){
     }
 }
 
-void ElementalComponent::InitProperty(Smol::f32 newCurrentTemperature, Smol::f32 newIgnitionTemperature){
-    currentTemperature = newCurrentTemperature;
-    ignitionTemperature = newIgnitionTemperature;
+void ElementalComponent::InitProperty(Smol::f32 currentTemperature, Smol::f32 ignitionTemperature, Smol::f32 remainingBurnTime){
+    this->currentTemperature = currentTemperature;
+    this->ignitionTemperature = ignitionTemperature;
+    this->remainingBurnTime = remainingBurnTime;
 }
 
 void ElementalComponent::TryIgnite(Smol::f32 dt){

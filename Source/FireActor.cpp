@@ -40,7 +40,7 @@ void FireActor::OnStart(){
     {
         return;
     }
-    elementalComp->InitProperty(100.f, 10000.f);
+    elementalComp->InitProperty(100.f, 10000.f, 9999999.f);
 }
 
 void FireActor::OnUpdate(float dt){
@@ -61,7 +61,7 @@ void FireActor::OnUpdate(float dt){
 
             if (nullptr != otherActor)
             {
-                otherActor->Destroy();
+                otherActor->Destroy(true);
             }
             continue;
         }

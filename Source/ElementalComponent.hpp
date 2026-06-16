@@ -24,16 +24,16 @@ public:
 
     void Update(Smol::f32) override;
 
-    void InitProperty(Smol::f32 newCurrentTemperature, Smol::f32 newIgnitionTemperature);
+    void InitProperty(Smol::f32 newCurrentTemperature, Smol::f32 newIgnitionTemperature, Smol::f32 remainingBurnTime = 3.f);
 
     void ApplyHeat(Smol::f32 Temperature);
 
     // 연소 시간이 0에 도달하면 true를 반환합니다.
     bool DecreaseBurnTime(Smol::f32 dt);
 
-    std::function<void(Smol::Actor*)> OnFire;
-
     Smol::f32 GetCurrentTemperature() { return currentTemperature; }
+
+    std::function<void(Smol::Actor*)> OnFire;
 
 private:
     void TryIgnite(Smol::f32 dt);

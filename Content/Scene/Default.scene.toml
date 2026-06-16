@@ -42,18 +42,11 @@ type = "BowComponent"
 type = "LineRenderer"
 
 [[actors]]
-type = "FireActor"
-position = [5, 0, 0]
-name = "FireActor1"
-[[actors.components]]
-type = "ColliderComponent"
-scale = [1, 1]
-layer = 0b1
-mask = 0b1
-[[actors.components]]
-type = "ElementalComponent"
+type = "TochLitActor"
+position = [-5, 0, 0]
+name = "TochLitActor1"
 
 [[actors]]
-type = "BowActor"
-position = [7, 0, 0]
-name = "BowActor1"
+type = "BushActor"
+position = [-2, 10, 0]
+name = "BushActor1"

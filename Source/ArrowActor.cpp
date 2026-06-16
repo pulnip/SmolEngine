@@ -59,8 +59,7 @@ void ArrowActor::OnStart(){
         ElementalComponent* elementalComp = GetComponent<ElementalComponent>();
         elementalComp->OnFire = nullptr;
 
-        //TODO. Attach this
-        fire->GetTransform().position = this->GetTransform().position;
+        fire->AttachTo(this, false);
     };
     elementalComp->InitProperty(30.f, 50.f);
 }

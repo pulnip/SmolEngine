@@ -20,6 +20,14 @@ name = "Pixel_Hero-Bow"
 file = "Assets/Sprite/Pixel_Hero-Bow.sprite.toml"
 
 [[sprites]]
+name = "Torch"
+file = "Assets/Sprite/Torch.toml"
+
+[[sprites]]
+name = "Bush"
+file = "Assets/Sprite/Bush.toml"
+
+[[sprites]]
 name = "Basic_Arrow"
 file = "Assets/Sprite/Basic_Arrow.toml"
 
