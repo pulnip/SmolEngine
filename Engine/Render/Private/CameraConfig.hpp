@@ -66,4 +66,15 @@ namespace Smol
 
         return static_cast<Vec3>(invView * toVec4(viewPos, 1.0f));
     }
+
+    inline constexpr Vec2 screenToWorld2D(Vec2 screen, CameraView cam = {}) noexcept{
+        const Vec3 viewPos{
+            (screen.x - 0.5f * cam.screenWidth) / cam.viewToScreen,
+            (0.5f * cam.screenHeight - screen.y) / cam.viewToScreen,
+            cam.focusDist
+        };
+        const auto invView = inverseRigid(cam.view);
+
+        return static_cast<Vec2>(invView * toVec4(viewPos, 1.0f));
+    }
 }
