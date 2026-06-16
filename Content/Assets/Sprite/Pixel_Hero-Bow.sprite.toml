@@ -1,6 +1,6 @@
 [metadata]
 version = 0
-name = "Bow"
+name = "Pixel_Hero-Bows"
 type = "sprite"
 
 [sheet]
@@ -9,8 +9,8 @@ rows = 1
 columns = 6
 
 [[animations]]
-name = "Bow"
+name = "idle"
 start_row = 0
 start_col = 0
-frame_count = 6
+frame_count = 1
 frame_duration_ms = 160

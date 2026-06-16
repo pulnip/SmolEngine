@@ -52,3 +52,8 @@ layer = 0b1
 mask = 0b1
 [[actors.components]]
 type = "ElementalComponent"
+
+[[actors]]
+type = "BowActor"
+position = [7, 0, 0]
+name = "BowActor1"

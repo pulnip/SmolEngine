@@ -16,7 +16,7 @@ name = "Pixel_Hero"
 file = "Assets/Sprite/Pixel_Hero.sprite.toml"
 
 [[sprites]]
-name = "Bow"
+name = "Pixel_Hero-Bow"
 file = "Assets/Sprite/Pixel_Hero-Bow.sprite.toml"
 
 [[sprites]]
