@@ -41,39 +41,10 @@ type = "BowComponent"
 [[actors.components]]
 type = "LineRenderer"
 
-# [[actors]]
-# type = "Actor"
-# position = [-2, 5, 0]
-# name = "NPC"
-# [[actors.components]]
-# type = "SpriteComponent"
-# sprite = "Pixel_Hero-Idle"
-# sprite_scale = [8, 8]
-
-# [[actors]]
-# type = "ArrowActor"
-# position = [0, 0, 0]
-# name = "ElementalActor"
-# [[actors.components]]
-# type = "SpriteComponent"
-# sprite = "Basic_Arrow"
-# sprite_scale = [3, 3]
-# [[actors.components]]
-# type = "ColliderComponent"
-# scale = [3, 3]
-# layer = 0b0
-# mask = 0b1
-# [[actors.components]]
-# type = "ElementalComponent"
-
 [[actors]]
 type = "FireActor"
 position = [5, 0, 0]
 name = "FireActor1"
-[[actors.components]]
-type = "SpriteComponent"
-sprite = "Fire"
-sprite_scale = [1, 1]
 [[actors.components]]
 type = "ColliderComponent"
 scale = [1, 1]

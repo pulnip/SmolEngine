@@ -44,6 +44,10 @@ namespace Smol
 
         void SetAnimation(StrView anim);
 
+        void SetSpriteScale(Vec2 spriteScale){
+            this->spriteScale = spriteScale;
+        }
+
     private:
         void syncToRenderer();
         void nextFrame() noexcept;
