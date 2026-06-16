@@ -47,7 +47,7 @@ namespace Smol
     };
 
     // Expect Orthographic
-    inline Vec2 worldToScreen(Vec3 world, CameraView cam = {}) noexcept{
+    inline Vec2 WorldToScreen(Vec3 world, CameraView cam = {}) noexcept{
         const auto viewPos = cam.view * toVec4(world, 1.0f);
 
         return Vec2{
@@ -56,7 +56,7 @@ namespace Smol
         };
     }
 
-    inline constexpr Vec3 screenToWorld(Vec2 screen, CameraView cam = {}) noexcept{
+    inline constexpr Vec3 ScreenToWorld(Vec2 screen, CameraView cam = {}) noexcept{
         const Vec3 viewPos{
             (screen.x - 0.5f * cam.screenWidth) / cam.viewToScreen,
             (0.5f * cam.screenHeight - screen.y) / cam.viewToScreen,
@@ -67,7 +67,7 @@ namespace Smol
         return static_cast<Vec3>(invView * toVec4(viewPos, 1.0f));
     }
 
-    inline constexpr Vec2 screenToWorld2D(Vec2 screen, CameraView cam = {}) noexcept{
+    inline constexpr Vec2 ScreenToWorld2D(Vec2 screen, CameraView cam = {}) noexcept{
         const Vec3 viewPos{
             (screen.x - 0.5f * cam.screenWidth) / cam.viewToScreen,
             (0.5f * cam.screenHeight - screen.y) / cam.viewToScreen,

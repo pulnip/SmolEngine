@@ -14,7 +14,7 @@ namespace
         line2d.reserve(line3d.size());
 
         for(const auto& point: line3d){
-            line2d.push_back(worldToScreen(point));
+            line2d.push_back(WorldToScreen(point));
         }
     }
 }
