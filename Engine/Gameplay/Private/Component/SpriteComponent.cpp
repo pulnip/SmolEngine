@@ -35,7 +35,7 @@ namespace Smol
 
     void SpriteComponent::syncToRenderer(){
         auto& item = proxy.GetRenderItem();
-        item.transform = owner->GetTransform();
+        item.transform = owner->GetWorldTransform();
         item.spriteScale = toVec3(spriteScale, 1.0f);
     }
 }

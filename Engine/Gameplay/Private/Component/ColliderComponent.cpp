@@ -55,7 +55,7 @@ namespace Smol
 
     RectCollider ColliderComponent::getWorldCollider() const{
         SMOL_ASSERT(owner != nullptr);
-        auto ownerTransform = static_cast<Transform2D>(owner->GetTransform());
+        auto ownerTransform = static_cast<Transform2D>(owner->GetWorldTransform());
 
         return RectCollider{
             .transform = ownerTransform * transform
