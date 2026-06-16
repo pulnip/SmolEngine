@@ -74,6 +74,8 @@ namespace Smol
             actor->Update(deltaTime);
         }
 
+        physicsEngine.FlushDestroy();
+
         // lazy destroy
         flushDestroy();
     }

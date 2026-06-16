@@ -14,21 +14,7 @@ namespace Smol
         .SetProperty("scale", &Actor::transform, &Transform::scale)
     SMOL_OBJECT_END(Actor)
 
-    Actor::~Actor(){
-        for(auto& component: builtinComponents){
-            if(component == nullptr)
-                continue;
-
-            component->Destroy();
-        }
-
-        for(auto& [_, component]: userdefinedComponents){
-            SMOL_ASSERT(component != nullptr);
-
-            component->Destroy();
-        }
-
-    }
+    Actor::~Actor() = default;
 
     Actor::Actor(Actor&& other) noexcept
         : builtinComponents(std::move(other.builtinComponents))
@@ -178,11 +164,28 @@ namespace Smol
             }
         }
 
+        propagateDestroy();
+
         SMOL_ASSERT(handle.IsValid());
         world->MarkDestroy(handle);
 
         // Guarantee Actor is not Destroyed twice
         handle = Handle::InvalidHandle();
+    }
+
+    void Actor::propagateDestroy(){
+        for(auto& component: builtinComponents){
+            if(component == nullptr)
+                continue;
+
+            component->Destroy();
+        }
+
+        for(auto& [_, component]: userdefinedComponents){
+            SMOL_ASSERT(component != nullptr);
+
+            component->Destroy();
+        }
     }
 
     bool Actor::IsValid() const noexcept{
