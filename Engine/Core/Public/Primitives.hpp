@@ -434,9 +434,19 @@ namespace Smol
         constexpr operator Transform() const noexcept;
     };
 
+    inline auto rotate(Vec2 v, f32 theta) noexcept{
+        f32 c = std::cos(theta), s = std::sin(theta);
+
+        return Vec2{
+            .x = c*v.x - s*v.y,
+            .y = s*v.x + c*v.y
+        };
+    }
+
     inline constexpr Transform2D operator*(Transform2D lhs, Transform2D rhs) noexcept{
         return Transform2D{
-            .position = lhs.position + rhs.position,
+            // Notice. Expect lhs has uniform scale
+            .position = lhs.position + rotate(lhs.scale * rhs.position, lhs.theta),
             .theta = lhs.theta + rhs.theta,
             .scale = lhs.scale * rhs.scale
         };
@@ -486,8 +496,9 @@ namespace Smol
 
     inline constexpr Transform operator*(Transform lhs, Transform rhs) noexcept{
         return Transform{
-            .position = lhs.position + rhs.position,
-            .rotation = rotate(lhs.rotation, rhs.rotation),
+            // Notice. Expect lhs has uniform scale
+            .position = lhs.position + rotate(lhs.scale * rhs.position, lhs.rotation),
+            .rotation = quat(lhs.rotation, rhs.rotation),
             .scale = lhs.scale * rhs.scale,
         };
     }
