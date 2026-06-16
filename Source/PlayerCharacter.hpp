@@ -10,6 +10,8 @@ class PlayerCharacter: public Smol::Pawn{
 public:
     void PossessedBy(Smol::CharacterController&) override;
 
+    void OnStart() override;
+
     void OnUpdate(float) override;
 
 private:

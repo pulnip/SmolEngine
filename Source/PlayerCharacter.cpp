@@ -1,5 +1,3 @@
-#include <cmath>
-
 #include "PlayerCharacter.hpp"
 #include "CharacterController.hpp"
 #include "IInputManager.hpp"
@@ -31,6 +29,10 @@ void PlayerCharacter::PossessedBy(Smol::CharacterController& controller){
     BindAction("AssistAction", Smol::TriggerEvent::Started, this, &PlayerCharacter::StartBowAim);
     BindAction("AssistAction", Smol::TriggerEvent::Triggered, this, &PlayerCharacter::OnBowAim);
     BindAction("AssistAction", Smol::TriggerEvent::Finished, this, &PlayerCharacter::EndBowAim);
+}
+
+void PlayerCharacter::OnStart(){
+
 }
 
 void PlayerCharacter::OnUpdate(float dt){
@@ -94,6 +96,12 @@ void PlayerCharacter::StartBowAim(Smol::InputValue v){
 
     Smol::SpriteAnimComponent* spriteAnimComp = GetComponent<Smol::SpriteAnimComponent>();
     spriteAnimComp->SetAnimation("aim");
+
+    // 이동 방향 기본값으로 초기화
+    Smol::MoveComponent* moveComponent = GetComponent<Smol::MoveComponent>();
+    if(moveComponent != nullptr){
+        moveComponent->SetDirection(Smol::zeros());
+    }
 }
 
 void PlayerCharacter::OnBowAim(Smol::InputValue v){
