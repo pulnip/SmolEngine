@@ -29,7 +29,8 @@ namespace Smol
         virtual void Init(){}
         // Just before Actor update
         virtual void Update(f32){}
-        // Just before Actual destroy
+        // When Actor::Destroy called.
+        // Notice, not on exit current frame
         virtual void Destroy(){}
 
         Actor* GetOwner() const noexcept{ return owner; }
