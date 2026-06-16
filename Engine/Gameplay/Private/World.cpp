@@ -86,6 +86,16 @@ namespace Smol
         return actors.GetRef(it->second).get();
     }
 
+    Actor* World::TryGetActor(Handle handle) const noexcept{
+        if(!handle.IsValid())
+            return nullptr;
+
+        auto ptr = actors.Find(handle);
+        return ptr != nullptr ?
+            ptr->get() :
+            nullptr;
+    }
+
     void World::MarkDestroy(Handle handle){
         if(!handle.IsValid()) [[unlikely]]
             return;

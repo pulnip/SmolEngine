@@ -52,10 +52,6 @@ namespace Smol
         };
     }
 
-    inline constexpr Vec4 conjugate(Vec4 q) noexcept{
-        return {-q.x, -q.y, -q.z, q.w};
-    }
-
     inline constexpr f32 dot(Vec4 lhs, Vec4 rhs) noexcept{
         return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z + lhs.w*rhs.w;
     }
@@ -68,14 +64,7 @@ namespace Smol
     inline Vec4 normalize(Vec4 v) noexcept{
         return v / norm(v);
     }
-    inline constexpr Vec4 quat(Vec4 lhs, Vec4 rhs) noexcept{
-        return Vec4{
-            lhs.w*rhs.x + lhs.x*rhs.w + lhs.y*rhs.z - lhs.z*rhs.y,
-            lhs.w*rhs.y - lhs.x*rhs.z + lhs.y*rhs.w + lhs.z*rhs.x,
-            lhs.w*rhs.z + lhs.x*rhs.y - lhs.y*rhs.x + lhs.z*rhs.w,
-            lhs.w*rhs.w - lhs.x*rhs.x - lhs.y*rhs.y - lhs.z*rhs.z
-        };
-    }
+
     inline Vec4 quat(Vec3 r, Vec3 u, Vec3 f) noexcept{
         f32 m00 = r.x, m01 = u.x, m02 = f.x;
         f32 m10 = r.y, m11 = u.y, m12 = f.y;
@@ -167,13 +156,6 @@ namespace Smol
             axis.z * s,
             std::cos(half)
         };
-    }
-    inline constexpr auto rotate(Vec4 v, Vec4 q) noexcept{
-        return quat(quat(q, v), conjugate(q));
-    }
-    inline constexpr auto rotate(Vec3 v, Vec4 q) noexcept{
-        Vec4 r = rotate(static_cast<Vec4>(v), q);
-        return static_cast<Vec3>(r);
     }
 
     // 2D

@@ -22,9 +22,12 @@ namespace Smol
         std::array<ComponentRAII, NUM_BUILTIN_COMPONENTS> builtinComponents;
         std::unordered_map<Component::TypeID, ComponentRAII> userdefinedComponents;
 
-        std::vector<ActorRAII> children;
+        using Handle = GenericHandle<ActorRAII>;
+        Handle parent = Handle::InvalidHandle();
+        std::vector<Handle> children;
 
     private:
+        // Local Transform
         Transform transform{
             .position = zeros(),
             .rotation = unitQuat(),
@@ -75,6 +78,15 @@ namespace Smol
         World* GetWorld() const noexcept{ return world; }
         auto& GetTransform(this auto& self) noexcept{ return self.transform; }
 
+        // if keepWorld == true,
+        //   Recalculate its Local Transform;
+        //   so, Attached Actor is not move at World Space
+        // else, Keep its Local Transform
+        void AttachTo(Actor* parent, bool keepWorld = true);
+
+        Actor* GetParent() const noexcept;
+        Transform GetWorldTransform() const noexcept;
+
         template<typename T>
             requires (!IsBuiltinComponent<T>())
         T* GetComponent(){
@@ -95,7 +107,7 @@ namespace Smol
             return static_cast<T*>(builtinComponents[index].get());
         }
 
-        void Destroy();
+        void Destroy(bool cascade = false);
 
         // Check if Actor is Marked as Destroyed
         // or Actor is NOT Managed by World
@@ -108,19 +120,24 @@ namespace Smol
         virtual void OnUpdate(f32){}
 
     private:
+        // Used by self
         void updateComponents(f32);
 
     private:
+        // Related to World
         friend class World;
 
         World* world = nullptr;
         // Handle for prevent double free
         // That means, Actor is managed by world
         // If Actor not destroyed at World, Handle is valid.
-        using Handle = GenericHandle<ActorRAII>;
         Handle handle = Handle::InvalidHandle();
 
         void MarkManaged(World* world, Handle handle);
+
+    private:
+        // Parent-Child
+        void detachChild(Handle handle);
     };
 }
 

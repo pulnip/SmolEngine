@@ -91,6 +91,8 @@ namespace Smol
         void Update(f32 deltaTime);
 
         Actor* FindActorByName(StrView name) const;
+        Actor* TryGetActor(Handle handle) const noexcept;
+
         bool IsShutdown() const noexcept{ return isShutdown; }
 
         // Get Engine Service

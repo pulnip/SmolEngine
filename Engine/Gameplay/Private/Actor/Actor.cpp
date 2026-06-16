@@ -3,6 +3,7 @@
 #include "LogLocal.hpp"
 #include "PtrUtil.hpp"
 #include "World.hpp"
+#include <utility>
 
 namespace Smol
 {
@@ -61,6 +62,59 @@ namespace Smol
         }
     }
 
+    void Actor::AttachTo(Actor* p, bool keepWorld){
+        if(p == this)
+            return;
+
+        // cycle check
+        for(auto a = p; a != nullptr; a = a->GetParent()){
+            if(a == this){
+                return;
+            }
+        }
+
+        auto t = keepWorld ? GetWorldTransform() : transform;
+
+        // detach from old parent
+        if(auto p = GetParent()){
+            std::erase(p->children, handle);
+        }
+
+        if(p == nullptr){
+            if(keepWorld){
+                transform = t;
+            }
+
+            parent = Handle::InvalidHandle();
+        }
+        else{
+            SMOL_ASSERT(p->handle.IsValid());
+
+            if(keepWorld){
+                // Notice. Expect parent has uniform scale
+                transform = inverse(p->GetWorldTransform()) * t;
+            }
+
+            parent = p->handle;
+            p->children.push_back(handle);
+        }
+    }
+
+    Actor* Actor::GetParent() const noexcept{
+        return parent.IsValid() ?
+            world->TryGetActor(parent) :
+            nullptr;
+    }
+
+    Transform Actor::GetWorldTransform() const noexcept{
+        auto p = GetParent();
+        SMOL_ASSERT(parent.IsValid() == (p != nullptr));
+
+        return p != nullptr ?
+            p->GetWorldTransform() * transform :
+            transform;
+    }
+
     Component* Actor::AddComponent(StrView type){
         auto object = ClassRegistry::Create(type);
         auto component = uniqueCast<Component>(object);
@@ -81,9 +135,33 @@ namespace Smol
         return ptr;
     }
 
-    void Actor::Destroy(){
+    void Actor::Destroy(bool cascade){
         if(world == nullptr) [[unlikely]]{
             return;
+        }
+
+        // detach self at parent
+        auto p = GetParent();
+        if(p != nullptr){
+            std::erase(p->children, handle);
+        }
+
+        // use snapshot for prevent side-effect on Actor::AttachTo
+        auto snapshot = children;
+
+        if(cascade){
+            for(auto child: snapshot){
+                if(auto c = world->TryGetActor(child))
+                    c->Destroy(false);
+            }
+        }
+        else{
+            // attach to child's grand parent
+            for(auto child: snapshot){
+                if(auto c = world->TryGetActor(child)){
+                    c->AttachTo(p, true);
+                }
+            }
         }
 
         SMOL_ASSERT(handle.IsValid());
@@ -111,5 +189,10 @@ namespace Smol
         }
 
         return world->IsShutdown();
+    }
+
+    void Actor::detachChild(Handle handle){
+        auto it = std::ranges::find(children, handle);
+        children.erase(it);
     }
 }
