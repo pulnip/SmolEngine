@@ -36,15 +36,25 @@ namespace Smol
 
     public:
         Actor() = default;
-        virtual ~Actor() = default;
+        virtual ~Actor();
         Actor(Actor&&) noexcept;
         Actor& operator=(Actor&&) noexcept;
         SMOL_DECLARE_NON_COPYABLE(Actor)
 
-        virtual void OnStart(){}
+    public:
+        // Actor lifetime Callback
 
         void Update(f32);
 
+        // Called when Enter next frame
+        virtual void OnStart(){}
+        // Called on the middle of frame
+        // Notice! Actor update should be treated as Unodered
+        virtual void OnUpdate(f32){}
+        // Called when Exit current frame (Just before Actual destroy)
+        virtual void OnDestroy(){}
+
+    public:
         // Built-in Component, Called both engine and user
         template<BuiltinComponent T>
         T* AddComponent(){
@@ -52,8 +62,13 @@ namespace Smol
             auto c = std::make_unique<T>();
             c->MarkManaged(this);
 
+            auto ptr = c.get();
+            // Notice. previous component destroyed when Add duplicated component
             builtinComponents[index] = std::move(c);
-            return static_cast<T*>(builtinComponents[index].get());
+
+            static_cast<Component*>(ptr)->Init();
+
+            return ptr;
         }
 
         // User-defined Component, but Called by engine
@@ -67,12 +82,12 @@ namespace Smol
             auto c = std::make_unique<T>(std::forward<Args>(args)...);
             c->MarkManaged(this);
 
-            auto [it, ret] = userdefinedComponents.try_emplace(typeID, std::move(c));
-            if(!ret){
-                return nullptr;
-            }
+            auto ptr = c.get();
+            userdefinedComponents[typeID] = std::move(c);
 
-            return static_cast<T*>(it->second.get());
+            static_cast<Component*>(ptr)->Init();
+
+            return ptr;
         }
 
         World* GetWorld() const noexcept{ return world; }
@@ -115,9 +130,6 @@ namespace Smol
 
         // for skip
         bool IsWorldShutdown() const noexcept;
-
-    protected:
-        virtual void OnUpdate(f32){}
 
     private:
         // Used by self

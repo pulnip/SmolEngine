@@ -25,11 +25,19 @@ namespace Smol
 
         virtual TypeID GetTypeID() const = 0;
 
+        // Just after Component is Registered on Actor
+        virtual void Init(){}
+        // Just before Actor update
         virtual void Update(f32){}
-
-        void MarkManaged(Actor* owner) noexcept;
+        // Just before Actual destroy
+        virtual void Destroy(){}
 
         Actor* GetOwner() const noexcept{ return owner; }
+
+    private:
+        friend class Actor;
+
+        void MarkManaged(Actor* owner) noexcept;
     };
 
     template<typename Derived>
