@@ -158,11 +158,6 @@ namespace Smol
         };
     }
 
-    inline constexpr auto rotate(Vec3 v, Vec4 q) noexcept{
-        Vec4 r = rotate(static_cast<Vec4>(v), q);
-        return static_cast<Vec3>(r);
-    }
-
     // 2D
     inline auto right(f32 theta) noexcept{
         return Vec2{

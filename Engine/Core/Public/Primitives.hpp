@@ -232,6 +232,9 @@ namespace Smol
         v.y /= f;
         return v;
     }
+    inline constexpr Vec2 operator/(f32 f, Vec2 v) noexcept{
+        return {f / v.x, f / v.y};
+    }
 
     inline constexpr bool operator==(Vec2 lhs, Vec2 rhs) noexcept{
         return lhs.x==rhs.x && lhs.y==rhs.y;
@@ -316,6 +319,13 @@ namespace Smol
         v.z /= f;
         return v;
     }
+    inline constexpr Vec3 operator/(f32 f, Vec3 v) noexcept{
+        return {
+            f / v.x,
+            f / v.y,
+            f / v.z
+        };
+    }
 
     inline constexpr bool operator==(Vec3 lhs, Vec3 rhs) noexcept{
         return lhs.x==rhs.x && lhs.y==rhs.y && lhs.z==rhs.z;
@@ -396,6 +406,14 @@ namespace Smol
         v.w /= f;
         return v;
     }
+    inline constexpr Vec4 operator/(f32 f, Vec4 v) noexcept{
+        return {
+            f / v.x,
+            f / v.y,
+            f / v.z,
+            f / v.w,
+        };
+    }
 
     inline constexpr auto operator==(Vec4 lhs, Vec4 rhs) noexcept{
         return lhs.x==rhs.x && lhs.y==rhs.y &&
@@ -461,12 +479,28 @@ namespace Smol
     inline constexpr auto rotate(Vec4 v, Vec4 q) noexcept{
         return quat(quat(q, v), conjugate(q));
     }
+    inline constexpr auto rotate(Vec3 v, Vec4 q) noexcept{
+        Vec4 r = rotate(static_cast<Vec4>(v), q);
+        return static_cast<Vec3>(r);
+    }
 
     inline constexpr Transform operator*(Transform lhs, Transform rhs) noexcept{
         return Transform{
             .position = lhs.position + rhs.position,
             .rotation = rotate(lhs.rotation, rhs.rotation),
             .scale = lhs.scale * rhs.scale,
+        };
+    }
+
+    inline constexpr auto inverse(Transform t) noexcept{
+        auto invRot = conjugate(t.rotation);
+        auto invScale = 1.0f / t.scale;
+        auto invPos = -invScale * rotate(t.position, invRot);
+
+        return Transform{
+            .position = invPos,
+            .rotation = invRot,
+            .scale = invScale
         };
     }
 }

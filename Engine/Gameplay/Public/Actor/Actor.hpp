@@ -24,9 +24,10 @@ namespace Smol
 
         using Handle = GenericHandle<ActorRAII>;
         Handle parent = Handle::InvalidHandle();
-        std::vector<GenericHandle<Actor>> children;
+        std::vector<Handle> children;
 
     private:
+        // Local Transform
         Transform transform{
             .position = zeros(),
             .rotation = unitQuat(),
@@ -77,6 +78,12 @@ namespace Smol
         World* GetWorld() const noexcept{ return world; }
         auto& GetTransform(this auto& self) noexcept{ return self.transform; }
 
+        // if keepWorld == true,
+        //   Recalculate its Local Transform;
+        //   so, Attached Actor is not move at World Space
+        // else, Keep its Local Transform
+        void AttachTo(Actor* parent, bool keepWorld = true);
+
         Actor* GetParent() const noexcept;
         Transform GetWorldTransform() const noexcept;
 
@@ -100,7 +107,7 @@ namespace Smol
             return static_cast<T*>(builtinComponents[index].get());
         }
 
-        void Destroy();
+        void Destroy(bool cascade = false);
 
         // Check if Actor is Marked as Destroyed
         // or Actor is NOT Managed by World
@@ -113,9 +120,11 @@ namespace Smol
         virtual void OnUpdate(f32){}
 
     private:
+        // Used by self
         void updateComponents(f32);
 
     private:
+        // Related to World
         friend class World;
 
         World* world = nullptr;
@@ -125,6 +134,10 @@ namespace Smol
         Handle handle = Handle::InvalidHandle();
 
         void MarkManaged(World* world, Handle handle);
+
+    private:
+        // Parent-Child
+        void detachChild(Handle handle);
     };
 }
 

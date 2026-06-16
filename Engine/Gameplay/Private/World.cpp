@@ -87,6 +87,9 @@ namespace Smol
     }
 
     Actor* World::TryGetActor(Handle handle) const noexcept{
+        if(!handle.IsValid())
+            return nullptr;
+
         auto ptr = actors.Find(handle);
         return ptr != nullptr ?
             ptr->get() :
