@@ -15,6 +15,7 @@ namespace Smol
         SMOL_DECLARE_PINNED(LineRenderer)
 
         // Write Discard mode
+        // Notice. points must be located in World coord
         void DrawLine(std::span<const Vec3>, Color color = Colors::Red);
     };
 }
