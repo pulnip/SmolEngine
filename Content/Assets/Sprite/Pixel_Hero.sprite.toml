@@ -1,0 +1,37 @@
+[metadata]
+version = 0
+name = "Pixel_Hero"
+type = "sprite"
+
+[sheet]
+image = "Assets/Sprite/Pixel_Hero.png"
+rows = 4
+columns = 8
+
+[[animations]]
+name = "idle"
+start_row = 0
+start_col = 0
+frame_count = 8
+frame_duration_ms = 160
+
+[[animations]]
+name = "walk"
+start_row = 1
+start_col = 0
+frame_count = 6
+frame_duration_ms = 160
+
+[[animations]]
+name = "jump"
+start_row = 2
+start_col = 0
+frame_count = 8
+frame_duration_ms = 160
+
+[[animations]]
+name = "aim"
+start_row = 3
+start_col = 0
+frame_count = 6
+frame_duration_ms = 160

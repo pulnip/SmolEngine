@@ -18,7 +18,8 @@ public:
 
     std::vector<Smol::Vec3> BuildTrajectory(Smol::Vec3 direction, const int sampleCount = 10);
 
-    void SetAiming(bool isAiming);
+    bool GetIsAiming(){ return bIsAiming; }
+    void SetIsAiming(bool isAiming){ bIsAiming = isAiming; }
 
 private:
     float arrowVelocity = 15.f;

@@ -3,6 +3,7 @@
 #include "FireActor.hpp"
 #include "ElementalComponent.hpp"
 #include "ColliderComponent.hpp"
+#include "SpriteAnimComponent.hpp"
 #include "SpriteComponent.hpp"
 #include "LogGame.hpp"
 
@@ -14,9 +15,11 @@ FireActor::FireActor(){
 }
 
 void FireActor::OnStart(){
-    AddComponent<Smol::SpriteComponent>();
-    Smol::SpriteComponent* spriteComp = GetComponent<Smol::SpriteComponent>();
-    spriteComp->OnAttach("Fire");
+    AddComponent<Smol::SpriteAnimComponent>();
+    Smol::SpriteAnimComponent* spriteAnimComp = GetComponent<Smol::SpriteAnimComponent>();
+    spriteAnimComp->OnAttach("Fire");
+    Smol::Vec2 spriteScale = Smol::Vec2(5, 5);
+    spriteAnimComp->SetSpriteScale(spriteScale);
 
     AddComponent<Smol::ColliderComponent>()->OnAttach();
 
