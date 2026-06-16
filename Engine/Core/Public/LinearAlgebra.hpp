@@ -215,6 +215,26 @@ namespace Smol
         };
     }
 
+    // inverse for Mat4 without Scale (= Rotation + Translation Only)
+    inline constexpr Mat4 inverseRigid(const Mat4 mat) noexcept{
+        // basis vector
+        const auto x = static_cast<Vec3>(mat[0]);
+        const auto y = static_cast<Vec3>(mat[1]);
+        const auto z = static_cast<Vec3>(mat[2]);
+        // translation
+        const auto t = static_cast<Vec3>(mat[3]);
+        const auto tx = -dot(x, t);
+        const auto ty = -dot(y, t);
+        const auto tz = -dot(z, t);
+
+        return Mat4{
+            Vec4{x.x, y.x, z.x, 0.0f},
+            Vec4{x.y, y.y, z.y, 0.0f},
+            Vec4{x.z, y.z, z.z, 0.0f},
+            Vec4{ tx,  ty,  tz, 1.0f}
+        };
+    }
+
     // expected multiplication form
     inline constexpr Vec4 operator*(const Mat4& lhs, const Vec4& rhs) noexcept{
         return lhs[0]*rhs.x + lhs[1]*rhs.y + lhs[2]*rhs.z + lhs[3]*rhs.w;

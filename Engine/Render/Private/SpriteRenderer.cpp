@@ -27,7 +27,7 @@ namespace{
         );
 
         return SpriteConstants{
-            .mvp = mvp(model, view, ogProj),
+            .mvp = mvp(model, detail::view, detail::ogProj),
             .uvScale = {1.0f/size.x, 1.0f/size.y},
             .offset = item.offset
         };

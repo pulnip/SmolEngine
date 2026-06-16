@@ -4,19 +4,6 @@
 
 namespace
 {
-    Smol::Vec2 worldToScreen(Smol::Vec3 world){
-        using namespace Smol;
-
-        const auto viewPos = view * world;
-
-        const auto p = viewToScreen * viewPos;
-
-        return Vec2{
-            0.5f * screenWidth + viewPos.x * viewToScreen,
-            0.5f * screenHeight - viewPos.y * viewToScreen,
-        };
-    }
-
     void fillLine2D(
         const std::span<const Smol::Vec3> line3d,
         std::vector<Smol::Vec2>& line2d
