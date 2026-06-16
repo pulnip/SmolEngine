@@ -10,6 +10,7 @@
 #include "MoveComponent.hpp"
 #include "OS.hpp"
 #include "Pawn.hpp"
+#include "Primitives.hpp"
 #include "RHICommandList.hpp"
 #include "RHIDevice.hpp"
 #include "RHITexture.hpp"
@@ -79,9 +80,9 @@ namespace{
         }
         else{
             // user-defined Component
-            actor.AddComponent(*type);
+            auto component = actor.AddComponent(*type);
 
-            // TODO. apply property to user-defined component
+            ApplyProperties(component, dom);
         }
     }
 
@@ -156,7 +157,7 @@ namespace{
                 // User-defined Actor
                 actor = world.SpawnActor(*type, name);
 
-                // TODO. apply property to user-defined actor
+                ApplyProperties(actor, node);
             }
 
             if(actor == nullptr){

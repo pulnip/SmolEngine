@@ -1,6 +1,6 @@
 #include "Assert.hpp"
-#include "Object.hpp"
 #include "ClassRegistry.hpp"
+#include "Object.hpp"
 
 namespace Smol
 {
@@ -40,8 +40,8 @@ namespace Smol
             for(const auto& [name, prop]: desc.properties){
                 auto node = table.at(name);
 
+                // use default value if prop is not specified
                 if(node == nullptr){
-                    // TODO. LOG WARN
                     continue;
                 }
 
