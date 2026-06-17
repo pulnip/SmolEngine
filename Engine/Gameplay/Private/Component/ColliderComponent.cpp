@@ -44,6 +44,12 @@ namespace Smol
         }
     }
 
+    void ColliderComponent::Destroy(){
+        auto& physics = owner->GetWorld()->GetPhysics();
+
+        physics.MarkDestroy(proxy.GetHandle());
+    }
+
     ColliderComponent::~ColliderComponent(){
         SMOL_ASSERT(owner != nullptr);
 

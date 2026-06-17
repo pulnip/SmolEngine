@@ -116,31 +116,59 @@ namespace Smol
             if(hit.filterB)
                 callback(hit.b, hit.a, hit.result);
         }
+
+        // fire OnExit for difference within previous frame
         for(const auto& key: prev){
             if(curr.count(key))
                 continue;
 
             auto a = colliders.Find(key.a);
             auto b = colliders.Find(key.b);
+            SMOL_ASSERT(a != nullptr && b != nullptr);
 
-            // Check if its component already destroyed
-            if(a != nullptr && b != nullptr){
+            const auto filterA = (a->mask & b->layer) != 0;
+            const auto filterB = (b->mask & a->layer) != 0;
+
+            if(filterA)
                 onExit(a->object, b->object);
-            }
+            if(filterB)
+                onExit(b->object, a->object);
         }
 
         prev = std::move(curr);
-        flushDestroy();
+        FlushDestroy();
     }
 
-    void PhysicsEngine2D::flushDestroy(){
-        std::swap(pendingDestroy, destroyScratch);
 
-        for(auto& handle: destroyScratch){
-            colliders.Remove(handle);
+    void PhysicsEngine2D::FlushDestroy(){
+        while(!pendingDestroy.empty()){
+            std::swap(pendingDestroy, destroyScratch);
+
+            for(const auto& handle: destroyScratch){
+                for(auto it = prev.begin(); it != prev.end();){
+                    if(it->a != handle && it->b != handle){
+                        ++it;
+                        continue;
+                    }
+
+                    auto a = colliders.Find(it->a);
+                    auto b = colliders.Find(it->b);
+                    SMOL_ASSERT(a != nullptr && b != nullptr);
+
+                    const auto filterA = (a->mask & b->layer) != 0;
+                    const auto filterB = (b->mask & a->layer) != 0;
+
+                    if(filterA)
+                        onExit(a->object, b->object);
+                    if(filterB)
+                        onExit(b->object, a->object);
+
+                    it = prev.erase(it);
+                }
+            }
+
+            destroyScratch.clear();
         }
-
-        destroyScratch.clear();
     }
 
     Collider2D& PhysicsEngine2D::GetRef(Handle handle){

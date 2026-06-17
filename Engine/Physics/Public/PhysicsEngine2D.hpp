@@ -39,6 +39,8 @@ namespace Smol
             return isEngineValid && isHandleValid;
         }
         Collider2D& GetRef() noexcept;
+
+        Handle GetHandle() const noexcept{ return handle; }
     };
 
     class PhysicsEngine2D final{
@@ -88,6 +90,7 @@ namespace Smol
         PhysicsProxy BindCollider(Collider2D);
 
         void Update();
+        void FlushDestroy();
 
         void MarkDestroy(Handle handle){
             pendingDestroy.push_back(handle);
@@ -95,8 +98,6 @@ namespace Smol
 
     private:
         std::vector<Handle> destroyScratch;
-
-        void flushDestroy();
 
     private:
         friend class PhysicsProxy;
