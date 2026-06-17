@@ -9,6 +9,7 @@
 #include "Semantics.hpp"
 #include "SlotMap.hpp"
 #include "StringUtil.hpp"
+#include "Timer.hpp"
 
 namespace Smol
 {
@@ -54,6 +55,8 @@ namespace Smol
 
         bool debugState = false;
 
+        Timer timer;
+
     public:
         World();
         ~World();
@@ -90,6 +93,7 @@ namespace Smol
         // Spawn user-defined Actor for engine
         Actor* SpawnActor(StrView type, StrView name);
 
+        void Initialize();
         void Update(f32 deltaTime);
 
         Actor* FindActorByName(StrView name) const;

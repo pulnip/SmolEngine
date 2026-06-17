@@ -61,7 +61,14 @@ namespace Smol
         handleToName[handle] = name;
     }
 
-    void World::Update(f32 deltaTime){
+    void World::Initialize(){
+        timer.Reset();
+    }
+
+    void World::Update(f32){
+        timer.NewFrame();
+        auto deltaTime = timer.GetDeltaTime();
+
         std::swap(startScratch, pendingStart);
         for(auto& actor: startScratch){
             actor->OnStart();
