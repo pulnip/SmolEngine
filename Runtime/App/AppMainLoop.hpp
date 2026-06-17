@@ -3,6 +3,7 @@
 #include "InputManager.hpp"
 #include "MainLoop.hpp"
 #include "ResourceRegistry.hpp"
+#include "PostRenderer.hpp"
 #include "RHIFWD.hpp"
 #include "ShapeRenderer.hpp"
 #include "SpriteRenderer.hpp"
@@ -22,6 +23,7 @@ namespace Smol
 
         InputManager inputManager;
         SpriteRenderer spriteRenderer;
+        PostRenderer postRenderer;
         ShapeRenderer shapeRenderer;
         WidgetRenderer widgetRenderer;
 
@@ -33,9 +35,6 @@ namespace Smol
 
         // TODO.
         RHITextureRAII scene;
-        RHISamplerRAII linearClamp;
-        RHIGraphicsPipelineStateRAII pipeline;
-        RHIBufferRAII rainBuf;
 
     public:
         AppMainLoop(const AppConfig&, OS&, RHIDevice&);

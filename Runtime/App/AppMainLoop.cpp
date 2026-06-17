@@ -21,11 +21,6 @@
 #include "TomlLoader.hpp"
 #include "Window.hpp"
 
-#include "CameraConfig.hpp"
-#include "RHIBuffer.hpp"
-#include "RHIPipelineState.hpp"
-#include "RHISampler.hpp"
-
 namespace{
     template<std::derived_from<Smol::Component> T>
     T* createComponent(
@@ -180,16 +175,6 @@ namespace{
             });
         });
     }
-
-    // TODO.
-    struct RainCB{
-        Smol::f32 elapsedTime;
-        Smol::f32 aspect = Smol::detail::aspect;
-        Smol::f32 intensity = 0.3f;
-        Smol::f32 speed = 1.0f;
-        Smol::Vec3 color{0.7f, 0.8f, 1.0f};
-        Smol::f32 slant = 0.05f;
-    };
 }
 
 namespace Smol
@@ -211,6 +196,7 @@ namespace Smol
             &os.GetInputProvider()
         )
         , spriteRenderer(device, resourceRegistry.GetSpriteManager())
+        , postRenderer(device)
         , shapeRenderer(device)
         , widgetRenderer(os.GetWindow().GetWindow(), device)
         , widget(Checkbox{
@@ -247,28 +233,6 @@ namespace Smol
                 )
             }
         );
-        linearClamp = device.CreateSampler(LINEAR_CLAMP_SAMPLER);
-
-        pipeline = device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
-            .topology = RHIPrimitiveTopology::TriangleStrip,
-            .vertexShaderPath = "Engine/Shader/FullscreenQuad.vert.hlsl",
-            .vertexShaderEntryPoint = "vs_main",
-            .rasterizer = RHIRasterizerState{
-                .frontCounterClockwise = false
-            },
-            .fragmentShaderPath = "Engine/Shader/Rain.pixel.hlsl",
-            .fragmentShaderEntryPoint = "ps_main",
-            .renderTargetFormats = {
-                RHIPixelFormat::RGBA8_UNORM
-            },
-            .renderTargetCount = 1
-        });
-
-        rainBuf = device.CreateBuffer(RHIBufferCreateDesc{
-            .size = sizeof(RainCB),
-            .usage = RHIBufferUsage::ConstantBuffer,
-            .access = RHIMemoryAccess::CPUWrite
-        }, "RainCB");
     }
 
     bool AppMainLoop::Initialize(){
@@ -284,6 +248,10 @@ namespace Smol
         inputManager.NewFrame();
         world.Update(static_cast<f32>(deltaTime));
 
+        return true;
+    }
+
+    bool AppMainLoop::Render(CommandListPool& pool, RHISwapchain& swapchain){
         RainCB rainCB{
             .elapsedTime = static_cast<f32>(timer.GetElapsedTime()),
             .aspect = detail::aspect,
@@ -292,18 +260,14 @@ namespace Smol
             .color = {0.5f, 0.5f, 1.0f},
             .slant = 0.15f
         };
-        rainBuf->Upload(&rainCB, sizeof(RainCB));
+        postRenderer.Upload(rainCB);
 
-        return true;
-    }
-
-    bool AppMainLoop::Render(CommandListPool& pool, RHISwapchain& swapchain){
         // for single thread model, use single cmdList.
         auto& cmdList = pool.Acquire();
         cmdList.Begin();
 
         // TODO. use integrated Renderer class
-        // Begin RenderPass for backbuffer
+        // Begin RenderPass for sceneTexture
         RHIClearColor backbufferClearColor{.v = {
             0.5f, 0.5f, 0.5f, 1.0f
         }};
@@ -316,7 +280,7 @@ namespace Smol
         );
         cmdList.SetViewport(RHIViewport{
             .x = 0, .y = 0,
-            // fill all backbuffer
+            // fill all sceneTexture
             .width = static_cast<f32>(swapchain.GetWidth()),
             .height = static_cast<f32>(swapchain.GetHeight()),
             .minDepth = 0, .maxDepth = 1
@@ -324,10 +288,11 @@ namespace Smol
         spriteRenderer.Draw(cmdList);
 
         cmdList.EndRenderPass();
-        // End RenderPass for backbuffer
+        // End RenderPass for sceneTexture
 
         // cmdList.Copy(*scene, swapchain);
 
+        // Begin RenderPass for backbuffer
         cmdList.BeginRenderPass(swapchain,
             backbufferClearColor,
             nullptr,
@@ -342,22 +307,7 @@ namespace Smol
             .minDepth = 0, .maxDepth = 1
         });
 
-        cmdList.SetPipelineState(*pipeline);
-
-        cmdList.SetConstantBuffer(
-            *rainBuf,
-            0,
-            RHIShaderStage::FragmentShader
-        );
-        cmdList.SetTexture(
-            *scene,
-            0,
-            RHIBindingAccess::ReadOnly,
-            RHIShaderStage::FragmentShader
-        );
-        cmdList.SetSampler(*linearClamp, 0, RHIShaderStage::FragmentShader);
-
-        cmdList.Draw(4);
+        postRenderer.Draw(cmdList, *scene);
 
         shapeRenderer.Draw(swapchain);
 
@@ -371,6 +321,7 @@ namespace Smol
         );
 
         cmdList.EndRenderPass();
+        // End RenderPass for backbuffer
 
         cmdList.Close();
         return true;
