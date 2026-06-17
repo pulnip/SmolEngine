@@ -430,6 +430,14 @@ namespace Smol
         .magFilter = RHIFilter::Linear,
         .mipFilter = RHIFilter::Linear
     };
+    constexpr RHISamplerState LINEAR_CLAMP_SAMPLER{
+        .minFilter = RHIFilter::Linear,
+        .magFilter = RHIFilter::Linear,
+        .mipFilter = RHIFilter::Linear,
+        .addressU = RHIAddressMode::Clamp,
+        .addressV = RHIAddressMode::Clamp,
+        .addressW = RHIAddressMode::Clamp
+    };
     constexpr RHISamplerState NEAREST_WRAP_SAMPLER{
         .minFilter = RHIFilter::Nearest,
         .magFilter = RHIFilter::Nearest,

@@ -3,7 +3,25 @@ struct VertexOut{
     float2 uv : TEXCOORD;
 };
 
-VertexOut vs_main(uint vertexID : SV_VertexID){
+VertexOut vs_main(uint vertexID: SV_VertexID) {
+    // TriangleStrip, Clockwise to Front-Face
+    static const float2 ndc[4] = {
+        float2(-1.0,  1.0), float2(1.0,  1.0),
+        float2(-1.0, -1.0), float2(1.0, -1.0)
+    };
+    static const float2 texCoords[4] = {
+        float2(0, 0), float2(1, 0),
+        float2(0, 1), float2(1, 1)
+    };
+
+    VertexOut output;
+    output.position = float4(ndc[vertexID], 0, 1);
+    output.uv = texCoords[vertexID];
+
+    return output;
+}
+
+VertexOut vs_main_half(uint vertexID : SV_VertexID){
     // TriangleStrip, Clockwise to Front-Face
     static const float2 ndc[4] = {
         float2(-0.5,  0.5), float2(0.5,  0.5),

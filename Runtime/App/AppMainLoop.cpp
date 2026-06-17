@@ -12,9 +12,10 @@
 #include "Pawn.hpp"
 #include "Primitives.hpp"
 #include "RHICommandList.hpp"
+#include "RHIDefinitions.hpp"
 #include "RHIDevice.hpp"
-#include "RHITexture.hpp"
 #include "RHISwapchain.hpp"
+#include "RHITexture.hpp"
 #include "SpriteComponent.hpp"
 #include "SpriteAnimComponent.hpp"
 #include "TomlLoader.hpp"
@@ -195,16 +196,33 @@ namespace Smol
             &os.GetInputProvider()
         )
         , spriteRenderer(device, resourceRegistry.GetSpriteManager())
+        , postRenderer(device)
         , shapeRenderer(device)
         , widgetRenderer(os.GetWindow().GetWindow(), device)
-        , widget(Checkbox{
-            .label = "Debug",
-            .onChanged = [&world = world](UIContext&, bool v){
-                LOG_WARN("Checked! {}", v);
-                world.SetDebugState(v);
+        , widget(Column({
+            Checkbox{
+                .label = "Collider",
+                .onChanged = [&world = world](UIContext&, bool v){
+                    LOG_WARN("Checked! {}", v);
+                    world.SetDebugState(v);
+                },
+                .v = false
             },
-            .v = false
-        })
+            Checkbox{
+                .label = "Rain",
+                .onChanged = [&self = *this](UIContext&, bool v){
+                    self.showRain = v;
+                },
+                .v = showRain
+            },
+            Checkbox{
+                .label = "Inversion",
+                .onChanged = [&self = *this](UIContext&, bool v){
+                    self.colorInversion = v;
+                },
+                .v = colorInversion != 0
+            }
+        }))
         , world(EngineService{
             .spriteManager = &resourceRegistry.GetSpriteManager(),
             .inputManager = &inputManager,
@@ -218,6 +236,19 @@ namespace Smol
         createActors(world, dom, contentRoot);
 
         resourceRegistry.DrainAllCompletions();
+
+        // TODO.
+        scene = device.CreateTexture(
+            RHITextureCreateDesc{
+                .width = os.GetWindow().GetWidth(),
+                .height = os.GetWindow().GetHeight(),
+                .format = RHIPixelFormat::RGBA8_UNORM,
+                .usage = combine(
+                    RHITextureUsage::AllowRenderTarget,
+                    RHITextureUsage::AllowShaderRead
+                )
+            }
+        );
     }
 
     bool AppMainLoop::Initialize(){
@@ -237,20 +268,55 @@ namespace Smol
     }
 
     bool AppMainLoop::Render(CommandListPool& pool, RHISwapchain& swapchain){
+        RainCB rainCB{
+            .elapsedTime = static_cast<f32>(timer.GetElapsedTime()),
+            .aspect = detail::aspect,
+            .intensity = 1.0f,
+            .speed = 1.0f,
+            .color = {0.5f, 0.5f, 1.0f},
+            .slant = 0.15f,
+            .inversion = colorInversion
+        };
+        postRenderer.Upload(rainCB);
+
         // for single thread model, use single cmdList.
         auto& cmdList = pool.Acquire();
         cmdList.Begin();
 
         // TODO. use integrated Renderer class
-        // Begin RenderPass for backbuffer
+        // Begin RenderPass for sceneTexture
         RHIClearColor backbufferClearColor{.v = {
             0.5f, 0.5f, 0.5f, 1.0f
         }};
-        cmdList.BeginRenderPass(swapchain,
+        RHITexture* renderTargets[1] = {scene.get()};
+        cmdList.BeginRenderPass(renderTargets,
             backbufferClearColor,
             nullptr,
             {},
             RHILoadAction::Clear
+        );
+        cmdList.SetViewport(RHIViewport{
+            .x = 0, .y = 0,
+            // fill all sceneTexture
+            .width = static_cast<f32>(swapchain.GetWidth()),
+            .height = static_cast<f32>(swapchain.GetHeight()),
+            .minDepth = 0, .maxDepth = 1
+        });
+        spriteRenderer.Draw(cmdList);
+
+        cmdList.EndRenderPass();
+        // End RenderPass for sceneTexture
+
+        if(!showRain){
+            cmdList.Copy(*scene, swapchain);
+        }
+
+        // Begin RenderPass for backbuffer
+        cmdList.BeginRenderPass(swapchain,
+            backbufferClearColor,
+            nullptr,
+            {},
+            RHILoadAction::Load
         );
         cmdList.SetViewport(RHIViewport{
             .x = 0, .y = 0,
@@ -259,13 +325,16 @@ namespace Smol
             .height = static_cast<f32>(swapchain.GetHeight()),
             .minDepth = 0, .maxDepth = 1
         });
-        spriteRenderer.Draw(cmdList);
+
+        if(showRain){
+            postRenderer.Draw(cmdList, *scene);
+        }
 
         shapeRenderer.Draw(swapchain);
 
         UIContext uiContext{};
         widgetRenderer.Draw(
-            "Root Widget",
+            "Debug",
             widget,
             uiContext,
             cmdList,
