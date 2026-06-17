@@ -30,6 +30,7 @@ namespace Smol
 
     struct TextStyle{
         Color color = Colors::Red;
+        f32 fontSize = 15.0f;
         Size2D size;
     };
 
