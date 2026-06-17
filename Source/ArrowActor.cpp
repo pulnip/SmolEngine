@@ -64,10 +64,12 @@ void ArrowActor::OnStart(){
 
         fire->AttachTo(this, false);
         fire->GetTransform().position.y = 0.2f;
+        fire->GetTransform().position.z = 0.f;
         fire->GetTransform().scale = Smol::Vec2(0.3f, 0.3f);
     };
     elementalComp->InitProperty(30.f, 50.f);
 
+    GetTransform().position.z = 1.f;
     GetTransform().scale = Smol::Vec2(2.f, 2.f);
 }
 

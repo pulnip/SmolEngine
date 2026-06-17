@@ -111,25 +111,25 @@ name = "TochLitActor2"
 
 [[actors]]
 type = "BushActorSpawner"
-position = [14, 11, 0]
+position = [14, 11, 1]
 name = "BushActorSpawner1"
 
 [[actors]]
 type = "BushActorSpawner"
-position = [14, 6, 0]
+position = [14, 6, 1]
 name = "BushActorSpawner2"
 
 [[actors]]
 type = "BushActorSpawner"
-position = [14, 1, 0]
+position = [14, 1, 1]
 name = "BushActorSpawner3"
 
 [[actors]]
 type = "BushActorSpawner"
-position = [14, -4, 0]
+position = [14, -4, 1]
 name = "BushActorSpawner4"
 
 [[actors]]
 type = "BushActorSpawner"
-position = [14, -9, 0]
+position = [14, -9, 1]
 name = "BushActorSpawner5"

@@ -27,7 +27,7 @@ private:
 private:
     bool bIsPlaying = true;
 
-    Smol::f32 remainRoundTime = 3.f;
+    Smol::f32 remainRoundTime = 30.f;
 
     Smol::i32 score = 0;
 

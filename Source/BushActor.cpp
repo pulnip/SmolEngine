@@ -50,6 +50,7 @@ void BushActor::OnStart(){
         elementalComp->OnFire = nullptr;
 
         fire->AttachTo(this, false);
+        fire->GetTransform().position.z = 0.f;
         fire->GetTransform().scale = Smol::Vec2(0.4f, 0.2f);
     };
     elementalComp->InitProperty(30.f, 50.f, 3.f);
