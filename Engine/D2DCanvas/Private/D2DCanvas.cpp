@@ -73,6 +73,24 @@ namespace{
                 );
         }
     };
+
+    struct TextStyleHash{
+        using is_transparent = void;
+
+        Smol::usize operator()(const Smol::TextStyle& k) const noexcept{
+            // Only fontSize is needed for create TextFormat
+            return Smol::hashAll(k.fontSize);
+        }
+    };
+
+    struct TextStyleEqual{
+        using is_transparent = void;
+
+        template<class A, class B>
+        bool operator()(const A& a, const B& b) const noexcept{
+            return a.fontSize == b.fontSize;
+        }
+    };
 }
 
 namespace Smol
@@ -88,14 +106,18 @@ namespace Smol
         ComPtr<ID2D1DeviceContext7> context = nullptr;
 
         ComPtr<IDWriteFactory> writeFactory = nullptr;
-        ComPtr<IDWriteTextFormat> textFormat = nullptr;
-
         std::unordered_map<
             StrokeStyleKey,
             ComPtr<ID2D1StrokeStyle1>,
             StrokeStyleKeyHash,
             StrokeStyleKeyEqual
         > strokeStyles;
+        std::unordered_map<
+            TextStyle,
+            ComPtr<IDWriteTextFormat>,
+            TextStyleHash,
+            TextStyleEqual
+        > textFormats;
         ComPtr<ID2D1SolidColorBrush> solidBrush = nullptr;
 
         ComPtr<ID2D1Bitmap1> target = nullptr;
@@ -116,6 +138,7 @@ namespace Smol
 
     private:
         ID2D1StrokeStyle1* getOrCreateStrokeStyle(const StrokeStyle& s);
+        IDWriteTextFormat* getOrCreateTextureFormat(const TextStyle& s);
     };
 
     D2DCanvas::D2DCanvas(RHIDevice& device)
@@ -203,23 +226,6 @@ namespace Smol
         ))){
             throw std::runtime_error("Failed to create Write Factory");
         }
-        if(FAILED(writeFactory->CreateTextFormat(
-            // TODO
-            L"Cascadia Mono",
-            NULL,
-            DWRITE_FONT_WEIGHT_NORMAL,
-            DWRITE_FONT_STYLE_NORMAL,
-            DWRITE_FONT_STRETCH_NORMAL,
-            15.0f,   // Font Size
-            L"", //locale
-            textFormat.GetAddressOf()
-        ))){
-            throw std::runtime_error("Failed to create Text Format");
-        }
-
-        textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-        textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-        textFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP);
     }
 
     void D2DCanvas::End(){
@@ -338,7 +344,7 @@ namespace Smol
         context->DrawText(
             utf16Str.data(),
             static_cast<UINT32>(utf16Str.length()),
-            textFormat.Get(),
+            getOrCreateTextureFormat(style),
             D2D1::RectF(
                 pos.x,
                 pos.y,
@@ -390,6 +396,38 @@ namespace Smol
                 .dashPattern = {s.dashPattern.begin(), s.dashPattern.end()}
             },
             std::move(style)
+        );
+        SMOL_ASSERT(ret);
+
+        return it->second.Get();
+    }
+
+    IDWriteTextFormat* D2DCanvas::Impl::getOrCreateTextureFormat(const TextStyle& s){
+        if(auto it = textFormats.find(s); it != textFormats.end())
+            return it->second.Get();
+
+        ComPtr<IDWriteTextFormat> textFormat;
+        if(FAILED(writeFactory->CreateTextFormat(
+            // TODO
+            L"Cascadia Mono",
+            NULL,
+            DWRITE_FONT_WEIGHT_NORMAL,
+            DWRITE_FONT_STYLE_NORMAL,
+            DWRITE_FONT_STRETCH_NORMAL,
+            s.fontSize,
+            L"",
+            textFormat.GetAddressOf()
+        ))){
+            throw std::runtime_error("Failed to create Text Format");
+        }
+
+        textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+        textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+        textFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+
+        auto [it, ret] = textFormats.emplace(
+            s,
+            std::move(textFormat)
         );
         SMOL_ASSERT(ret);
 

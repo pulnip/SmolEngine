@@ -14,4 +14,11 @@ namespace Smol
 
         renderer->SubmitLine(points, color);
     }
+
+    void LineRenderer::DrawText(StrView text, Vec2 pos, Color color, f32 fontSize){
+        auto world = owner->GetWorld();
+        auto renderer = world->GetShapeRenderer();
+
+        renderer->SubmitText(text, pos, color, fontSize);
+    }
 }
