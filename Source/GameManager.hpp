@@ -17,11 +17,17 @@ public:
 
     void IncreaseArrowCount(Smol::i32 amount);
 
+    bool GetIsPlaying(){
+        return bIsPlaying;
+    }
+
 private:
     void Playing();
 
 private:
-    Smol::f32 remainRoundTime = 30.f;
+    bool bIsPlaying = true;
+
+    Smol::f32 remainRoundTime = 3.f;
 
     Smol::i32 score = 0;
 

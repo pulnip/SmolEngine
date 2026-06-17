@@ -12,6 +12,7 @@
 #include "LogGame.hpp"
 #include "SpriteAnimComponent.hpp"
 #include "World.hpp"
+#include "GameManager.hpp"
 
 // Temporal Header
 #include "CameraConfig.hpp"
@@ -45,6 +46,16 @@ void PlayerCharacter::OnUpdate(float dt){
 }
 
 void PlayerCharacter::StartMove(Smol::InputValue v){
+    Smol::Actor* findActor = GetWorld()->FindActorByName("GameManager");
+    GameManager* gameManager = static_cast<GameManager*>(findActor);
+    if (gameManager == nullptr)
+    {
+        return;
+    }
+    if (!gameManager->GetIsPlaying()){
+        return;
+    }
+
     BowComponent* bowComp = GetComponent<BowComponent>();
     bool bIsAiming = bowComp->GetIsAiming();
     if (bIsAiming){
@@ -57,6 +68,16 @@ void PlayerCharacter::StartMove(Smol::InputValue v){
 
 void PlayerCharacter::OnMove(Smol::InputValue v)
 {
+    Smol::Actor* findActor = GetWorld()->FindActorByName("GameManager");
+    GameManager* gameManager = static_cast<GameManager*>(findActor);
+    if (gameManager == nullptr)
+    {
+        return;
+    }
+    if (!gameManager->GetIsPlaying()){
+        return;
+    }
+
     BowComponent* bowComp = GetComponent<BowComponent>();
     bool bIsAiming = bowComp->GetIsAiming();
 
@@ -96,6 +117,16 @@ void PlayerCharacter::OnMove(Smol::InputValue v)
 }
 
 void PlayerCharacter::EndMove(Smol::InputValue v){
+    Smol::Actor* findActor = GetWorld()->FindActorByName("GameManager");
+    GameManager* gameManager = static_cast<GameManager*>(findActor);
+    if (gameManager == nullptr)
+    {
+        return;
+    }
+    if (!gameManager->GetIsPlaying()){
+        return;
+    }
+
     BowComponent* bowComp = GetComponent<BowComponent>();
     bool bIsAiming = bowComp->GetIsAiming();
     if (bIsAiming){
@@ -118,6 +149,16 @@ void PlayerCharacter::OnJump(Smol::InputValue v){
 }
 
 void PlayerCharacter::StartBowAim(Smol::InputValue v){
+    Smol::Actor* findActor = GetWorld()->FindActorByName("GameManager");
+    GameManager* gameManager = static_cast<GameManager*>(findActor);
+    if (gameManager == nullptr)
+    {
+        return;
+    }
+    if (!gameManager->GetIsPlaying()){
+        return;
+    }
+
     BowComponent* bowComp = GetComponent<BowComponent>();
     bowComp->SetIsAiming(true);
 
@@ -132,7 +173,15 @@ void PlayerCharacter::StartBowAim(Smol::InputValue v){
 }
 
 void PlayerCharacter::OnBowAim(Smol::InputValue v){
-    //LOG_INFO("OnBowAim");
+    Smol::Actor* findActor = GetWorld()->FindActorByName("GameManager");
+    GameManager* gameManager = static_cast<GameManager*>(findActor);
+    if (gameManager == nullptr)
+    {
+        return;
+    }
+    if (!gameManager->GetIsPlaying()){
+        return;
+    }
 
     BowComponent* bowComp = GetComponent<BowComponent>();
     if (nullptr == bowComp)
@@ -161,6 +210,16 @@ void PlayerCharacter::OnBowAim(Smol::InputValue v){
 }
 
 void PlayerCharacter::EndBowAim(Smol::InputValue v){
+    Smol::Actor* findActor = GetWorld()->FindActorByName("GameManager");
+    GameManager* gameManager = static_cast<GameManager*>(findActor);
+    if (gameManager == nullptr)
+    {
+        return;
+    }
+    if (!gameManager->GetIsPlaying()){
+        return;
+    }
+
     BowComponent* bowComp = GetComponent<BowComponent>();
     if (nullptr == bowComp)
     {
@@ -175,7 +234,15 @@ void PlayerCharacter::EndBowAim(Smol::InputValue v){
 }
 
 void PlayerCharacter::OnBowShoot(Smol::InputValue v){
-    //LOG_INFO("OnBowShoot");
+    Smol::Actor* findActor = GetWorld()->FindActorByName("GameManager");
+    GameManager* gameManager = static_cast<GameManager*>(findActor);
+    if (gameManager == nullptr)
+    {
+        return;
+    }
+    if (!gameManager->GetIsPlaying()){
+        return;
+    }
 
     BowComponent* bowComp = GetComponent<BowComponent>();
     if (nullptr == bowComp)

@@ -1,0 +1,18 @@
+[metadata]
+version = 0
+name = "UI_EndGame"
+type = "sprite"
+
+[sheet]
+image = "Assets/Sprite/UI_EndGame.png"
+rows = 1
+columns = 1
+
+# TODO. 해당 이미지에서는 애니메이션이 불필요하기 때문에 추후 제거 예정
+
+[[animations]]
+name = "idle"
+start_row = 0
+start_col = 0
+frame_count = 1
+frame_duration_ms = 160

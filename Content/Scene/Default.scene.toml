@@ -35,6 +35,42 @@ sprite = "Score"
 sprite_scale = [7, 3]
 
 [[actors]]
+type = "Actor"
+position = [-20.9, 12.5, 0]
+name = "ArrowUIBackGround"
+[[actors.components]]
+type = "SpriteComponent"
+sprite = "Score"
+sprite_scale = [7, 3]
+
+[[actors]]
+type = "Actor"
+position = [-23.3, 12.5, 0]
+name = "ArrowUIIcon"
+[[actors.components]]
+type = "SpriteComponent"
+sprite = "UI_Arrow"
+sprite_scale = [3, 3]
+
+[[actors]]
+type = "Actor"
+position = [0, 0, 0]
+name = "UI_EndGame"
+[[actors.components]]
+type = "SpriteComponent"
+sprite = "UI_EndGame"
+sprite_scale = [1, 1]
+
+[[actors]]
+type = "Actor"
+position = [-20.4, -13.3, 0]
+name = "Floor"
+[[actors.components]]
+type = "SpriteComponent"
+sprite = "Floor"
+sprite_scale = [7, 3]
+
+[[actors]]
 type = "CharacterController"
 name = "PlayerController"
 [[actors.components]]

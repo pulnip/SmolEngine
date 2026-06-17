@@ -20,6 +20,18 @@ name = "Score"
 file = "Assets/Sprite/Score.toml"
 
 [[sprites]]
+name = "UI_Arrow"
+file = "Assets/Sprite/UI_Arrow.toml"
+
+[[sprites]]
+name = "UI_EndGame"
+file = "Assets/Sprite/UI_EndGame.toml"
+
+[[sprites]]
+name = "Floor"
+file = "Assets/Sprite/Floor.toml"
+
+[[sprites]]
 name = "hollow_knight"
 file = "Assets/Sprite/hollow_knight.sprite.toml"
 
