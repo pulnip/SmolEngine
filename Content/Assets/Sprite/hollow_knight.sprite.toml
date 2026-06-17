@@ -3,21 +3,53 @@ version = 0
 name = "hollow_knight"
 type = "sprite"
 
-[sheet]
-image = "Assets/Sprite/hollow_knight.png"
-rows = 16
-columns = 16
+[[images]]
+path = "Assets/Sprite/hollow_knight.png"
+
+# Declaration Order is Frame Order
+[[frames]]
+image_index = 0
+offset      = [  0,   0]
+pixel_size  = [128, 128]
+# pivot range is 0.0~1.0 at w, h
+# default is center
+# pivot = [0.5, 0.5]
+[[frames]]
+image_index = 0
+offset      = [128,   0]
+pixel_size  = [128, 128]
+[[frames]]
+image_index = 0
+offset      = [256,   0]
+pixel_size  = [128, 128]
+[[frames]]
+image_index = 0
+offset      = [384,   0]
+pixel_size  = [128, 128]
+[[frames]]
+image_index = 0
+offset      = [384,   0]
+pixel_size  = [128, 128]
+
+[[frames]]
+image_index = 0
+offset      = [512,   0]
+pixel_size  = [128, 128]
+[[frames]]
+image_index = 0
+offset      = [640,   0]
+pixel_size  = [128, 128]
+[[frames]]
+image_index = 0
+offset      = [768,   0]
+pixel_size  = [128, 128]
 
 [[animations]]
-name = "idle"
-start_row = 0
-start_col = 0
-frame_count = 1
+name   = "idle"
+frames = [0]
 frame_duration_ms = 0
 
 [[animations]]
-name = "walk"
-start_row = 0
-start_col = 0
-frame_count = 8
+name   = "walk"
+frames = [0, 1, 2, 3, 4, 5, 6, 7]
 frame_duration_ms = 160
