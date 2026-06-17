@@ -22,6 +22,8 @@ namespace Smol
         // time between [0, i]
         Duration elapsedTime = Duration(0);
 
+        f64 scale = 1.0f;
+
     public:
         Timer() noexcept;
         ~Timer() = default;
@@ -36,5 +38,7 @@ namespace Smol
         f64 GetDeltaTime() const noexcept;
         f64 GetElapsedTime() const noexcept;
         f64 GetFPS() const noexcept;
+
+        void SetScale(f64 scale = 1.0) noexcept;
     };
 }

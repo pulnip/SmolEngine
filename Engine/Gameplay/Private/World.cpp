@@ -61,7 +61,14 @@ namespace Smol
         handleToName[handle] = name;
     }
 
-    void World::Update(f32 deltaTime){
+    void World::Initialize(){
+        timer.Reset();
+    }
+
+    void World::Update(f32){
+        timer.NewFrame();
+        auto deltaTime = timer.GetDeltaTime();
+
         std::swap(startScratch, pendingStart);
         for(auto& actor: startScratch){
             actor->OnStart();
@@ -97,6 +104,14 @@ namespace Smol
         return ptr != nullptr ?
             ptr->get() :
             nullptr;
+    }
+
+    void World::SetTimerPaused(bool paused) noexcept{
+        timer.SetPaused(paused);
+    }
+
+    void World::SetTimerScale(f32 scale) noexcept{
+        timer.SetScale(static_cast<f32>(scale));
     }
 
     void World::MarkDestroy(Handle handle){
