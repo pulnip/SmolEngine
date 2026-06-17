@@ -125,6 +125,9 @@ namespace Smol
             return debugState;
         }
 
+        void SetTimerPaused(bool paused = true) noexcept;
+        void SetTimerScale(f32 scale) noexcept;
+
     private:
         friend class Actor;
 

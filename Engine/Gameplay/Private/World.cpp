@@ -106,6 +106,14 @@ namespace Smol
             nullptr;
     }
 
+    void World::SetTimerPaused(bool paused) noexcept{
+        timer.SetPaused(paused);
+    }
+
+    void World::SetTimerScale(f32 scale) noexcept{
+        timer.SetScale(static_cast<f32>(scale));
+    }
+
     void World::MarkDestroy(Handle handle){
         if(!handle.IsValid()) [[unlikely]]
             return;
