@@ -31,6 +31,12 @@ namespace Smol
 
         Timer timer;
 
+        // TODO.
+        RHITextureRAII scene;
+        RHISamplerRAII linearClamp;
+        RHIGraphicsPipelineStateRAII pipeline;
+        RHIBufferRAII rainBuf;
+
     public:
         AppMainLoop(const AppConfig&, OS&, RHIDevice&);
 

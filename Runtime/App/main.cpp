@@ -6,6 +6,10 @@
 #include "RHITexture.hpp"
 #include "Log.hpp"
 
+#include "RHIBuffer.hpp"
+#include "RHIPipelineState.hpp"
+#include "RHISampler.hpp"
+
 using namespace Smol;
 
 constexpr CStr APP_CONFIG_PATH = "Config/Default.app.toml";

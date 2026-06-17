@@ -12,13 +12,19 @@
 #include "Pawn.hpp"
 #include "Primitives.hpp"
 #include "RHICommandList.hpp"
+#include "RHIDefinitions.hpp"
 #include "RHIDevice.hpp"
-#include "RHITexture.hpp"
 #include "RHISwapchain.hpp"
+#include "RHITexture.hpp"
 #include "SpriteComponent.hpp"
 #include "SpriteAnimComponent.hpp"
 #include "TomlLoader.hpp"
 #include "Window.hpp"
+
+#include "CameraConfig.hpp"
+#include "RHIBuffer.hpp"
+#include "RHIPipelineState.hpp"
+#include "RHISampler.hpp"
 
 namespace{
     template<std::derived_from<Smol::Component> T>
@@ -174,6 +180,16 @@ namespace{
             });
         });
     }
+
+    // TODO.
+    struct RainCB{
+        Smol::f32 elapsedTime;
+        Smol::f32 aspect = Smol::detail::aspect;
+        Smol::f32 intensity = 0.3f;
+        Smol::f32 speed = 1.0f;
+        Smol::Vec3 color{0.7f, 0.8f, 1.0f};
+        Smol::f32 slant = 0.05f;
+    };
 }
 
 namespace Smol
@@ -218,6 +234,51 @@ namespace Smol
         createActors(world, dom, contentRoot);
 
         resourceRegistry.DrainAllCompletions();
+
+        // TODO.
+        scene = device.CreateTexture(
+            RHITextureCreateDesc{
+                .width = os.GetWindow().GetWidth(),
+                .height = os.GetWindow().GetHeight(),
+                .format = RHIPixelFormat::RGBA8_UNORM,
+                .usage = combine(
+                    RHITextureUsage::AllowRenderTarget,
+                    RHITextureUsage::AllowShaderRead
+                )
+            }
+        );
+        linearClamp = device.CreateSampler(LINEAR_CLAMP_SAMPLER);
+
+        pipeline = device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
+            .topology = RHIPrimitiveTopology::TriangleStrip,
+            .vertexShaderPath = "Engine/Shader/FullscreenQuad.vert.hlsl",
+            .vertexShaderEntryPoint = "vs_main",
+            .rasterizer = RHIRasterizerState{
+                .frontCounterClockwise = false
+            },
+            .fragmentShaderPath = "Engine/Shader/Rain.pixel.hlsl",
+            .fragmentShaderEntryPoint = "ps_main",
+            .renderTargetFormats = {
+                RHIPixelFormat::RGBA8_UNORM
+            },
+            .renderTargetCount = 1
+        });
+
+        RainCB initState{
+            .elapsedTime = 0.0f,
+            .aspect = detail::aspect,
+            .intensity = 0.3f,
+            .speed = 1.0f,
+            .color = {0.7f, 0.8f, 1.0f},
+            .slant = 0.05f
+        };
+
+        rainBuf = device.CreateBuffer(RHIBufferCreateDesc{
+            .size = sizeof(RainCB),
+            .usage = RHIBufferUsage::ConstantBuffer,
+            .access = RHIMemoryAccess::CPUWrite,
+            .initialData = &initState
+        }, "RainCB");
     }
 
     bool AppMainLoop::Initialize(){
@@ -233,6 +294,16 @@ namespace Smol
         inputManager.NewFrame();
         world.Update(static_cast<f32>(deltaTime));
 
+        RainCB rainCB{
+            .elapsedTime = static_cast<f32>(timer.GetElapsedTime()),
+            .aspect = detail::aspect,
+            .intensity = 1.0f,
+            .speed = 1.0f,
+            .color = {0.7f, 0.8f, 1.0f},
+            .slant = 0.15f
+        };
+        rainBuf->Upload(&rainCB, sizeof(RainCB));
+
         return true;
     }
 
@@ -246,7 +317,8 @@ namespace Smol
         RHIClearColor backbufferClearColor{.v = {
             0.5f, 0.5f, 0.5f, 1.0f
         }};
-        cmdList.BeginRenderPass(swapchain,
+        RHITexture* renderTargets[1] = {scene.get()};
+        cmdList.BeginRenderPass(renderTargets,
             backbufferClearColor,
             nullptr,
             {},
@@ -274,6 +346,41 @@ namespace Smol
 
         cmdList.EndRenderPass();
         // End RenderPass for backbuffer
+
+        // cmdList.Copy(*scene, swapchain);
+
+        cmdList.BeginRenderPass(swapchain,
+            backbufferClearColor,
+            nullptr,
+            {},
+            RHILoadAction::Load
+        );
+        cmdList.SetViewport(RHIViewport{
+            .x = 0, .y = 0,
+            // fill all backbuffer
+            .width = static_cast<f32>(swapchain.GetWidth()),
+            .height = static_cast<f32>(swapchain.GetHeight()),
+            .minDepth = 0, .maxDepth = 1
+        });
+
+        cmdList.SetPipelineState(*pipeline);
+
+        cmdList.SetConstantBuffer(
+            *rainBuf,
+            0,
+            RHIShaderStage::FragmentShader
+        );
+        cmdList.SetTexture(
+            *scene,
+            0,
+            RHIBindingAccess::ReadOnly,
+            RHIShaderStage::FragmentShader
+        );
+        cmdList.SetSampler(*linearClamp, 0, RHIShaderStage::FragmentShader);
+
+        cmdList.Draw(4);
+
+        cmdList.EndRenderPass();
 
         cmdList.Close();
         return true;
