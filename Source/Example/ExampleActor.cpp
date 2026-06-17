@@ -24,7 +24,13 @@ void ExampleActor::OnStart(){
 }
 
 void ExampleActor::OnUpdate(float dt){
+    using namespace Smol;
+
     // LOG_INFO("ExampleActor Update");
+
+    if(auto c = GetComponent<LineRenderer>()){
+        c->DrawText("Hello, World!", Vec2{200, 450});
+    }
 }
 
 void ExampleActor::PossessedBy(Smol::CharacterController& controller){
