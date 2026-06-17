@@ -199,14 +199,23 @@ namespace Smol
         , postRenderer(device)
         , shapeRenderer(device)
         , widgetRenderer(os.GetWindow().GetWindow(), device)
-        , widget(Checkbox{
-            .label = "Debug",
-            .onChanged = [&world = world](UIContext&, bool v){
-                LOG_WARN("Checked! {}", v);
-                world.SetDebugState(v);
+        , widget(Column({
+            Checkbox{
+                .label = "Collider",
+                .onChanged = [&world = world](UIContext&, bool v){
+                    LOG_WARN("Checked! {}", v);
+                    world.SetDebugState(v);
+                },
+                .v = false
             },
-            .v = false
-        })
+            Checkbox{
+                .label = "Rain",
+                .onChanged = [&self = *this](UIContext&, bool v){
+                    self.showRain = v;
+                },
+                .v = showRain
+            }
+        }))
         , world(EngineService{
             .spriteManager = &resourceRegistry.GetSpriteManager(),
             .inputManager = &inputManager,
@@ -290,7 +299,9 @@ namespace Smol
         cmdList.EndRenderPass();
         // End RenderPass for sceneTexture
 
-        // cmdList.Copy(*scene, swapchain);
+        if(!showRain){
+            cmdList.Copy(*scene, swapchain);
+        }
 
         // Begin RenderPass for backbuffer
         cmdList.BeginRenderPass(swapchain,
@@ -307,13 +318,15 @@ namespace Smol
             .minDepth = 0, .maxDepth = 1
         });
 
-        postRenderer.Draw(cmdList, *scene);
+        if(showRain){
+            postRenderer.Draw(cmdList, *scene);
+        }
 
         shapeRenderer.Draw(swapchain);
 
         UIContext uiContext{};
         widgetRenderer.Draw(
-            "Root Widget",
+            "Debug",
             widget,
             uiContext,
             cmdList,

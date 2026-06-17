@@ -27,6 +27,7 @@ namespace Smol
         ShapeRenderer shapeRenderer;
         WidgetRenderer widgetRenderer;
 
+        bool showRain = false;
         Widget widget;
 
         World world;
