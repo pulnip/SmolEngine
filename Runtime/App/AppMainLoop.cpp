@@ -264,20 +264,10 @@ namespace Smol
             .renderTargetCount = 1
         });
 
-        RainCB initState{
-            .elapsedTime = 0.0f,
-            .aspect = detail::aspect,
-            .intensity = 0.3f,
-            .speed = 1.0f,
-            .color = {0.7f, 0.8f, 1.0f},
-            .slant = 0.05f
-        };
-
         rainBuf = device.CreateBuffer(RHIBufferCreateDesc{
             .size = sizeof(RainCB),
             .usage = RHIBufferUsage::ConstantBuffer,
-            .access = RHIMemoryAccess::CPUWrite,
-            .initialData = &initState
+            .access = RHIMemoryAccess::CPUWrite
         }, "RainCB");
     }
 
@@ -299,7 +289,7 @@ namespace Smol
             .aspect = detail::aspect,
             .intensity = 1.0f,
             .speed = 1.0f,
-            .color = {0.7f, 0.8f, 1.0f},
+            .color = {0.5f, 0.5f, 1.0f},
             .slant = 0.15f
         };
         rainBuf->Upload(&rainCB, sizeof(RainCB));
@@ -332,17 +322,6 @@ namespace Smol
             .minDepth = 0, .maxDepth = 1
         });
         spriteRenderer.Draw(cmdList);
-
-        shapeRenderer.Draw(swapchain);
-
-        UIContext uiContext{};
-        widgetRenderer.Draw(
-            "Root Widget",
-            widget,
-            uiContext,
-            cmdList,
-            &swapchain
-        );
 
         cmdList.EndRenderPass();
         // End RenderPass for backbuffer
@@ -379,6 +358,17 @@ namespace Smol
         cmdList.SetSampler(*linearClamp, 0, RHIShaderStage::FragmentShader);
 
         cmdList.Draw(4);
+
+        shapeRenderer.Draw(swapchain);
+
+        UIContext uiContext{};
+        widgetRenderer.Draw(
+            "Root Widget",
+            widget,
+            uiContext,
+            cmdList,
+            &swapchain
+        );
 
         cmdList.EndRenderPass();
 

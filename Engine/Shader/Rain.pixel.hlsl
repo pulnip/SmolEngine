@@ -73,15 +73,16 @@ float4 ps_main(VertexOut input) : SV_Target {
     uv.x *= aspect;
 
     float rain = 0.0;
-    rain += rainLayer(uv, 220.0, 12.0, 1.30, 0.012) * 0.35; // far
-    rain += rainLayer(uv, 130.0, 8.0, 1.80, 0.020) * 0.60;  // mid
-    rain += rainLayer(uv, 70.0, 5.0, 2.40, 0.030) * 1.00;   // near
+    rain += rainLayer(uv, 220.0, 12.0, 1.30, 0.1) * 0.35; // far
+    rain += rainLayer(uv, 130.0, 8.0, 1.80, 0.2) * 0.60;  // mid
+    rain += rainLayer(uv, 70.0, 5.0, 2.40, 0.3) * 1.00;   // near
 
     rain *= intensity;
 
     // screen blend so streaks brighten without blowing out
-    float3 streakCol = color * rain;
-    float3 outCol = 1.0 - (1.0 - sampled) * (1.0 - streakCol);
+    float3 streak = color * rain;
+    float3 outCol = sampled + streak;
+    // float3 outCol = 1.0 - (1.0 - sampled) * (1.0 - streak);
 
     return float4(outCol, 1.0);
 }
