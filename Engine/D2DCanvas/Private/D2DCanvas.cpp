@@ -423,7 +423,7 @@ namespace Smol
 
         textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
         textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-        textFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP);
+        textFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
 
         auto [it, ret] = textFormats.emplace(
             s,

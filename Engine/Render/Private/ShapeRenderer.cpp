@@ -1,5 +1,6 @@
 #include "CameraConfig.hpp"
 #include "Canvas2D.hpp"
+#include "Primitives.hpp"
 #include "ShapeRenderer.hpp"
 
 namespace
@@ -31,6 +32,10 @@ namespace Smol
         lines.emplace_back(points, color);
     }
 
+    void ShapeRenderer::SubmitText(StrView text, Vec2 pos, Color color, f32 fontSize){
+        texts.emplace_back(text, pos, color, fontSize);
+    }
+
     void ShapeRenderer::SubmitOBB2D(OBB2D obb, Color color){
         Vec3 c = obb.center;
         Vec3 x = obb.halfAxes[0];
@@ -56,14 +61,23 @@ namespace Smol
         canvas->Begin(swapchain);
 
         std::vector<Vec2> line2d;
-
         for(const auto& item: lines){
             fillLine2D(item.points, line2d);
 
             canvas->Polyline(line2d, item.style);
         }
 
+        for(const auto& item: texts){
+            canvas->Text(
+                item.text,
+                item.pos,
+                item.style
+            );
+        }
+
         canvas->End();
+
         lines.clear();
+        texts.clear();
     }
 }
