@@ -12,6 +12,14 @@ name = "BG_Temple"
 file = "Assets/Sprite/BG_Temple.toml"
 
 [[sprites]]
+name = "RemainTime"
+file = "Assets/Sprite/RemainTime.toml"
+
+[[sprites]]
+name = "Score"
+file = "Assets/Sprite/Score.toml"
+
+[[sprites]]
 name = "hollow_knight"
 file = "Assets/Sprite/hollow_knight.sprite.toml"
 

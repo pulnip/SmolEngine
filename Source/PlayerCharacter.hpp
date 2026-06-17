@@ -3,6 +3,7 @@
 
 #include "CharacterController.hpp"
 #include "Pawn.hpp"
+#include "Primitives.hpp"
 
 class PlayerCharacter: public Smol::Pawn{
     SMOL_ACTOR_BODY(PlayerCharacter, Smol::Pawn)
@@ -25,7 +26,6 @@ private:
     void OnBowShoot(Smol::InputValue);
 
 private:
-    //TODO. 활 컴포넌트 추가
-
+    Smol::Vec3 startPos;
 
 };

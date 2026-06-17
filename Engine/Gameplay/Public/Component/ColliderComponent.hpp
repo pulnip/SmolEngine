@@ -5,6 +5,7 @@
 #include "GenericHandle.hpp"
 #include "Geometry/Overlap2D.hpp"
 #include "PhysicsEngine2D.hpp"
+#include "Primitives.hpp"
 #include "Semantics.hpp"
 #include "Shape2D.hpp"
 #include "SlotMap.hpp"
@@ -116,6 +117,14 @@ namespace Smol
 
         void SetMask(CollisionMask mask){
             this->mask = mask;
+        }
+
+        void SetScale(Smol::Vec2 scale){
+            transform.scale = scale;
+        }
+
+        void SetPos(Smol::Vec2 pos){
+            transform.position = pos;
         }
 
     private:

@@ -10,8 +10,8 @@ app_identifier = "io.github.pulnip.smol"
 
 [runtime.window]
 title = "SmolApp"
-width = 800
-height = 600
+width = 1280
+height = 720
 fullscreen = false
 resizable = false
 borderless = false

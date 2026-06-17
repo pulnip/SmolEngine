@@ -10,7 +10,29 @@ name = "BackGround"
 [[actors.components]]
 type = "SpriteComponent"
 sprite = "BG_Temple"
-sprite_scale = [38, 28]
+sprite_scale = [50, 28]
+
+[[actors]]
+type = "GameManager"
+name = "GameManager"
+
+[[actors]]
+type = "Actor"
+position = [-0.5, 12.5, 0]
+name = "RemainTimeUIBackGround"
+[[actors.components]]
+type = "SpriteComponent"
+sprite = "RemainTime"
+sprite_scale = [7, 3]
+
+[[actors]]
+type = "Actor"
+position = [-11.5, 12.5, 0]
+name = "ScoreUIBackGround"
+[[actors.components]]
+type = "SpriteComponent"
+sprite = "Score"
+sprite_scale = [7, 3]
 
 [[actors]]
 type = "CharacterController"
@@ -20,13 +42,13 @@ type = "InputComponent"
 
 [[actors]]
 type = "PlayerCharacter"
-position = [5, 3, 0]
+position = [-20, -10, 0]
 name = "Player"
 possessed_by = "PlayerController"
 [[actors.components]]
 type = "SpriteAnimComponent"
 sprite = "Pixel_Hero"
-sprite_scale = [8, 8]
+sprite_scale = [5, 5]
 [[actors.components]]
 type = "MoveComponent"
 speed = 16
@@ -43,10 +65,35 @@ type = "LineRenderer"
 
 [[actors]]
 type = "TochLitActor"
-position = [-5, 0, 0]
+position = [-10, 15, 0]
 name = "TochLitActor1"
 
 [[actors]]
-type = "BushActor"
-position = [-2, 10, 0]
-name = "BushActor1"
+type = "TochLitActor"
+position = [0, 15, 0]
+name = "TochLitActor2"
+
+[[actors]]
+type = "BushActorSpawner"
+position = [14, 11, 0]
+name = "BushActorSpawner1"
+
+[[actors]]
+type = "BushActorSpawner"
+position = [14, 6, 0]
+name = "BushActorSpawner2"
+
+[[actors]]
+type = "BushActorSpawner"
+position = [14, 1, 0]
+name = "BushActorSpawner3"
+
+[[actors]]
+type = "BushActorSpawner"
+position = [14, -4, 0]
+name = "BushActorSpawner4"
+
+[[actors]]
+type = "BushActorSpawner"
+position = [14, -9, 0]
+name = "BushActorSpawner5"

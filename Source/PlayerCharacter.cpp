@@ -1,6 +1,7 @@
 #include "PlayerCharacter.hpp"
 #include "BowActor.hpp"
 #include "CharacterController.hpp"
+#include "Geometry/GeoUtil.hpp"
 #include "IInputManager.hpp"
 #include "InputAction.hpp"
 #include "LinearAlgebra.hpp"
@@ -36,7 +37,7 @@ void PlayerCharacter::PossessedBy(Smol::CharacterController& controller){
 }
 
 void PlayerCharacter::OnStart(){
-
+    startPos = GetTransform().position;
 }
 
 void PlayerCharacter::OnUpdate(float dt){
@@ -54,20 +55,42 @@ void PlayerCharacter::StartMove(Smol::InputValue v){
     spriteAnimComp->SetAnimation("walk");
 }
 
-void PlayerCharacter::OnMove(Smol::InputValue v){
+void PlayerCharacter::OnMove(Smol::InputValue v)
+{
     BowComponent* bowComp = GetComponent<BowComponent>();
     bool bIsAiming = bowComp->GetIsAiming();
-    if (bIsAiming){
+
+    if (bIsAiming)
+    {
         return;
     }
 
-    // 입력 방향으로 이동 방향 설정
-    Smol::Vec3 dir = v.GetAxis3D();
+    float inputX = v.GetAxis2D().x;
 
-    // LOG_INFO("OnMove to {}", dir);
+    float moveRange = 2.f;
+    float minX = startPos.x - moveRange;
+    float maxX = startPos.x + moveRange;
+
+    float currentX = GetTransform().position.x;
+
+    // 왼쪽 범위 밖으로 가려는 입력이면 막기
+    if (currentX <= minX && inputX < 0.f)
+    {
+        inputX = 0.f;
+    }
+
+    // 오른쪽 범위 밖으로 가려는 입력이면 막기
+    if (currentX >= maxX && inputX > 0.f)
+    {
+        inputX = 0.f;
+    }
+
+    Smol::Vec2 dir = Smol::Vec2(inputX, 0.f);
 
     Smol::MoveComponent* moveComponent = GetComponent<Smol::MoveComponent>();
-    if(moveComponent != nullptr){
+
+    if (moveComponent != nullptr)
+    {
         moveComponent->SetDirection(dir);
     }
 }
@@ -146,6 +169,9 @@ void PlayerCharacter::EndBowAim(Smol::InputValue v){
     }
 
     bowComp->SetIsAiming(false);
+
+    Smol::SpriteAnimComponent* spriteAnimComp = GetComponent<Smol::SpriteAnimComponent>();
+    spriteAnimComp->SetAnimation("idle");
 }
 
 void PlayerCharacter::OnBowShoot(Smol::InputValue v){

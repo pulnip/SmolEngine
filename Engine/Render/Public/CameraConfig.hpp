@@ -11,8 +11,8 @@ namespace Smol
         const auto camRot = unitQuat();
         const auto view = viewMat(camPos, camRot);
 
-        constexpr auto screenWidth = 800.0f;
-        constexpr auto screenHeight = 600.0f;
+        constexpr auto screenWidth = 1280.0f;
+        constexpr auto screenHeight = 720.0f;
         constexpr auto aspect = screenWidth/screenHeight;
 
         constexpr auto fovY = static_cast<f32>(toRadian(50.0f));

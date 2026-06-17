@@ -1,4 +1,5 @@
 #include "BushActor.hpp"
+#include "Actor.hpp"
 #include "Primitives.hpp"
 #include "SpriteAnimComponent.hpp"
 #include "SpriteComponent.hpp"
@@ -7,6 +8,7 @@
 #include "LogGame.hpp"
 #include "World.hpp"
 #include "FireActor.hpp"
+#include "GameManager.hpp"
 
 SMOL_ACTOR(BushActor, Smol::Actor)
 SMOL_ACTOR_END(BushActor)
@@ -26,6 +28,11 @@ void BushActor::OnStart(){
 
     colliderComp->SetLayer(0b1);
     colliderComp->SetMask(0b0);
+
+    Smol::Vec2 colliderScale = Smol::Vec2(1, 0.37f);
+    colliderComp->SetScale(colliderScale);
+    Smol::Vec2 colliderPos = Smol::Vec2(0, -0.31f);
+    colliderComp->SetPos(colliderPos);
 
     AddComponent<ElementalComponent>();
 
@@ -51,5 +58,24 @@ void BushActor::OnStart(){
 }
 
 void BushActor::OnUpdate(float dt){
+    elapsedMoveTime += dt;
 
+    GetTransform().position.x =
+        startX + std::sin(elapsedMoveTime * moveSpeed) * moveRange;
+}
+
+void BushActor::OnDestroy(){
+    if (OnDestroyed)
+    {
+        OnDestroyed(this);
+    }
+
+    // 점수 증가
+    Smol::Actor* findActor = GetWorld()->FindActorByName("GameManager");
+    GameManager* gameManager = static_cast<GameManager*>(findActor);
+    if (gameManager == nullptr)
+    {
+        return;
+    }
+    gameManager->IncreaseScore(1);
 }

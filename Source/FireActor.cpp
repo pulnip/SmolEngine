@@ -34,6 +34,11 @@ void FireActor::OnStart(){
     colliderComp->SetLayer(0b1);
     colliderComp->SetMask(0b1);
 
+    Smol::Vec2 colliderScale = Smol::Vec2(1.8f, 2.f);
+    colliderComp->SetScale(colliderScale);
+    Smol::Vec2 colliderPos = Smol::Vec2(0.2f, -0.5f);
+    colliderComp->SetPos(colliderPos);
+
     AddComponent<ElementalComponent>();
     ElementalComponent* elementalComp = GetComponent<ElementalComponent>();
     if (nullptr == elementalComp)

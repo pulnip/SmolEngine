@@ -44,6 +44,9 @@ void ArrowActor::OnStart(){
     colliderComp->SetLayer(0b1);
     colliderComp->SetMask(0b0);
 
+    Smol::Vec2 colliderScale = Smol::Vec2(0.5f, 0.3f);
+    colliderComp->SetScale(colliderScale);
+
     AddComponent<ElementalComponent>();
 
     ElementalComponent* elementalComp = GetComponent<ElementalComponent>();

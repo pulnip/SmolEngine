@@ -9,6 +9,7 @@
 #include "LogGame.hpp"
 #include "SpriteComponent.hpp"
 #include "BowActor.hpp"
+#include "GameManager.hpp"
 
 SMOL_COMPONENT(BowComponent)
     .SetProperty("ArrowVelocity", &BowComponent::arrowVelocity)
@@ -19,11 +20,19 @@ BowComponent::~BowComponent() = default;
 void BowComponent::Init(){
     auto world = owner->GetWorld();
     bow = world->SpawnActor<BowActor>();
-    //bow->AttachTo(owner, false);
+    bow->AttachTo(owner, false);
+    bow->GetTransform().scale = Smol::Vec2(0, 0);
 }
 
 void BowComponent::Update(Smol::f32 dt){
-
+    if (bIsAiming)
+    {
+        bow->GetTransform().scale = Smol::Vec2(4, 4);
+    }
+    else
+    {
+        bow->GetTransform().scale = Smol::Vec2(0, 0);
+    }
 }
 
 void BowComponent::Shoot(Smol::Vec3 direction){
@@ -32,7 +41,7 @@ void BowComponent::Shoot(Smol::Vec3 direction){
     }
 
     // 화살 생성
-    ArrowActor* arrow = owner->GetWorld()->SpawnActor<ArrowActor>();
+    ArrowActor* arrow = GetOwner()->GetWorld()->SpawnActor<ArrowActor>();
     if (arrow == nullptr){
         LOG_WARN("nullptr");
         return;
@@ -44,12 +53,20 @@ void BowComponent::Shoot(Smol::Vec3 direction){
 
     // 계산한 궤적을 화살에게 넘겨서 샘플 위치를 따라 이동시킨다.
     arrow->SetTrajectory(std::move(arrowTrajectory), 0.1f);
+
+    Smol::Actor* findActor = GetOwner()->GetWorld()->FindActorByName("GameManager");
+    GameManager* gameManager = static_cast<GameManager*>(findActor);
+    if (gameManager == nullptr)
+    {
+        return;
+    }
+    gameManager->IncreaseArrowCount(1);
 }
 
 std::vector<Smol::Vec3> BowComponent::BuildTrajectory(Smol::Vec3 direction, const int sampleCount){
     //TODO.
     // 임시 변수
-    Smol::Vec3 startPos = Smol::Vec3(owner->GetTransform().position + (direction * 1));
+    Smol::Vec3 startPos = Smol::Vec3(GetOwner()->GetTransform().position + (direction * 1));
     Smol::Vec3 gravity = Smol::Vec3(0, -9.8f, 0);   // 1unit이 1cm일 경우 -980.f가 적절
 
     // 계산할 위치 수 및 위치 간격

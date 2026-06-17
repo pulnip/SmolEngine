@@ -20,7 +20,7 @@ public:
     // <활 발사>
     void Shoot(Smol::Vec3 direction);
 
-    std::vector<Smol::Vec3> BuildTrajectory(Smol::Vec3 direction, const int sampleCount = 10);
+    std::vector<Smol::Vec3> BuildTrajectory(Smol::Vec3 direction, const int sampleCount = 5);
 
     void SetBowDirection(Smol::Vec3 direction);
 
@@ -28,7 +28,7 @@ public:
     void SetIsAiming(bool isAiming){ bIsAiming = isAiming; }
 
 private:
-    float arrowVelocity = 15.f;
+    float arrowVelocity = 25.f;
 
     bool bIsAiming = false;
 
