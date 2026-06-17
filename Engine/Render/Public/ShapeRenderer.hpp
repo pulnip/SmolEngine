@@ -26,6 +26,21 @@ namespace Smol
                 .screenSpaceWidth = true
             }){}
     };
+    struct TextRenderItem{
+        Str text;
+        Vec2 pos; // screen coord
+        TextStyle style;
+
+        explicit TextRenderItem(StrView text, Vec2 pos, Color color, f32 fontSize)
+            : text(text)
+            , pos(pos)
+            , style(TextStyle{
+                .color = color,
+                .fontSize = fontSize,
+                // Notice. WORD_WRAPPING = NO_WRAP
+                .size = {0, 0}
+            }){}
+    };
 
     class ShapeRenderer final{
     private:
@@ -33,6 +48,7 @@ namespace Smol
 
         // Write-Discard buffer
         std::vector<LineRenderItem> lines;
+        std::vector<TextRenderItem> texts;
 
     public:
         ShapeRenderer(RHIDevice&);
@@ -40,6 +56,7 @@ namespace Smol
         SMOL_DECLARE_PINNED(ShapeRenderer)
 
         void SubmitLine(std::span<const Vec3>, Color color);
+        void SubmitText(StrView text, Vec2 pos, Color color, f32 fontSize);
 
         // Debug Collider
         void SubmitOBB2D(OBB2D, Color color);
