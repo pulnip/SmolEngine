@@ -214,6 +214,13 @@ namespace Smol
                     self.showRain = v;
                 },
                 .v = showRain
+            },
+            Checkbox{
+                .label = "Inversion",
+                .onChanged = [&self = *this](UIContext&, bool v){
+                    self.colorInversion = v;
+                },
+                .v = colorInversion != 0
             }
         }))
         , world(EngineService{
@@ -267,7 +274,8 @@ namespace Smol
             .intensity = 1.0f,
             .speed = 1.0f,
             .color = {0.5f, 0.5f, 1.0f},
-            .slant = 0.15f
+            .slant = 0.15f,
+            .inversion = colorInversion
         };
         postRenderer.Upload(rainCB);
 

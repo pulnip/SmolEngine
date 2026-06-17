@@ -28,6 +28,7 @@ namespace Smol
         WidgetRenderer widgetRenderer;
 
         bool showRain = false;
+        i32 colorInversion = false;
         Widget widget;
 
         World world;

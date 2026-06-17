@@ -10,6 +10,7 @@ cbuffer RainCB : register(b0)
     float3 color;
     // wind effect (0 = straight down)
     float slant;
+    bool inversion; // Notice. 4 byte
 };
 
 Texture2D tex : register(t0);
@@ -67,6 +68,9 @@ struct VertexOut {
 
 float4 ps_main(VertexOut input) : SV_Target {
     float3 sampled = tex.Sample(linearClamp, input.uv).rgb;
+    sampled = inversion ?
+        1.0 - sampled :
+        sampled;
 
     // aspect-correct uv
     float2 uv = input.uv;
@@ -81,8 +85,8 @@ float4 ps_main(VertexOut input) : SV_Target {
 
     // screen blend so streaks brighten without blowing out
     float3 streak = color * rain;
-    float3 outCol = sampled + streak;
-    // float3 outCol = 1.0 - (1.0 - sampled) * (1.0 - streak);
+    float3 outColor = saturate(sampled + streak);
+    // float3 outColor = 1.0 - (1.0 - sampled) * (1.0 - streak);
 
-    return float4(outCol, 1.0);
+    return float4(outColor, 1.0);
 }

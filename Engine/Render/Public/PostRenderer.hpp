@@ -14,6 +14,8 @@ namespace Smol
         f32 speed = 1.0f;
         Vec3 color{0.7f, 0.8f, 1.0f};
         f32 slant = 0.15f;
+        i32 inversion;
+        f32 padding[3];
     };
 
     class PostRenderer final{
