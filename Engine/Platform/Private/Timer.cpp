@@ -28,24 +28,28 @@ namespace Smol
         using namespace std::chrono;
 
         auto sec = duration<f64>(deltaTime);
-        return sec.count();
+        return scale * sec.count();
     }
 
     f64 Timer::GetElapsedTime() const noexcept{
         using namespace std::chrono;
 
         auto sec = duration<f64>(elapsedTime);
-        return sec.count();
+        return scale * sec.count();
     }
 
     f64 Timer::GetFPS() const noexcept{
         using namespace std::chrono;
 
-        auto sec = duration<f64>(elapsedTime).count();
+        auto sec = scale * duration<f64>(elapsedTime).count();
         // Avoid Div by 0
         if(sec <= 0.0)
             return 0.0;
 
         return frameNumber / sec;
+    }
+
+    void Timer::SetScale(f64 scale) noexcept{
+        this->scale = scale;
     }
 }
