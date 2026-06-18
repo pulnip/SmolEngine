@@ -269,16 +269,18 @@ namespace Smol
     }
 
     bool AppMainLoop::Render(CommandListPool& pool, RHISwapchain& swapchain){
-        RainCB rainCB{
-            .elapsedTime = static_cast<f32>(timer.GetElapsedTime()),
-            .aspect = detail::aspect,
-            .intensity = 1.0f,
-            .speed = 1.0f,
-            .color = {0.5f, 0.5f, 1.0f},
-            .slant = 0.15f,
-            .inversion = colorInversion
-        };
-        postRenderer.Upload(rainCB);
+        if(showRain){
+            RainCB rainCB{
+                .elapsedTime = static_cast<f32>(timer.GetElapsedTime()),
+                .aspect = detail::aspect,
+                .intensity = 1.0f,
+                .speed = 1.0f,
+                .color = {0.5f, 0.5f, 1.0f},
+                .slant = 0.15f,
+                .inversion = colorInversion
+            };
+            postRenderer.Upload(rainCB);
+        }
 
         // for single thread model, use single cmdList.
         auto& cmdList = pool.Acquire();
@@ -308,33 +310,33 @@ namespace Smol
         cmdList.EndRenderPass();
         // End RenderPass for sceneTexture
 
-        if(!showRain){
-            cmdList.Copy(*scene, swapchain);
-        }
-
-        // Begin RenderPass for backbuffer
-        cmdList.BeginRenderPass(swapchain,
-            backbufferClearColor,
-            nullptr,
-            {},
-            RHILoadAction::Load
-        );
-        cmdList.SetViewport(RHIViewport{
-            .x = 0, .y = 0,
-            // fill all backbuffer
-            .width = static_cast<f32>(swapchain.GetWidth()),
-            .height = static_cast<f32>(swapchain.GetHeight()),
-            .minDepth = 0, .maxDepth = 1
-        });
-
         if(showRain){
+            // Begin RenderPass for backbuffer
+            cmdList.BeginRenderPass(swapchain,
+                backbufferClearColor,
+                nullptr,
+                {},
+                RHILoadAction::Load
+            );
+            cmdList.SetViewport(RHIViewport{
+                .x = 0, .y = 0,
+                // fill all backbuffer
+                .width = static_cast<f32>(swapchain.GetWidth()),
+                .height = static_cast<f32>(swapchain.GetHeight()),
+                .minDepth = 0, .maxDepth = 1
+            });
+
             postRenderer.Draw(cmdList, *scene);
+
+            cmdList.EndRenderPass();
+            // End RenderPass for backbuffer
+        }
+        else{
+            cmdList.Copy(*scene, swapchain);
+            cmdList.Flush();
         }
 
         uiRenderer.Draw(cmdList, &swapchain);
-
-        cmdList.EndRenderPass();
-        // End RenderPass for backbuffer
 
         cmdList.Close();
         return true;

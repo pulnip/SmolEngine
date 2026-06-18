@@ -5,10 +5,6 @@
 #include "RHIDevice.hpp"
 #include "RHISwapchain.hpp"
 
-#if defined(SMOL_DX11RHI)
-
-#include <imgui_impl_dx11.h>
-
 namespace Smol
 {
     detail::UIRendererInitializer::UIRendererInitializer(
@@ -36,7 +32,14 @@ namespace Smol
     }
 
     struct UIContext{};
+}
 
+#if defined(SMOL_DX11RHI)
+
+#include <imgui_impl_dx11.h>
+
+namespace Smol
+{
     UIRenderer::UIRenderer(
         void* sdlWindow,
         RHIDevice& device,
@@ -85,6 +88,76 @@ namespace Smol
         ImDrawData* draw_data = ImGui::GetDrawData();
 
         ImGui_ImplDX11_RenderDrawData(draw_data);
+    }
+}
+
+#elif defined(SMOL_METALRHI)
+
+#include <imgui_impl_metal.h>
+
+namespace Smol
+{
+    UIRenderer::UIRenderer(
+        void* sdlWindow,
+        RHIDevice& device,
+        const std::filesystem::path& contentRoot,
+        Widget&& debugWidget
+    )
+        : initializer(contentRoot)
+        , shapeRenderer(device)
+        , debugWidget(std::move(debugWidget))
+    {
+        ImGui_ImplSDL3_InitForMetal(
+            static_cast<SDL_Window*>(sdlWindow)
+        );
+        ImGui_ImplMetal_Init(static_cast<MTL::Device*>(device.Get()));
+    }
+
+    UIRenderer::~UIRenderer(){
+        ImGui_ImplMetal_Shutdown();
+
+        ImGui_ImplSDL3_Shutdown();
+        ImGui::DestroyContext();
+    }
+
+    void UIRenderer::Draw(RHICommandList& cmdList, RHISwapchain* swapchain){
+        auto uiPassDesc = MTL::RenderPassDescriptor::alloc()->init();
+        auto colorAttachment = uiPassDesc->colorAttachments()->object(0);
+        colorAttachment->setLoadAction(MTL::LoadActionLoad);
+        colorAttachment->setStoreAction(MTL::StoreActionStore);
+        colorAttachment->setTexture(static_cast<MTL::Texture*>(
+            swapchain->GetCurrentNativeTexture()
+        ));
+
+        ImGui_ImplMetal_NewFrame(uiPassDesc);
+        ImGui_ImplSDL3_NewFrame();
+        ImGui::NewFrame();
+
+        shapeRenderer.Draw(*swapchain);
+
+        UIContext uiContext{};
+        ImGui::Begin("Debug");
+        std::visit([&uiContext](auto& widget){
+            widget.submit(uiContext);
+        }, debugWidget);
+        ImGui::End();
+
+        ImGui::Render();
+        ImDrawData* draw_data = ImGui::GetDrawData();
+
+        auto commandBuffer = static_cast<MTL::CommandBuffer*>(
+            cmdList.GetNative()
+        );
+
+        auto uiRenderEncoder = commandBuffer->renderCommandEncoder(uiPassDesc);
+        ImGui_ImplMetal_RenderDrawData(
+            draw_data,
+            commandBuffer,
+            uiRenderEncoder
+        );
+        uiRenderEncoder->endEncoding();
+
+        uiPassDesc->release();
     }
 }
 
