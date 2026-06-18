@@ -198,6 +198,7 @@ namespace Smol
         , spriteRenderer(device, resourceRegistry.GetSpriteManager())
         , postRenderer(device)
         , uiRenderer(os.GetWindow().GetWindow(), device,
+            config.project.content_root,
             Column({
                 Checkbox{
                     .label = "Collider",

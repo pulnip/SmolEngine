@@ -1,5 +1,6 @@
 #include <imgui_impl_sdl3.h>
 #include "UIRenderer.hpp"
+#include "StringUtil.hpp"
 #include "RHICommandList.hpp"
 #include "RHIDevice.hpp"
 #include "RHISwapchain.hpp"
@@ -10,11 +11,22 @@
 
 namespace Smol
 {
-    detail::UIRendererInitializer::UIRendererInitializer(){
+    detail::UIRendererInitializer::UIRendererInitializer(
+        const std::filesystem::path& contentRoot
+    ){
+        auto fontPath = contentRoot / "Fonts/NanumBarunGothic.ttf";
+        auto utf8Path = toUTF8String(fontPath);
+
         // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        ImGuiIO& io = ImGui::GetIO();
+        io.Fonts->AddFontFromFileTTF(
+            utf8Path.c_str(),
+            0.0f,
+            nullptr,
+            io.Fonts->GetGlyphRangesKorean()
+        );
         // Enable Keyboard Controls
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
@@ -28,9 +40,10 @@ namespace Smol
     UIRenderer::UIRenderer(
         void* sdlWindow,
         RHIDevice& device,
+        const std::filesystem::path& contentRoot,
         Widget&& debugWidget
     )
-        : initializer()
+        : initializer(contentRoot)
         , shapeRenderer(device)
         , debugWidget(std::move(debugWidget))
     {

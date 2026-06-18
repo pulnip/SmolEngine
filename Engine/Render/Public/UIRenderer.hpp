@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include "ShapeRenderer.hpp"
 #include "Widget.hpp"
 
@@ -8,7 +9,7 @@ namespace Smol
     namespace detail{
         class UIRendererInitializer final{
         public:
-            UIRendererInitializer();
+            UIRendererInitializer(const std::filesystem::path& contentRoot);
         };
     }
 
@@ -19,7 +20,10 @@ namespace Smol
         Widget debugWidget;
 
     public:
-        UIRenderer(void* sdlWindow, RHIDevice&, Widget&& debugWidget);
+        UIRenderer(void* sdlWindow, RHIDevice&,
+            const std::filesystem::path& contentRoot,
+            Widget&& debugWidget
+        );
         ~UIRenderer();
 
         void Draw(
