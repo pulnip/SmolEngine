@@ -27,7 +27,7 @@ namespace Smol
         ShapeRenderer shapeRenderer;
         WidgetRenderer widgetRenderer;
 
-        bool showRain = false;
+        bool showRain = true;
         i32 colorInversion = false;
         Widget widget;
 

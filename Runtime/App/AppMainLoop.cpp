@@ -271,7 +271,7 @@ namespace Smol
         RainCB rainCB{
             .elapsedTime = static_cast<f32>(timer.GetElapsedTime()),
             .aspect = detail::aspect,
-            .intensity = 1.0f,
+            .intensity = 0.5f,
             .speed = 1.0f,
             .color = {0.5f, 0.5f, 1.0f},
             .slant = 0.15f,
