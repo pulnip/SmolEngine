@@ -24,7 +24,7 @@ namespace Smol
         RHISamplerRAII linearClamp;
         RHIBufferRAII rainCB;
         struct FragmentShaderSlot{
-            static constexpr CStr rainCBSlot = "RainCB";
+            static constexpr CStr rainCBSlot = "rainCB";
             u32 rainCB = 0;
             static constexpr CStr texSlot = "tex";
             u32 tex = 0;
