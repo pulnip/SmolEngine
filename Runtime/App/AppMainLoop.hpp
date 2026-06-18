@@ -5,11 +5,9 @@
 #include "ResourceRegistry.hpp"
 #include "PostRenderer.hpp"
 #include "RHIFWD.hpp"
-#include "ShapeRenderer.hpp"
 #include "SpriteRenderer.hpp"
 #include "Timer.hpp"
-#include "Widget.hpp"
-#include "WidgetRenderer.hpp"
+#include "UIRenderer.hpp"
 #include "World.hpp"
 
 namespace Smol
@@ -24,12 +22,9 @@ namespace Smol
         InputManager inputManager;
         SpriteRenderer spriteRenderer;
         PostRenderer postRenderer;
-        ShapeRenderer shapeRenderer;
-        WidgetRenderer widgetRenderer;
-
         bool showRain = false;
         i32 colorInversion = false;
-        Widget widget;
+        UIRenderer uiRenderer;
 
         World world;
 

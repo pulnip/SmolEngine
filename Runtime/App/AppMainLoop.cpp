@@ -197,37 +197,37 @@ namespace Smol
         )
         , spriteRenderer(device, resourceRegistry.GetSpriteManager())
         , postRenderer(device)
-        , shapeRenderer(device)
-        , widgetRenderer(os.GetWindow().GetWindow(), device)
-        , widget(Column({
-            Checkbox{
-                .label = "Collider",
-                .onChanged = [&world = world](UIContext&, bool v){
-                    LOG_WARN("Checked! {}", v);
-                    world.SetDebugState(v);
+        , uiRenderer(os.GetWindow().GetWindow(), device,
+            Column({
+                Checkbox{
+                    .label = "Collider",
+                    .onChanged = [&world = world](UIContext&, bool v){
+                        LOG_WARN("Checked! {}", v);
+                        world.SetDebugState(v);
+                    },
+                    .v = false
                 },
-                .v = false
-            },
-            Checkbox{
-                .label = "Rain",
-                .onChanged = [&self = *this](UIContext&, bool v){
-                    self.showRain = v;
+                Checkbox{
+                    .label = "Rain",
+                    .onChanged = [&self = *this](UIContext&, bool v){
+                        self.showRain = v;
+                    },
+                    .v = showRain
                 },
-                .v = showRain
-            },
-            Checkbox{
-                .label = "Inversion",
-                .onChanged = [&self = *this](UIContext&, bool v){
-                    self.colorInversion = v;
-                },
-                .v = colorInversion != 0
+                Checkbox{
+                    .label = "Inversion",
+                    .onChanged = [&self = *this](UIContext&, bool v){
+                        self.colorInversion = v;
+                    },
+                    .v = colorInversion != 0
+                }
             }
-        }))
+        ))
         , world(EngineService{
             .spriteManager = &resourceRegistry.GetSpriteManager(),
             .inputManager = &inputManager,
             .spriteRenderer = &spriteRenderer,
-            .shapeRenderer = &shapeRenderer,
+            .shapeRenderer = &uiRenderer.GetShapeRenderer(),
         })
     {
         const auto contentRoot = config.project.content_root;
@@ -330,16 +330,7 @@ namespace Smol
             postRenderer.Draw(cmdList, *scene);
         }
 
-        shapeRenderer.Draw(swapchain);
-
-        UIContext uiContext{};
-        widgetRenderer.Draw(
-            "Debug",
-            widget,
-            uiContext,
-            cmdList,
-            &swapchain
-        );
+        uiRenderer.Draw(cmdList, &swapchain);
 
         cmdList.EndRenderPass();
         // End RenderPass for backbuffer

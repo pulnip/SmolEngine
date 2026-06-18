@@ -8,6 +8,7 @@ PUBLIC
     Smol::RHI
     Smol::UI
 PRIVATE
+    imgui
 )
 
 smol_rhi_macro(Render)
