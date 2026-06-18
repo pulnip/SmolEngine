@@ -6,6 +6,7 @@ PUBLIC
     Smol::Core
     Smol::Resource
     Smol::RHI
+    Smol::UI
 PRIVATE
 )
 
