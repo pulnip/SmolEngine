@@ -14,22 +14,15 @@ namespace Smol
         f32 speed = 1.0f;
         Vec3 color{0.7f, 0.8f, 1.0f};
         f32 slant = 0.15f;
-        i32 inversion;
-        f32 padding[3];
     };
 
     class PostRenderer final{
     private:
         RHIGraphicsPipelineStateRAII rainStreakPipeline;
-        RHISamplerRAII linearClamp;
         RHIBufferRAII rainCB;
         struct FragmentShaderSlot{
             static constexpr CStr rainCBSlot = "rainCB";
             u32 rainCB = 0;
-            static constexpr CStr texSlot = "tex";
-            u32 tex = 0;
-            static constexpr CStr linearClampSlot = "linearClamp";
-            u32 linearClamp = 0;
         } fs;
 
     public:
@@ -38,6 +31,6 @@ namespace Smol
         SMOL_DECLARE_PINNED(PostRenderer)
 
         void Upload(const RainCB&);
-        void Draw(RHICommandList&, RHITexture& scene);
+        void Draw(RHICommandList&);
     };
 }

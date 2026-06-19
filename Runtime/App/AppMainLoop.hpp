@@ -23,7 +23,6 @@ namespace Smol
         SpriteRenderer spriteRenderer;
         PostRenderer postRenderer;
         bool showRain = true;
-        i32 colorInversion = false;
         UIRenderer uiRenderer;
 
         World world;

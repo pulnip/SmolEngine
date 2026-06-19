@@ -1,13 +1,10 @@
 #include "Assert.hpp"
-#include "CameraConfig.hpp"
 #include "PostRenderer.hpp"
 #include "RHIBuffer.hpp"
 #include "RHICommandList.hpp"
 #include "RHIDefinitions.hpp"
 #include "RHIDevice.hpp"
 #include "RHIPipelineState.hpp"
-#include "RHISampler.hpp"
-#include "RHITexture.hpp"
 
 namespace Smol
 {
@@ -31,12 +28,26 @@ namespace Smol
             .fragmentShaderPath = "Engine/Shader/RainStreak.frag.metal",
             .fragmentShaderEntryPoint = "fs_main",
         #endif
+            .blend = RHIBlendState{
+                .alphaToCoverageEnable = false,
+                .independentBlendEnable = false,
+                .renderTargets = {
+                    RHIRenderTargetBlendState{
+                        .blendEnable = true,
+                        .srcBlend = RHIBlend::One,
+                        .dstBlend = RHIBlend::One,
+                        .blendOp = RHIBlendOp::Add,
+                        .srcBlendAlpha = RHIBlend::Zero,
+                        .dstBlendAlpha = RHIBlend::One,
+                        .blendOpAlpha = RHIBlendOp::Add
+                    }
+                }
+            },
             .renderTargetFormats = {
                 RHIPixelFormat::RGBA8_UNORM
             },
             .renderTargetCount = 1
         }))
-        , linearClamp(device.CreateSampler(LINEAR_CLAMP_SAMPLER))
         , rainCB(device.CreateBuffer(RHIBufferCreateDesc{
             .size = sizeof(RainCB),
             .usage = RHIBufferUsage::ConstantBuffer,
@@ -44,17 +55,12 @@ namespace Smol
         }, "RainCB"))
     {
         SMOL_ASSERT(rainStreakPipeline != nullptr);
-        SMOL_ASSERT(linearClamp != nullptr);
         SMOL_ASSERT(rainCB != nullptr);
 
         auto& reflInfo = rainStreakPipeline->GetInfo();
         auto& fsInfo = reflInfo.fsInfo;
-        auto& textureInfo = fsInfo.textureInfo;
-        auto& samplerInfo = fsInfo.samplerInfo;
         auto& bufferInfo = fsInfo.bufferInfo;
 
-        fs.tex = textureInfo.at(fs.texSlot).index;
-        fs.linearClamp = samplerInfo.at(fs.linearClampSlot).index;
         fs.rainCB = bufferInfo.at(fs.rainCBSlot).index;
     }
 
@@ -64,23 +70,12 @@ namespace Smol
         rainCB->Upload(&param, sizeof(RainCB));
     }
 
-    void PostRenderer::Draw(RHICommandList& cmdList, RHITexture& scene){
+    void PostRenderer::Draw(RHICommandList& cmdList){
         cmdList.SetPipelineState(*rainStreakPipeline);
 
         cmdList.SetConstantBuffer(
             *rainCB,
             fs.rainCB,
-            RHIShaderStage::FragmentShader
-        );
-        cmdList.SetTexture(
-            scene,
-            fs.tex,
-            RHIBindingAccess::ReadOnly,
-            RHIShaderStage::FragmentShader
-        );
-        cmdList.SetSampler(
-            *linearClamp,
-            fs.linearClamp,
             RHIShaderStage::FragmentShader
         );
 

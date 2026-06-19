@@ -14,7 +14,6 @@ struct RainCB
     packed_float3 color;
     // wind effect (0 = straight down)
     float slant;
-    uint inversion;
 };
 
 struct VertexOut{
@@ -22,7 +21,7 @@ struct VertexOut{
     float2 uv;
 };
 
-float hash11(float n) {
+float hash11(float n){
     return fract(sin(n * 78.233) * 43758.5453);
 }
 
@@ -33,7 +32,7 @@ float rainLayer(
     float dropsPerCol,
     float speed,
     float thickness
-) {
+){
     // wind: shift x as a function of y
     uv.x += uv.y * rainCB.slant;
 
@@ -70,15 +69,8 @@ float rainLayer(
 
 fragment float4 fs_main(
     VertexOut input [[stage_in]],
-    constant RainCB& rainCB [[buffer(0)]],
-    texture2d<float> tex [[texture(0)]],
-    sampler linearClamp [[sampler(0)]]
-) {
-    float3 sampled = tex.sample(linearClamp, input.uv).rgb;
-    sampled = (rainCB.inversion != 0) ?
-        1.0 - sampled :
-        sampled;
-
+    constant RainCB& rainCB [[buffer(0)]]
+){
     // aspect-correct uv
     float2 uv = input.uv;
     uv.x *= rainCB.aspect;
@@ -92,8 +84,5 @@ fragment float4 fs_main(
 
     // screen blend so streaks brighten without blowing out
     float3 streak = float3(rainCB.color) * rain;
-    float3 outColor = saturate(sampled + streak);
-    // float3 outColor = 1.0 - (1.0 - sampled) * (1.0 - streak);
-
-    return float4(outColor, 1.0);
+    return float4(streak, 1.0);
 }
