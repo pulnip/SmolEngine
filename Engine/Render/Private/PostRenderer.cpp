@@ -12,7 +12,7 @@
 namespace Smol
 {
     PostRenderer::PostRenderer(RHIDevice& device)
-        : rainPipeline(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
+        : rainStreakPipeline(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
             .topology = RHIPrimitiveTopology::TriangleStrip,
         #if defined(SMOL_DXRHI)
             .vertexShaderPath = "Engine/Shader/FullscreenQuad.vert.hlsl",
@@ -25,10 +25,10 @@ namespace Smol
                 .frontCounterClockwise = false
             },
         #if defined(SMOL_DXRHI)
-            .fragmentShaderPath = "Engine/Shader/Rain.pixel.hlsl",
+            .fragmentShaderPath = "Engine/Shader/RainStreak.pixel.hlsl",
             .fragmentShaderEntryPoint = "ps_main",
         #elif defined(SMOL_METALRHI)
-            .fragmentShaderPath = "Engine/Shader/Rain.frag.metal",
+            .fragmentShaderPath = "Engine/Shader/RainStreak.frag.metal",
             .fragmentShaderEntryPoint = "fs_main",
         #endif
             .renderTargetFormats = {
@@ -43,11 +43,11 @@ namespace Smol
             .access = RHIMemoryAccess::CPUWrite
         }, "RainCB"))
     {
-        SMOL_ASSERT(rainPipeline != nullptr);
+        SMOL_ASSERT(rainStreakPipeline != nullptr);
         SMOL_ASSERT(linearClamp != nullptr);
         SMOL_ASSERT(rainCB != nullptr);
 
-        auto& reflInfo = rainPipeline->GetInfo();
+        auto& reflInfo = rainStreakPipeline->GetInfo();
         auto& fsInfo = reflInfo.fsInfo;
         auto& textureInfo = fsInfo.textureInfo;
         auto& samplerInfo = fsInfo.samplerInfo;
@@ -65,7 +65,7 @@ namespace Smol
     }
 
     void PostRenderer::Draw(RHICommandList& cmdList, RHITexture& scene){
-        cmdList.SetPipelineState(*rainPipeline);
+        cmdList.SetPipelineState(*rainStreakPipeline);
 
         cmdList.SetConstantBuffer(
             *rainCB,

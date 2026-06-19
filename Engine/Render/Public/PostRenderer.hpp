@@ -20,7 +20,7 @@ namespace Smol
 
     class PostRenderer final{
     private:
-        RHIGraphicsPipelineStateRAII rainPipeline;
+        RHIGraphicsPipelineStateRAII rainStreakPipeline;
         RHISamplerRAII linearClamp;
         RHIBufferRAII rainCB;
         struct FragmentShaderSlot{
