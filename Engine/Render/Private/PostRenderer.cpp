@@ -17,6 +17,9 @@ namespace Smol
         #if defined(SMOL_DXRHI)
             .vertexShaderPath = "Engine/Shader/FullscreenQuad.vert.hlsl",
             .vertexShaderEntryPoint = "vs_main",
+        #elif defined(SMOL_METALRHI)
+            .vertexShaderPath = "Engine/Shader/FullscreenQuad.vert.metal",
+            .vertexShaderEntryPoint = "vs_main",
         #endif
             .rasterizer = RHIRasterizerState{
                 .frontCounterClockwise = false
@@ -24,6 +27,9 @@ namespace Smol
         #if defined(SMOL_DXRHI)
             .fragmentShaderPath = "Engine/Shader/Rain.pixel.hlsl",
             .fragmentShaderEntryPoint = "ps_main",
+        #elif defined(SMOL_METALRHI)
+            .fragmentShaderPath = "Engine/Shader/Rain.frag.metal",
+            .fragmentShaderEntryPoint = "fs_main",
         #endif
             .renderTargetFormats = {
                 RHIPixelFormat::RGBA8_UNORM

@@ -37,5 +37,6 @@ elseif(RENDER_BACKEND STREQUAL "Metal")
     target_link_libraries(SmolApp
     PRIVATE
         Smol::MetalRHI
+        Smol::ImGuiCanvas
     )
 endif()

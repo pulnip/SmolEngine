@@ -197,37 +197,38 @@ namespace Smol
         )
         , spriteRenderer(device, resourceRegistry.GetSpriteManager())
         , postRenderer(device)
-        , shapeRenderer(device)
-        , widgetRenderer(os.GetWindow().GetWindow(), device)
-        , widget(Column({
-            Checkbox{
-                .label = "Collider",
-                .onChanged = [&world = world](UIContext&, bool v){
-                    LOG_WARN("Checked! {}", v);
-                    world.SetDebugState(v);
+        , uiRenderer(os.GetWindow().GetWindow(), device,
+            config.project.content_root,
+            Column({
+                Checkbox{
+                    .label = "Collider",
+                    .onChanged = [&world = world](UIContext&, bool v){
+                        LOG_WARN("Checked! {}", v);
+                        world.SetDebugState(v);
+                    },
+                    .v = false
                 },
-                .v = false
-            },
-            Checkbox{
-                .label = "Rain",
-                .onChanged = [&self = *this](UIContext&, bool v){
-                    self.showRain = v;
+                Checkbox{
+                    .label = "Rain",
+                    .onChanged = [&self = *this](UIContext&, bool v){
+                        self.showRain = v;
+                    },
+                    .v = showRain
                 },
-                .v = showRain
-            },
-            Checkbox{
-                .label = "Inversion",
-                .onChanged = [&self = *this](UIContext&, bool v){
-                    self.colorInversion = v;
-                },
-                .v = colorInversion != 0
+                Checkbox{
+                    .label = "Inversion",
+                    .onChanged = [&self = *this](UIContext&, bool v){
+                        self.colorInversion = v;
+                    },
+                    .v = colorInversion != 0
+                }
             }
-        }))
+        ))
         , world(EngineService{
             .spriteManager = &resourceRegistry.GetSpriteManager(),
             .inputManager = &inputManager,
             .spriteRenderer = &spriteRenderer,
-            .shapeRenderer = &shapeRenderer,
+            .shapeRenderer = &uiRenderer.GetShapeRenderer(),
         })
     {
         const auto contentRoot = config.project.content_root;
@@ -268,17 +269,6 @@ namespace Smol
     }
 
     bool AppMainLoop::Render(CommandListPool& pool, RHISwapchain& swapchain){
-        RainCB rainCB{
-            .elapsedTime = static_cast<f32>(timer.GetElapsedTime()),
-            .aspect = detail::aspect,
-            .intensity = 0.5f,
-            .speed = 1.0f,
-            .color = {0.5f, 0.5f, 1.0f},
-            .slant = 0.15f,
-            .inversion = colorInversion
-        };
-        postRenderer.Upload(rainCB);
-
         // for single thread model, use single cmdList.
         auto& cmdList = pool.Acquire();
         cmdList.Begin();
@@ -307,42 +297,43 @@ namespace Smol
         cmdList.EndRenderPass();
         // End RenderPass for sceneTexture
 
-        if(!showRain){
-            cmdList.Copy(*scene, swapchain);
-        }
-
-        // Begin RenderPass for backbuffer
-        cmdList.BeginRenderPass(swapchain,
-            backbufferClearColor,
-            nullptr,
-            {},
-            RHILoadAction::Load
-        );
-        cmdList.SetViewport(RHIViewport{
-            .x = 0, .y = 0,
-            // fill all backbuffer
-            .width = static_cast<f32>(swapchain.GetWidth()),
-            .height = static_cast<f32>(swapchain.GetHeight()),
-            .minDepth = 0, .maxDepth = 1
-        });
-
         if(showRain){
+            RainCB rainCB{
+                .elapsedTime = static_cast<f32>(timer.GetElapsedTime()),
+                .aspect = detail::aspect,
+                .intensity = 1.0f,
+                .speed = 1.0f,
+                .color = {0.5f, 0.5f, 1.0f},
+                .slant = 0.15f,
+                .inversion = colorInversion
+            };
+            postRenderer.Upload(rainCB);
+
+            cmdList.BeginRenderPass(swapchain,
+                backbufferClearColor,
+                nullptr,
+                {},
+                // Fullscreen
+                RHILoadAction::DontCare
+            );
+            cmdList.SetViewport(RHIViewport{
+                .x = 0, .y = 0,
+                // fill all backbuffer
+                .width = static_cast<f32>(swapchain.GetWidth()),
+                .height = static_cast<f32>(swapchain.GetHeight()),
+                .minDepth = 0, .maxDepth = 1
+            });
+
             postRenderer.Draw(cmdList, *scene);
+
+            cmdList.EndRenderPass();
+        }
+        else{
+            cmdList.Copy(*scene, swapchain);
+            cmdList.Flush();
         }
 
-        shapeRenderer.Draw(swapchain);
-
-        UIContext uiContext{};
-        widgetRenderer.Draw(
-            "Debug",
-            widget,
-            uiContext,
-            cmdList,
-            &swapchain
-        );
-
-        cmdList.EndRenderPass();
-        // End RenderPass for backbuffer
+        uiRenderer.Draw(cmdList, &swapchain);
 
         cmdList.Close();
         return true;

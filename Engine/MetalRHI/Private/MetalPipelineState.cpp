@@ -1,5 +1,6 @@
 
 #include <Metal/MTLRenderCommandEncoder.hpp>
+#include <Metal/MTLRenderPipeline.hpp>
 #include <filesystem>
 #include <print>
 #include <utility>
@@ -328,7 +329,7 @@ namespace Smol
             colorAttach->setPixelFormat(
                 convertPixelFormat(desc.renderTargetFormats[i])
             );
-            MTL::ColorWriteMask writeMask = MTL::ColorWriteMaskNone;
+            MTL::ColorWriteMask writeMask = MTL::ColorWriteMaskAll;
 
             if(desc.blend.has_value()){
                 const auto& blend = desc.blend.value();
@@ -356,6 +357,7 @@ namespace Smol
                     );
                 }
 
+                writeMask = MTL::ColorWriteMaskNone;
                 if(rtBlend.renderTargetWriteMask & 0x1) writeMask |= MTL::ColorWriteMaskRed;
                 if(rtBlend.renderTargetWriteMask & 0x2) writeMask |= MTL::ColorWriteMaskGreen;
                 if(rtBlend.renderTargetWriteMask & 0x4) writeMask |= MTL::ColorWriteMaskBlue;

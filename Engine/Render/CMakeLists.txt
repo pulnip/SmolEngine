@@ -6,7 +6,9 @@ PUBLIC
     Smol::Core
     Smol::Resource
     Smol::RHI
+    Smol::UI
 PRIVATE
+    imgui
 )
 
 smol_rhi_macro(Render)

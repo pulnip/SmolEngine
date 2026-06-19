@@ -1,4 +1,8 @@
-cbuffer rainCB : register(b0)
+#include <metal_stdlib>
+
+using namespace metal;
+
+struct RainCB
 {
     float elapsedTime;
     float aspect;
@@ -7,20 +11,23 @@ cbuffer rainCB : register(b0)
     // fall speed multiplier
     float speedFactor;
     // streak tint, e.g. (0.7, 0.8, 1.0)
-    float3 color;
+    packed_float3 color;
     // wind effect (0 = straight down)
     float slant;
-    bool inversion; // Notice. 4 byte
+    uint inversion;
 };
 
-Texture2D tex : register(t0);
-SamplerState linearClamp : register(s0);
+struct VertexOut{
+    float4 position [[position]];
+    float2 uv;
+};
 
 float hash11(float n) {
-    return frac(sin(n * 78.233) * 43758.5453);
+    return fract(sin(n * 78.233) * 43758.5453);
 }
 
 float rainLayer(
+    constant RainCB& rainCB,
     float2 uv,
     float columns,
     float dropsPerCol,
@@ -28,12 +35,12 @@ float rainLayer(
     float thickness
 ) {
     // wind: shift x as a function of y
-    uv.x += uv.y * slant;
+    uv.x += uv.y * rainCB.slant;
 
     float colX = uv.x * columns;
     float col = floor(colX);
     // 0..1 across this lane
-    float colU = frac(colX);
+    float colU = fract(colX);
 
     // per-lane random seed
     float rnd = hash11(col);
@@ -43,12 +50,12 @@ float rainLayer(
     float lineMask = smoothstep(thickness, 0.0, abs(colU - center));
 
     // vertical motion
-    float speedVar = lerp(0.75, 1.25, hash11(col + 7.13));
+    float speedVar = mix(0.75, 1.25, hash11(col + 7.13));
     float phase = rnd * 17.0;
     float y = uv.y * dropsPerCol
-        - elapsedTime * speed * speedFactor * speedVar
+        - rainCB.elapsedTime * speed * rainCB.speedFactor * speedVar
         + phase;
-    float dropU = frac(y); // 0..1 within one drop
+    float dropU = fract(y); // 0..1 within one drop
 
     // streak shape
     float head = pow(saturate(dropU), 12.0);       // sharp leading head
@@ -61,30 +68,30 @@ float rainLayer(
     return lineMask * streak * bright;
 }
 
-struct VertexOut {
-    float4 position : SV_POSITION;
-    float2 uv : TEXCOORD;
-};
-
-float4 ps_main(VertexOut input) : SV_Target {
-    float3 sampled = tex.Sample(linearClamp, input.uv).rgb;
-    sampled = inversion ?
+fragment float4 fs_main(
+    VertexOut input [[stage_in]],
+    constant RainCB& rainCB [[buffer(0)]],
+    texture2d<float> tex [[texture(0)]],
+    sampler linearClamp [[sampler(0)]]
+) {
+    float3 sampled = tex.sample(linearClamp, input.uv).rgb;
+    sampled = (rainCB.inversion != 0) ?
         1.0 - sampled :
         sampled;
 
     // aspect-correct uv
     float2 uv = input.uv;
-    uv.x *= aspect;
+    uv.x *= rainCB.aspect;
 
     float rain = 0.0;
-    rain += rainLayer(uv, 220.0, 12.0, 1.30, 0.1) * 0.35; // far
-    rain += rainLayer(uv, 130.0, 8.0, 1.80, 0.2) * 0.60;  // mid
-    rain += rainLayer(uv, 70.0, 5.0, 2.40, 0.3) * 1.00;   // near
+    rain += rainLayer(rainCB, uv, 220.0, 12.0, 1.30, 0.1) * 0.35; // far
+    rain += rainLayer(rainCB, uv, 130.0, 8.0, 1.80, 0.2) * 0.60;  // mid
+    rain += rainLayer(rainCB, uv, 70.0, 5.0, 2.40, 0.3) * 1.00;   // near
 
-    rain *= intensity;
+    rain *= rainCB.intensity;
 
     // screen blend so streaks brighten without blowing out
-    float3 streak = color * rain;
+    float3 streak = float3(rainCB.color) * rain;
     float3 outColor = saturate(sampled + streak);
     // float3 outColor = 1.0 - (1.0 - sampled) * (1.0 - streak);
 
