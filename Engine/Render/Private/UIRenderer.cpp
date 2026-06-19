@@ -87,7 +87,20 @@ namespace Smol
         ImGui::Render();
         ImDrawData* draw_data = ImGui::GetDrawData();
 
+        cmdList.BeginRenderPass(*swapchain,
+            {},
+            nullptr,
+            {},
+            RHILoadAction::Load
+        );
+        cmdList.SetViewport(RHIViewport{
+            .x = 0, .y = 0,
+            .width = static_cast<f32>(swapchain->GetWidth()),
+            .height = static_cast<f32>(swapchain->GetHeight()),
+            .minDepth = 0, .maxDepth = 1
+        });
         ImGui_ImplDX11_RenderDrawData(draw_data);
+        cmdList.EndRenderPass();
     }
 }
 
