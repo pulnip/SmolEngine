@@ -22,7 +22,7 @@ namespace Smol
         InputManager inputManager;
         SpriteRenderer spriteRenderer;
         PostRenderer postRenderer;
-        bool showRain = false;
+        bool showRain = true;
         i32 colorInversion = false;
         UIRenderer uiRenderer;
 
