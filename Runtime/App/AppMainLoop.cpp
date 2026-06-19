@@ -269,19 +269,6 @@ namespace Smol
     }
 
     bool AppMainLoop::Render(CommandListPool& pool, RHISwapchain& swapchain){
-        if(showRain){
-            RainCB rainCB{
-                .elapsedTime = static_cast<f32>(timer.GetElapsedTime()),
-                .aspect = detail::aspect,
-                .intensity = 1.0f,
-                .speed = 1.0f,
-                .color = {0.5f, 0.5f, 1.0f},
-                .slant = 0.15f,
-                .inversion = colorInversion
-            };
-            postRenderer.Upload(rainCB);
-        }
-
         // for single thread model, use single cmdList.
         auto& cmdList = pool.Acquire();
         cmdList.Begin();
@@ -311,12 +298,23 @@ namespace Smol
         // End RenderPass for sceneTexture
 
         if(showRain){
-            // Begin RenderPass for backbuffer
+            RainCB rainCB{
+                .elapsedTime = static_cast<f32>(timer.GetElapsedTime()),
+                .aspect = detail::aspect,
+                .intensity = 1.0f,
+                .speed = 1.0f,
+                .color = {0.5f, 0.5f, 1.0f},
+                .slant = 0.15f,
+                .inversion = colorInversion
+            };
+            postRenderer.Upload(rainCB);
+
             cmdList.BeginRenderPass(swapchain,
                 backbufferClearColor,
                 nullptr,
                 {},
-                RHILoadAction::Load
+                // Fullscreen
+                RHILoadAction::DontCare
             );
             cmdList.SetViewport(RHIViewport{
                 .x = 0, .y = 0,
@@ -329,7 +327,6 @@ namespace Smol
             postRenderer.Draw(cmdList, *scene);
 
             cmdList.EndRenderPass();
-            // End RenderPass for backbuffer
         }
         else{
             cmdList.Copy(*scene, swapchain);
