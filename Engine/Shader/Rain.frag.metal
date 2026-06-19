@@ -68,7 +68,7 @@ float rainLayer(
     return lineMask * streak * bright;
 }
 
-fragment float4 ps_main(
+fragment float4 fs_main(
     VertexOut input [[stage_in]],
     constant RainCB& rainCB [[buffer(0)]],
     texture2d<float> tex [[texture(0)]],

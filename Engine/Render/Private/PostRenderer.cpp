@@ -29,7 +29,7 @@ namespace Smol
             .fragmentShaderEntryPoint = "ps_main",
         #elif defined(SMOL_METALRHI)
             .fragmentShaderPath = "Engine/Shader/Rain.frag.metal",
-            .fragmentShaderEntryPoint = "ps_main",
+            .fragmentShaderEntryPoint = "fs_main",
         #endif
             .renderTargetFormats = {
                 RHIPixelFormat::RGBA8_UNORM
