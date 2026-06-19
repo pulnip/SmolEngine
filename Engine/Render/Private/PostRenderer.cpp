@@ -9,7 +9,7 @@
 namespace Smol
 {
     PostRenderer::PostRenderer(RHIDevice& device)
-        : rainStreakPipeline(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
+        : rainStreak(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
             .topology = RHIPrimitiveTopology::TriangleStrip,
         #if defined(SMOL_DXRHI)
             .vertexShaderPath = "Engine/Shader/FullscreenQuad.vert.hlsl",
@@ -48,34 +48,34 @@ namespace Smol
             },
             .renderTargetCount = 1
         }))
-        , rainCB(device.CreateBuffer(RHIBufferCreateDesc{
+        , rainStreakParam(device.CreateBuffer(RHIBufferCreateDesc{
             .size = sizeof(RainCB),
             .usage = RHIBufferUsage::ConstantBuffer,
             .access = RHIMemoryAccess::CPUWrite
-        }, "RainCB"))
+        }, "rainStreakParam"))
     {
-        SMOL_ASSERT(rainStreakPipeline != nullptr);
-        SMOL_ASSERT(rainCB != nullptr);
+        SMOL_ASSERT(rainStreak != nullptr);
+        SMOL_ASSERT(rainStreakParam != nullptr);
 
-        auto& reflInfo = rainStreakPipeline->GetInfo();
+        auto& reflInfo = rainStreak->GetInfo();
         auto& fsInfo = reflInfo.fsInfo;
         auto& bufferInfo = fsInfo.bufferInfo;
 
-        fs.rainCB = bufferInfo.at(fs.rainCBSlot).index;
+        rainStreakParamSlot = bufferInfo.at("rainStreakParam").index;
     }
 
     PostRenderer::~PostRenderer() = default;
 
-    void PostRenderer::Upload(const RainCB& param){
-        rainCB->Upload(&param, sizeof(RainCB));
+    void PostRenderer::Upload(const RainStreakParam& p0){
+        rainStreakParam->Upload(&p0, sizeof(RainStreakParam));
     }
 
     void PostRenderer::Draw(RHICommandList& cmdList){
-        cmdList.SetPipelineState(*rainStreakPipeline);
+        cmdList.SetPipelineState(*rainStreak);
 
         cmdList.SetConstantBuffer(
-            *rainCB,
-            fs.rainCB,
+            *rainStreakParam,
+            rainStreakParamSlot,
             RHIShaderStage::FragmentShader
         );
 

@@ -7,7 +7,7 @@
 
 namespace Smol
 {
-    struct RainCB{
+    struct RainStreakParam{
         f32 elapsedTime;
         f32 aspect = detail::aspect;
         f32 intensity = 0.5f;
@@ -18,19 +18,16 @@ namespace Smol
 
     class PostRenderer final{
     private:
-        RHIGraphicsPipelineStateRAII rainStreakPipeline;
-        RHIBufferRAII rainCB;
-        struct FragmentShaderSlot{
-            static constexpr CStr rainCBSlot = "rainCB";
-            u32 rainCB = 0;
-        } fs;
+        RHIGraphicsPipelineStateRAII rainStreak;
+        RHIBufferRAII rainStreakParam;
+        u32 rainStreakParamSlot = 0;
 
     public:
         PostRenderer(RHIDevice&);
         ~PostRenderer();
         SMOL_DECLARE_PINNED(PostRenderer)
 
-        void Upload(const RainCB&);
+        void Upload(const RainStreakParam&);
         void Draw(RHICommandList&);
     };
 }

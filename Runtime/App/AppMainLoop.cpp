@@ -10,6 +10,7 @@
 #include "MoveComponent.hpp"
 #include "OS.hpp"
 #include "Pawn.hpp"
+#include "PostRenderer.hpp"
 #include "Primitives.hpp"
 #include "RHICommandList.hpp"
 #include "RHIDefinitions.hpp"
@@ -267,7 +268,7 @@ namespace Smol
         cmdList.Begin();
 
         if(showRain){
-            RainCB rainCB{
+            RainStreakParam rainStreakParam{
                 .elapsedTime = static_cast<f32>(timer.GetElapsedTime()),
                 .aspect = detail::aspect,
                 .intensity = 0.5f,
@@ -275,7 +276,7 @@ namespace Smol
                 .color = {0.7f, 0.8f, 1.0f},
                 .slant = 0.15f
             };
-            postRenderer.Upload(rainCB);
+            postRenderer.Upload(rainStreakParam);
         }
 
         // TODO. use integrated Renderer class
