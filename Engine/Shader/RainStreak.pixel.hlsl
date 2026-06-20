@@ -1,4 +1,4 @@
-cbuffer rainCB : register(b0)
+cbuffer rainStreakParam : register(b0)
 {
     float elapsedTime;
     float aspect;

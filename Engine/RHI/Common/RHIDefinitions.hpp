@@ -341,6 +341,22 @@ namespace Smol
         Max,
     };
 
+    enum class RHIColorWriteMask: u8{
+        EnableRed   = 1 << 0,
+        EnableGreen = 1 << 1,
+        EnableBlue  = 1 << 2,
+        EnableAlpha = 1 << 3
+    };
+    constexpr auto RHIColorWriteEnableColor = combine(
+        RHIColorWriteMask::EnableRed,
+        RHIColorWriteMask::EnableGreen,
+        RHIColorWriteMask::EnableBlue
+    );
+    constexpr auto RHIColorWriteEnableAll = combine(
+        RHIColorWriteEnableColor,
+        RHIColorWriteMask::EnableAlpha
+    );
+
     struct RHIRenderTargetBlendState{
         bool blendEnable = false;
         RHIBlend srcBlend = RHIBlend::One;
@@ -349,7 +365,7 @@ namespace Smol
         RHIBlend srcBlendAlpha = RHIBlend::One;
         RHIBlend dstBlendAlpha = RHIBlend::Zero;
         RHIBlendOp blendOpAlpha = RHIBlendOp::Add;
-        u8 renderTargetWriteMask = 0b1111; // RGBA
+        RHIColorWriteMask writeMask = RHIColorWriteEnableAll;
     };
 
     struct RHIBlendState{

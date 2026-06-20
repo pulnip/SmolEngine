@@ -26,7 +26,7 @@ float hash11(float n){
 }
 
 float rainLayer(
-    constant RainCB& rainCB,
+    constant RainCB& param,
     float2 uv,
     float columns,
     float dropsPerCol,
@@ -34,7 +34,7 @@ float rainLayer(
     float thickness
 ){
     // wind: shift x as a function of y
-    uv.x += uv.y * rainCB.slant;
+    uv.x += uv.y * param.slant;
 
     float colX = uv.x * columns;
     float col = floor(colX);
@@ -52,7 +52,7 @@ float rainLayer(
     float speedVar = mix(0.75, 1.25, hash11(col + 7.13));
     float phase = rnd * 17.0;
     float y = uv.y * dropsPerCol
-        - rainCB.elapsedTime * speed * rainCB.speedFactor * speedVar
+        - param.elapsedTime * speed * param.speedFactor * speedVar
         + phase;
     float dropU = fract(y); // 0..1 within one drop
 
@@ -69,20 +69,20 @@ float rainLayer(
 
 fragment float4 fs_main(
     VertexOut input [[stage_in]],
-    constant RainCB& rainCB [[buffer(0)]]
+    constant RainCB& rainStreakParam [[buffer(0)]]
 ){
     // aspect-correct uv
     float2 uv = input.uv;
-    uv.x *= rainCB.aspect;
+    uv.x *= rainStreakParam.aspect;
 
     float rain = 0.0;
-    rain += rainLayer(rainCB, uv, 220.0, 12.0, 1.30, 0.1) * 0.35; // far
-    rain += rainLayer(rainCB, uv, 130.0, 8.0, 1.80, 0.2) * 0.60;  // mid
-    rain += rainLayer(rainCB, uv, 70.0, 5.0, 2.40, 0.3) * 1.00;   // near
+    rain += rainLayer(rainStreakParam, uv, 220.0, 12.0, 1.30, 0.1) * 0.35; // far
+    rain += rainLayer(rainStreakParam, uv, 130.0, 8.0, 1.80, 0.2) * 0.60;  // mid
+    rain += rainLayer(rainStreakParam, uv, 70.0, 5.0, 2.40, 0.3) * 1.00;   // near
 
-    rain *= rainCB.intensity;
+    rain *= rainStreakParam.intensity;
 
     // screen blend so streaks brighten without blowing out
-    float3 streak = float3(rainCB.color) * rain;
+    float3 streak = float3(rainStreakParam.color) * rain;
     return float4(streak, 1.0);
 }
