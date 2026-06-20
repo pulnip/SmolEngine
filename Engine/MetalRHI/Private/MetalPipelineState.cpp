@@ -358,10 +358,17 @@ namespace Smol
                 }
 
                 writeMask = MTL::ColorWriteMaskNone;
-                if(rtBlend.renderTargetWriteMask & 0x1) writeMask |= MTL::ColorWriteMaskRed;
-                if(rtBlend.renderTargetWriteMask & 0x2) writeMask |= MTL::ColorWriteMaskGreen;
-                if(rtBlend.renderTargetWriteMask & 0x4) writeMask |= MTL::ColorWriteMaskBlue;
-                if(rtBlend.renderTargetWriteMask & 0x8) writeMask |= MTL::ColorWriteMaskAlpha;
+
+                using enum RHIColorWriteMask;
+
+                if(hasFlag(rtBlend.writeMask, EnableRed))
+                    writeMask |= MTL::ColorWriteMaskRed;
+                if(hasFlag(rtBlend.writeMask, EnableGreen))
+                    writeMask |= MTL::ColorWriteMaskGreen;
+                if(hasFlag(rtBlend.writeMask, EnableBlue))
+                    writeMask |= MTL::ColorWriteMaskBlue;
+                if(hasFlag(rtBlend.writeMask, EnableAlpha))
+                    writeMask |= MTL::ColorWriteMaskAlpha;
             }
 
             colorAttach->setWriteMask(writeMask);
