@@ -369,6 +369,13 @@ namespace Smol
                 const auto& src = blend.renderTargets[i];
                 auto& dst = bsDesc.RenderTarget[i];
 
+                using enum RHIColorWriteMask;
+
+                static_assert(D3D11_COLOR_WRITE_ENABLE_RED   == static_cast<u8>(EnableRed));
+                static_assert(D3D11_COLOR_WRITE_ENABLE_GREEN == static_cast<u8>(EnableGreen));
+                static_assert(D3D11_COLOR_WRITE_ENABLE_BLUE  == static_cast<u8>(EnableBlue));
+                static_assert(D3D11_COLOR_WRITE_ENABLE_ALPHA == static_cast<u8>(EnableAlpha));
+
                 dst.BlendEnable    = src.blendEnable;
                 dst.SrcBlend       = convertBlendFactor(src.srcBlend);
                 dst.DestBlend      = convertBlendFactor(src.dstBlend);
@@ -376,7 +383,7 @@ namespace Smol
                 dst.SrcBlendAlpha  = convertBlendFactor(src.srcBlendAlpha);
                 dst.DestBlendAlpha = convertBlendFactor(src.dstBlendAlpha);
                 dst.BlendOpAlpha   = convertBlendOp(src.blendOpAlpha);
-                dst.RenderTargetWriteMask = src.renderTargetWriteMask;
+                dst.RenderTargetWriteMask = static_cast<UINT8>(src.writeMask);
             }
             if(FAILED(device.CreateBlendState(
                 &bsDesc,
