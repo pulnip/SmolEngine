@@ -85,13 +85,6 @@ namespace Smol
         ) = 0;
 
         // for per-draw data, size should be <= 256B
-        virtual void SetBytes(
-            const void* bytes,
-            usize size,
-            u32 slot,
-            RHIShaderStage stage
-        ) = 0;
-
         template<typename T>
             requires (!std::is_pointer_v<T> && std::is_trivially_copyable_v<T>)
         void SetBytes(
@@ -185,5 +178,14 @@ namespace Smol
 
         // for UI, CommandBuffer for Metal, CommandList for D3D12
         virtual void* GetNative() const noexcept{ return nullptr; }
+
+    private:
+        // direct use of void* is unsafe
+        virtual void SetBytes(
+            const void* bytes,
+            usize size,
+            u32 slot,
+            RHIShaderStage stage
+        ) = 0;
     };
 }
