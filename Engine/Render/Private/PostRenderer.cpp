@@ -127,10 +127,10 @@ namespace Smol
     PostRenderer::~PostRenderer() = default;
 
     void PostRenderer::Upload(const RainStreakParam& p0){
-        rainStreakParam->Upload(&p0, sizeof(RainStreakParam));
+        rainStreakParam->Upload(p0);
 
         RainDropletParam p1{};
-        rainDropletParam->Upload(&p1, sizeof(RainDropletParam));
+        rainDropletParam->Upload(p1);
     }
 
     void PostRenderer::Draw(RHICommandList& cmdList){

@@ -97,9 +97,9 @@ namespace Smol
 
         void SetBytes(
             const void* bytes,
-            u32 slot,
             usize size,
-            RHIShaderStage stage = RHIShaderStage::ComputeShader
+            u32 slot,
+            RHIShaderStage stage
         ) RHI_OVERRIDE;
 
         void SetSampler(

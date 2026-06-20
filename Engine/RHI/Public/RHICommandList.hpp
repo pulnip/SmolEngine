@@ -87,10 +87,21 @@ namespace Smol
         // for per-draw data, size should be <= 256B
         virtual void SetBytes(
             const void* bytes,
-            u32 slot,
             usize size,
-            RHIShaderStage stage = RHIShaderStage::ComputeShader
+            u32 slot,
+            RHIShaderStage stage
         ) = 0;
+
+        template<typename T>
+            requires (!std::is_pointer_v<T> && std::is_trivially_copyable_v<T>)
+        void SetBytes(
+            const T& data,
+            u32 slot,
+            RHIShaderStage stage
+        ){
+            // type-safe helper
+            SetBytes(&data, sizeof(T), slot, stage);
+        }
 
         virtual void SetSampler(
             const RHISampler&,

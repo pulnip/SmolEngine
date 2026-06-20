@@ -316,8 +316,8 @@ namespace Smol
 
     void MetalCommandList::SetBytes(
         const void* bytes,
-        u32 slot,
         usize size,
+        u32 slot,
         RHIShaderStage stage
     ){
         using enum RHIShaderStage;

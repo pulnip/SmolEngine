@@ -131,9 +131,8 @@ namespace Smol
 
             auto c = pack(item, resource.sheetSize);
             cmdList.SetBytes(
-                &c,
+                c,
                 vs.spriteConstants,
-                sizeof(c),
                 RHIShaderStage::VertexShader
             );
 

@@ -449,8 +449,8 @@ namespace Smol
 
     void DX11CommandList::SetBytes(
         const void* bytes,
-        u32 slot,
         usize size,
+        u32 slot,
         RHIShaderStage stage
     ){
         SMOL_ASSERT(size <= 256);
