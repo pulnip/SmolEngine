@@ -46,26 +46,7 @@ namespace Smol
         void Close() RHI_OVERRIDE;
         void Reset() RHI_OVERRIDE;
 
-        void BeginRenderPass(
-            std::span<RHITexture*> renderTargets,
-            const Color& clearColor,
-            RHITexture* depthTarget,
-            const RHIClearDepthStencil& clearDS,
-            RHILoadAction loadAction,
-            RHIStoreAction storeAction,
-            CStr debugName
-        ) RHI_OVERRIDE;
-
-        void BeginRenderPass(
-            RHISwapchain& swapchain,
-            const Color& clearColor,
-            RHITexture* depthTarget,
-            const RHIClearDepthStencil& clearDS,
-            RHILoadAction loadAction,
-            RHIStoreAction storeAction,
-            CStr debugName
-        ) RHI_OVERRIDE;
-
+        void BeginRenderPass(const RHIRenderPassDesc&) RHI_OVERRIDE;
         void EndRenderPass() RHI_OVERRIDE;
 
         void SetPipelineState(RHIGraphicsPipelineState& pso) RHI_OVERRIDE;
@@ -189,16 +170,6 @@ namespace Smol
         auto Get() const noexcept{ return commandBuffer; }
 
     private:
-        void beginRenderPass(
-            std::span<const MTL::Texture*> texes,
-            const Color& clearColor,
-            RHITexture* depthTarget,
-            const RHIClearDepthStencil& clearDS,
-            RHILoadAction loadAction,
-            RHIStoreAction storeAction,
-            CStr debugName
-        ) noexcept;
-
         void ensureBlitEncoder();
     };
 }

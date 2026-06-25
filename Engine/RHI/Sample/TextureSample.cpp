@@ -111,12 +111,18 @@ int main(void){
             break;
 
         cmdList->Begin();
-        cmdList->BeginRenderPass(*swapchain,
-            clearColor,
-            nullptr,
-            {},
-            RHILoadAction::Clear
-        );
+
+        std::array colorAttachments = {
+            RHIColorAttachment{
+                .texture = &swapchain->GetCurrentTexture(),
+                .loadAction = RHILoadAction::Clear,
+                .storeAction = RHIStoreAction::Store,
+                .clearColor = clearColor
+            }
+        };
+        cmdList->BeginRenderPass(RHIRenderPassDesc{
+            .colorAttachments = colorAttachments
+        });
 
         cmdList->SetPipelineState(*pipeline);
         cmdList->SetViewport(RHIViewport{

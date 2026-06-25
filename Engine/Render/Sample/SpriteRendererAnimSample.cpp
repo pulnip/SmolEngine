@@ -1,3 +1,4 @@
+#include <array>
 #include "ImmediateResourceLoader.hpp"
 #include "Primitives.hpp"
 #include "Resource.hpp"
@@ -114,12 +115,17 @@ int main(void){
         swapchain->AcquireNextImage();
 
         cmdList->Begin();
-        cmdList->BeginRenderPass(*swapchain,
-            clearColor,
-            nullptr,
-            {},
-            RHILoadAction::Clear
-        );
+        std::array colorAttachments = {
+            RHIColorAttachment{
+                .texture = &swapchain->GetCurrentTexture(),
+                .loadAction = RHILoadAction::Clear,
+                .storeAction = RHIStoreAction::Store,
+                .clearColor = clearColor
+            }
+        };
+        cmdList->BeginRenderPass(RHIRenderPassDesc{
+            .colorAttachments = colorAttachments
+        });
 
         cmdList->SetViewport(RHIViewport{
             .x = 0, .y = 0,

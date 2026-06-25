@@ -10,6 +10,7 @@
 #include "EnumUtil.hpp"
 #include "HashUtil.hpp"
 #include "Primitives.hpp"
+#include "RHIFWD.hpp"
 #include "StringUtil.hpp"
 
 namespace Smol
@@ -22,7 +23,9 @@ namespace Smol
     enum class RHIMemoryAccess: u8{
         GPUOnly  = 0,
         CPUWrite = 1,
-        CPURead  = 2
+        CPURead  = 2,
+        // for TBDR.
+        Transient = 3
     };
 
     enum class RHIBufferUsage: u16{
@@ -195,9 +198,10 @@ namespace Smol
         RHITextureUsage usage = RHITextureUsage::None;
         RHIMemoryAccess access = RHIMemoryAccess::GPUOnly;
         RHIResourceState initialState = RHIResourceState::Common;
+        const void* initialData = nullptr;
+        // ClearColor for optimize (only Valid at D3D12)
         Color clearColor = Colors::Black;
         RHIClearDepthStencil clearDepthStencil{};
-        const void* initialData = nullptr;
     };
 
     enum class RHIShaderStage: u8{
@@ -215,6 +219,28 @@ namespace Smol
     enum class RHIStoreAction: u8{
         Store,    // Save contents
         DontCare, // Don't care about existing contents
+    };
+
+    struct RHIColorAttachment{
+        RHITexture* texture = nullptr;
+        RHILoadAction loadAction = RHILoadAction::Clear;
+        RHIStoreAction storeAction = RHIStoreAction::Store;
+        Color clearColor = Colors::Black;
+    };
+
+    struct RHIDepthAttachment{
+        RHITexture* texture = nullptr;
+        RHILoadAction loadAction = RHILoadAction::Clear;
+        RHIStoreAction storeAction = RHIStoreAction::Store;
+        RHIClearDepthStencil clearDepthStencil{};
+    };
+
+    struct RHIRenderPassDesc{
+        std::span<const RHIColorAttachment> colorAttachments;
+        std::optional<RHIDepthAttachment> depthAttachment = std::nullopt;
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        Str debugName;
+    #endif
     };
 
     enum class RHIIndexFormat{

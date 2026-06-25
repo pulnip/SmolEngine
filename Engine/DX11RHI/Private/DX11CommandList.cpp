@@ -55,15 +55,7 @@ namespace Smol
         }
     }
 
-    void DX11CommandList::BeginRenderPass(
-        std::span<RHITexture*> renderTargets,
-        const Color& clearColor,
-        RHITexture* depthTarget,
-        const RHIClearDepthStencil& clearDS,
-        RHILoadAction loadAction,
-        RHIStoreAction storeAction,
-        CStr debugName
-    ){
+    void DX11CommandList::BeginRenderPass(const RHIRenderPassDesc& desc){
         SMOL_ASSERT(isRecording,
             "Did you call RHICommandList::begin()?"
         );
@@ -73,66 +65,51 @@ namespace Smol
         SMOL_ASSERT(!inComputePass,
             "Already in a compute pass. Did you call RHICommandList::endComputePass()?"
         );
-        SMOL_ASSERT(renderTargets.size() > 0);
+        SMOL_ASSERT(desc.colorAttachments.size() > 0);
 
-        RTV* rtvs[RHI_MAX_RENDER_TARGETS];
-        for(usize i=0; i<renderTargets.size(); ++i){
-            auto tex = static_cast<DX11Texture*>(renderTargets[i]);
+        std::array<RTV*, RHI_MAX_RENDER_TARGETS> rtvs;
+        for(usize i=0; i<desc.colorAttachments.size(); ++i){
+            auto& attachment = desc.colorAttachments[i];
+            auto tex = static_cast<DX11Texture*>(attachment.texture);
+
             rtvs[i] = tex->GetOrCreateRTV();
         }
 
         DSV* dsv = nullptr;
-        if(depthTarget != nullptr){
-            auto tex = static_cast<DX11Texture*>(depthTarget);
+        if(desc.depthAttachment.has_value()){
+            auto& attachment = *desc.depthAttachment;
+            auto tex = static_cast<DX11Texture*>(attachment.texture);
+
             dsv = tex->GetOrCreateDSV();
         }
 
-        beginRenderPass(
-            std::span<RTV*>(rtvs, renderTargets.size()), clearColor,
-            dsv, clearDS,
-            loadAction, storeAction,
-            debugName
+        context.OMSetRenderTargets(
+            desc.colorAttachments.size(),
+            rtvs.data(),
+            dsv
         );
 
-        inRenderPass = true;
-    }
+        for(usize i=0; i<desc.colorAttachments.size(); ++i){
+            auto& attachment = desc.colorAttachments[i];
+            if(attachment.loadAction != RHILoadAction::Clear)
+                continue;
 
-    void DX11CommandList::BeginRenderPass(
-        RHISwapchain& swapchain,
-        const Color& clearColor,
-        RHITexture* depthTarget,
-        const RHIClearDepthStencil& clearDS,
-        RHILoadAction loadAction,
-        RHIStoreAction storeAction,
-        CStr debugName
-    ){
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
-        );
-        SMOL_ASSERT(!inRenderPass,
-            "Already in a render pass. Did you call RHICommandList::endRenderPass()?"
-        );
-        SMOL_ASSERT(!inComputePass,
-            "Already in a compute pass. Did you call RHICommandList::endComputePass()?"
-        );
-        ID3D11RenderTargetView* rtvs[1] = {
-            static_cast<DX11Texture&>(
-                swapchain.GetCurrentTexture()
-            ).GetOrCreateRTV()
-        };
-
-        DSV* dsv = nullptr;
-        if(depthTarget != nullptr){
-            auto tex = static_cast<DX11Texture*>(depthTarget);
-            dsv = tex->GetOrCreateDSV({.format = tex->GetFormat()});
+            context.ClearRenderTargetView(
+                rtvs[i],
+                &attachment.clearColor[0]
+            );
         }
 
-        beginRenderPass(
-            rtvs, clearColor,
-            dsv, clearDS,
-            loadAction, storeAction,
-            debugName
-        );
+        if(dsv != nullptr){
+            auto& attachment = *desc.depthAttachment;
+
+            context.ClearDepthStencilView(
+                dsv,
+                D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+                attachment.clearDepthStencil.depth,
+                attachment.clearDepthStencil.stencil
+            );
+        }
 
         inRenderPass = true;
     }
@@ -704,32 +681,5 @@ namespace Smol
     ){
         // TODO.
         throw std::runtime_error("Unimplemented");
-    }
-
-    void DX11CommandList::beginRenderPass(
-        std::span<ID3D11RenderTargetView*> rtvs,
-        const Color& clearColor,
-        ID3D11DepthStencilView* dsv,
-        const RHIClearDepthStencil& clearDS,
-        RHILoadAction loadAction,
-        RHIStoreAction storeAction,
-        CStr debugName
-    ){
-        context.OMSetRenderTargets(
-            rtvs.size(),
-            rtvs.data(),
-            dsv
-        );
-
-        if(loadAction == RHILoadAction::Clear){
-            for(usize i=0; i<rtvs.size(); ++i)
-                context.ClearRenderTargetView(rtvs[i], &clearColor[0]);
-
-            if(dsv != nullptr)
-                context.ClearDepthStencilView(dsv,
-                    D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
-                    clearDS.depth, clearDS.stencil
-                );
-        }
     }
 }
