@@ -16,5 +16,3 @@ PRIVATE
     ${FOUNDATION_LIBRARY}
     SDL3::SDL3
 )
-
-smol_declare_private_interface(MetalRHI)

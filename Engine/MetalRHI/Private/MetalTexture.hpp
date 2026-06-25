@@ -43,6 +43,10 @@ namespace Smol
             return texture->height();
         }
 
+        virtual void* GetNative() const noexcept RHI_OVERRIDE{
+            return texture;
+        }
+
         RHIResourceState GetState() const noexcept RHI_OVERRIDE{
             return currentState;
         }

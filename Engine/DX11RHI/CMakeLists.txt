@@ -20,5 +20,3 @@ PRIVATE
     SDL3::SDL3
     Smol::Log
 )
-
-smol_declare_private_interface(DX11RHI)

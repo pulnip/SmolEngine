@@ -44,6 +44,10 @@ namespace Smol
         usize GetWidth() const noexcept RHI_OVERRIDE;
         usize GetHeight() const noexcept RHI_OVERRIDE;
 
+        void* GetNative() const noexcept RHI_OVERRIDE{
+            return texture.Get();
+        }
+
         RHIResourceState GetState() const RHI_OVERRIDE{
             return currentState;
         }

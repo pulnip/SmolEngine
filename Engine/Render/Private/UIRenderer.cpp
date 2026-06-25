@@ -112,7 +112,7 @@ namespace Smol
 #elif defined(SMOL_METALRHI)
 
 #include <imgui_impl_metal.h>
-#include "MetalTexture.hpp"
+#include "RHITexture.hpp"
 
 namespace Smol
 {
@@ -144,9 +144,9 @@ namespace Smol
         auto colorAttachment = uiPassDesc->colorAttachments()->object(0);
         colorAttachment->setLoadAction(MTL::LoadActionLoad);
         colorAttachment->setStoreAction(MTL::StoreActionStore);
-        colorAttachment->setTexture(static_cast<MetalTexture&>(
-            swapchain->GetCurrentTexture()
-        ).Get());
+        colorAttachment->setTexture(static_cast<MTL::Texture*>(
+            swapchain->GetCurrentTexture().GetNative()
+        ));
 
         ImGui_ImplMetal_NewFrame(uiPassDesc);
         ImGui_ImplSDL3_NewFrame();
