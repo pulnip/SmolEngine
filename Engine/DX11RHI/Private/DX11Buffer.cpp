@@ -18,7 +18,6 @@ namespace Smol
         StrView name
     )
         : device(device), context(context)
-        , usage(desc.usage), size(desc.size)
     {
         using enum RHIBufferUsage;
         using enum RHIMemoryAccess;
@@ -114,7 +113,7 @@ namespace Smol
             u32 srcSize,
             u32 offset
         ){
-            SMOL_ASSERT(srcSize <= size - offset);
+            SMOL_ASSERT(srcSize <= GetSize() - offset);
 
             D3D11_MAPPED_SUBRESOURCE mapped;
             context.Map(
@@ -142,7 +141,7 @@ namespace Smol
         u32 dstSize,
         u32 offset
     ){
-        SMOL_ASSERT(dstSize <= size - offset);
+        SMOL_ASSERT(dstSize <= GetSize() - offset);
         SMOL_ASSERT(stagingBuffer != nullptr,
             "download() requires RHIMemoryAccess::CPURead"
         );
@@ -184,6 +183,13 @@ namespace Smol
             stagingBuffer.Get(),
             0
         );
+    }
+
+    u32 DX11Buffer::GetSize() const noexcept{
+        D3D11_BUFFER_DESC desc;
+        buffer->GetDesc(&desc);
+
+        return desc.ByteWidth;
     }
 
     SRV* DX11Buffer::GetOrCreateSRV(const RHIBufferViewDesc& desc){

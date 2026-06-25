@@ -12,13 +12,10 @@ namespace Smol
     private:
         BufferRAII buffer = nullptr;
         BufferRAII stagingBuffer = nullptr; // for CPURead download
-        u32 size = 0;
-        RHIBufferUsage usage = RHIBufferUsage::None;
+        RHIResourceState currentState = RHIResourceState::Common;
 
         Device& device;
         DeviceContext& context;
-
-        RHIResourceState currentState = RHIResourceState::Common;
 
         std::unordered_map<RHIBufferViewDesc, SRVRAII> srvs;
         std::unordered_map<RHIBufferViewDesc, UAVRAII> uavs;
@@ -45,9 +42,7 @@ namespace Smol
             u32 offset
         ) RHI_OVERRIDE;
 
-        u32 GetSize() const noexcept RHI_OVERRIDE{
-            return size;
-        }
+        u32 GetSize() const noexcept RHI_OVERRIDE;
 
         RHIResourceState GetState() const noexcept RHI_OVERRIDE{
             // NOTE. No-Op for DX11

@@ -12,9 +12,7 @@ namespace Smol
         MTL::Device& device,
         const RHIBufferCreateDesc& desc,
         StrView name
-    )
-        :usage(desc.usage),size(desc.size)
-    {
+    ){
         auto hasVertexUsage = hasFlag(desc.usage, RHIBufferUsage::VertexBuffer);
         auto hasIndexUsage = hasFlag(desc.usage, RHIBufferUsage::IndexBuffer);
         auto hasConstantUsage = hasFlag(desc.usage, RHIBufferUsage::ConstantBuffer);
@@ -71,8 +69,7 @@ namespace Smol
         u32 size,
         u32 offset
     ){
-        const auto bufSize = this->size;
-        SMOL_ASSERT(size <= bufSize - offset);
+        SMOL_ASSERT(offset + size <= GetSize());
         void* mapped = buffer->contents();
 
         std::memcpy(
@@ -91,8 +88,7 @@ namespace Smol
         u32 size,
         u32 offset
     ){
-        const auto bufSize = this->size;
-        SMOL_ASSERT(size <= bufSize - offset);
+        SMOL_ASSERT(offset + size <= GetSize());
         void* mapped = buffer->contents();
 
         std::memcpy(
