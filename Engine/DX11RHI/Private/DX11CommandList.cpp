@@ -30,7 +30,7 @@ namespace Smol
 
     void DX11CommandList::Begin() noexcept{
         SMOL_ASSERT(!isRecording,
-            "Did you call RHICommandList::close()?"
+            "Did you call RHICommandList::Close()?"
         );
         SMOL_ASSERT(!inRenderPass && !inComputePass);
 
@@ -40,7 +40,7 @@ namespace Smol
 
     void DX11CommandList::Close() noexcept{
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(!inRenderPass && !inComputePass);
 
@@ -57,13 +57,13 @@ namespace Smol
 
     void DX11CommandList::BeginRenderPass(const RHIRenderPassDesc& desc){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(!inRenderPass,
-            "Already in a render pass. Did you call RHICommandList::endRenderPass()?"
+            "Already in a render pass. Did you call RHICommandList::EndRenderPass()?"
         );
         SMOL_ASSERT(!inComputePass,
-            "Already in a compute pass. Did you call RHICommandList::endComputePass()?"
+            "Already in a compute pass. Did you call RHICommandList::EndCompute()?"
         );
         SMOL_ASSERT(desc.colorAttachments.size() > 0);
 
@@ -116,10 +116,10 @@ namespace Smol
 
     void DX11CommandList::EndRenderPass(){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass,
-            "Not in a render pass. Did you call RHICommandList::beginRenderPass()?"
+            "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
         SMOL_ASSERT(!inComputePass);
 
@@ -148,10 +148,10 @@ namespace Smol
 
     void DX11CommandList::SetPipelineState(RHIGraphicsPipelineState& pso){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass,
-            "Not in a render pass. Did you call RHICommandList::beginRenderPass()?"
+            "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
         SMOL_ASSERT(!inComputePass);
 
@@ -161,10 +161,10 @@ namespace Smol
 
     void DX11CommandList::SetPipelineState(RHIComputePipelineState& pso){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inComputePass,
-            "Not in a compute pass. Did you call RHICommandList::beginComputePass()?"
+            "Not in a compute pass. Did you call RHICommandList::BeginCompute()?"
         );
         SMOL_ASSERT(!inRenderPass);
 
@@ -181,10 +181,10 @@ namespace Smol
         u32 offset
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass,
-            "Not in a render pass. Did you call RHICommandList::beginRenderPass()?"
+            "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
         SMOL_ASSERT(!inComputePass);
 
@@ -204,10 +204,10 @@ namespace Smol
         u32 offset
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass,
-            "Not in a render pass. Did you call RHICommandList::beginRenderPass()?"
+            "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
         SMOL_ASSERT(!inComputePass);
 
@@ -227,10 +227,10 @@ namespace Smol
         u32 offset
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass != inComputePass,
-            "Not in a pass. Did you call RHICommandList::beginPass()?"
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
         );
 
         using enum RHIShaderStage;
@@ -271,10 +271,10 @@ namespace Smol
         RHIShaderStage stage
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass != inComputePass,
-            "Not in a pass. Did you call RHICommandList::beginPass()?"
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
         );
 
         using enum RHIBindingAccess;
@@ -349,10 +349,10 @@ namespace Smol
         RHIShaderStage stage
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass != inComputePass,
-            "Not in a pass. Did you call RHICommandList::beginPass()?"
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
         );
 
         using enum RHIBindingAccess;
@@ -470,10 +470,10 @@ namespace Smol
         RHIShaderStage stage
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass != inComputePass,
-            "Not in a pass. Did you call RHICommandList::beginPass()?"
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
         );
 
         using enum RHIShaderStage;
@@ -529,10 +529,10 @@ namespace Smol
         u32 startInstance
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass,
-            "Not in a render pass. Did you call RHICommandList::beginRenderPass()?"
+            "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
         SMOL_ASSERT(!inComputePass);
 
@@ -558,10 +558,10 @@ namespace Smol
         u32 startInstance
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass,
-            "Not in a render pass. Did you call RHICommandList::beginRenderPass()?"
+            "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
         SMOL_ASSERT(!inComputePass);
 
@@ -583,13 +583,13 @@ namespace Smol
 
     void DX11CommandList::BeginCompute() noexcept{
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(!inComputePass,
-            "Already in a compute pass. Did you call RHICommandList::endComputePass()?"
+            "Already in a compute pass. Did you call RHICommandList::EndCompute()?"
         );
         SMOL_ASSERT(!inRenderPass,
-            "Already in a render pass. Did you call RHICommandList::endRenderPass()?"
+            "Already in a render pass. Did you call RHICommandList::EndRenderPass()?"
         );
 
         inComputePass = true;
@@ -598,10 +598,10 @@ namespace Smol
 
     void DX11CommandList::EndCompute() noexcept{
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inComputePass,
-            "Not in a compute pass. Did you call RHICommandList::beginComputePass()?"
+            "Not in a compute pass. Did you call RHICommandList::BeginCompute()?"
         );
         SMOL_ASSERT(!inRenderPass);
 
@@ -610,13 +610,13 @@ namespace Smol
 
     void DX11CommandList::Dispatch(RHISize3D gridSize){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inComputePass,
-            "Not in a compute pass. Did you call RHICommandList::beginComputePass()?"
+            "Not in a compute pass. Did you call RHICommandList::BeginCompute()?"
         );
         SMOL_ASSERT(currentComputePSO != nullptr,
-            "Did you call RHICommandList::setPipelineState(ComputePSO)?"
+            "Did you call RHICommandList::SetPipelineState(ComputePSO)?"
         );
         auto threadGroupSize = currentComputePSO->getThreadGroupSize();
 
