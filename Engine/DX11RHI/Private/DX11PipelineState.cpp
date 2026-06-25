@@ -245,14 +245,16 @@ namespace Smol
         const RHIGraphicsPipelineStateDesc& desc,
         StrView name
     )
-        : primitiveTopology(convert(desc.topology))
     #if defined(_DEBUG) || !defined(NDEBUG)
-        , debugName(name)
+        : debugName(name)
     #endif
     {
+        auto& frontend = std::get<RHILegacyFrontendDesc>(desc.preRasterizer);
+        primitiveTopology = convert(frontend.topology);
+
         auto vsBytecode = CompiledShader(
-            desc.vertexShaderPath,
-            desc.vertexShaderEntryPoint,
+            frontend.vertexShader.path,
+            frontend.vertexShader.entryPoint,
             "vs_5_0"
         );
         if(FAILED(device.CreateVertexShader(
@@ -265,8 +267,8 @@ namespace Smol
         }
 
         // Input Layout
-        if(desc.vertexLayout.has_value()){
-            const auto& vertexLayout = desc.vertexLayout.value();
+        if(frontend.vertexLayout.has_value()){
+            const auto& vertexLayout = frontend.vertexLayout.value();
 
             std::vector<D3D11_INPUT_ELEMENT_DESC> elements(vertexLayout.size());
             for(usize i=0; i<vertexLayout.size(); ++i){
@@ -314,8 +316,8 @@ namespace Smol
         }
 
         auto psBytecode = CompiledShader(
-            desc.fragmentShaderPath,
-            desc.fragmentShaderEntryPoint,
+            desc.fragmentShader.path,
+            desc.fragmentShader.entryPoint,
             "ps_5_0"
         );
         if(FAILED(device.CreatePixelShader(
@@ -461,8 +463,8 @@ namespace Smol
     #endif
     {
         auto csBytecode = CompiledShader(
-            desc.computeShaderPath,
-            desc.computeShaderEntryPoint,
+            desc.computeShader.path,
+            desc.computeShader.entryPoint,
             "cs_5_0"
         );
 

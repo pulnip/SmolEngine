@@ -14,8 +14,6 @@ namespace Smol
 {
     class MetalGraphicsPipelineState final: public RHIGraphicsPipelineState{
     private:
-        MTL::Function* vs = nullptr;
-        MTL::Function* fs = nullptr;
         MTL::RenderPipelineState* pipeline = nullptr;
         MTL::DepthStencilState* depthStencilState = nullptr;
         RHIRasterizerState rasterizerState{};

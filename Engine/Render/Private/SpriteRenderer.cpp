@@ -42,24 +42,30 @@ namespace Smol
     )
         : spriteManager(spriteManager)
         , pipeline(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
-            .topology = RHIPrimitiveTopology::TriangleStrip,
-        #if defined(SMOL_DXRHI)
-            .vertexShaderPath = "Engine/Shader/SpriteQuad.vert.hlsl",
-            .vertexShaderEntryPoint = "vs_main",
-        #elif defined(SMOL_METALRHI)
-            .vertexShaderPath = "Engine/Shader/SpriteQuad.metal",
-            .vertexShaderEntryPoint = "vs_main",
-        #endif
+            .preRasterizer = RHILegacyFrontendDesc{
+                .topology = RHIPrimitiveTopology::TriangleStrip,
+                .vertexShader = RHIShaderDesc{
+                #if defined(SMOL_DXRHI)
+                    .path = "Engine/Shader/SpriteQuad.vert.hlsl",
+                    .entryPoint = "vs_main"
+                #elif defined(SMOL_METALRHI)
+                    .path = "Engine/Shader/SpriteQuad.metal",
+                    .entryPoint = "vs_main"
+                #endif
+                }
+            },
             .rasterizer = RHIRasterizerState{
                 .frontCounterClockwise = false
             },
-        #if defined(SMOL_DXRHI)
-            .fragmentShaderPath = "Engine/Shader/Sprite.pixel.hlsl",
-            .fragmentShaderEntryPoint = "ps_main",
-        #elif defined(SMOL_METALRHI)
-            .fragmentShaderPath = "Engine/Shader/SpriteQuad.metal",
-            .fragmentShaderEntryPoint = "fs_main",
-        #endif
+            .fragmentShader = RHIShaderDesc{
+            #if defined(SMOL_DXRHI)
+                .path = "Engine/Shader/Sprite.pixel.hlsl",
+                .entryPoint = "ps_main"
+            #elif defined(SMOL_METALRHI)
+                .path = "Engine/Shader/SpriteQuad.metal",
+                .entryPoint = "fs_main"
+            #endif
+            },
             // Alpha blending
             .blend = RHIBlendState{
                 .independentBlendEnable = false,

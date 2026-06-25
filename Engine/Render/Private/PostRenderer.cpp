@@ -10,24 +10,30 @@ namespace Smol
 {
     PostRenderer::PostRenderer(RHIDevice& device)
         : rainStreak(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
-            .topology = RHIPrimitiveTopology::TriangleStrip,
-        #if defined(SMOL_DXRHI)
-            .vertexShaderPath = "Engine/Shader/FullscreenQuad.vert.hlsl",
-            .vertexShaderEntryPoint = "vs_main",
-        #elif defined(SMOL_METALRHI)
-            .vertexShaderPath = "Engine/Shader/FullscreenQuad.vert.metal",
-            .vertexShaderEntryPoint = "vs_main",
-        #endif
+            .preRasterizer = RHILegacyFrontendDesc{
+                .topology = RHIPrimitiveTopology::TriangleStrip,
+                .vertexShader = RHIShaderDesc{
+                #if defined(SMOL_DXRHI)
+                    .path = "Engine/Shader/FullscreenQuad.vert.hlsl",
+                    .entryPoint = "vs_main"
+                #elif defined(SMOL_METALRHI)
+                    .path = "Engine/Shader/FullscreenQuad.vert.metal",
+                    .entryPoint = "vs_main"
+                #endif
+                }
+            },
             .rasterizer = RHIRasterizerState{
                 .frontCounterClockwise = false
             },
-        #if defined(SMOL_DXRHI)
-            .fragmentShaderPath = "Engine/Shader/RainStreak.pixel.hlsl",
-            .fragmentShaderEntryPoint = "ps_main",
-        #elif defined(SMOL_METALRHI)
-            .fragmentShaderPath = "Engine/Shader/RainStreak.frag.metal",
-            .fragmentShaderEntryPoint = "fs_main",
-        #endif
+            .fragmentShader = RHIShaderDesc{
+            #if defined(SMOL_DXRHI)
+                .path = "Engine/Shader/RainStreak.pixel.hlsl",
+                .entryPoint = "ps_main"
+            #elif defined(SMOL_METALRHI)
+                .path = "Engine/Shader/RainStreak.frag.metal",
+                .entryPoint = "fs_main"
+            #endif
+            },
             .blend = RHIBlendState{
                 .alphaToCoverageEnable = false,
                 .independentBlendEnable = false,
@@ -56,24 +62,30 @@ namespace Smol
             .access = RHIMemoryAccess::CPUWrite
         }, "rainStreakParam")),
         rainDroplet(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
-            .topology = RHIPrimitiveTopology::TriangleStrip,
-        #if defined(SMOL_DXRHI)
-            .vertexShaderPath = "Engine/Shader/FullscreenQuad.vert.hlsl",
-            .vertexShaderEntryPoint = "vs_main",
-        #elif defined(SMOL_METALRHI)
-            .vertexShaderPath = "Engine/Shader/FullscreenQuad.vert.metal",
-            .vertexShaderEntryPoint = "vs_main",
-        #endif
+            .preRasterizer = RHILegacyFrontendDesc{
+                .topology = RHIPrimitiveTopology::TriangleStrip,
+                .vertexShader = RHIShaderDesc{
+                #if defined(SMOL_DXRHI)
+                    .path = "Engine/Shader/FullscreenQuad.vert.hlsl",
+                    .entryPoint = "vs_main"
+                #elif defined(SMOL_METALRHI)
+                    .path = "Engine/Shader/FullscreenQuad.vert.metal",
+                    .entryPoint = "vs_main"
+                #endif
+                }
+            },
             .rasterizer = RHIRasterizerState{
                 .frontCounterClockwise = false
             },
-        #if defined(SMOL_DXRHI)
-            .fragmentShaderPath = "Engine/Shader/RainDroplet.pixel.hlsl",
-            .fragmentShaderEntryPoint = "ps_main",
-        #elif defined(SMOL_METALRHI)
-            .fragmentShaderPath = "Engine/Shader/RainDroplet.frag.metal",
-            .fragmentShaderEntryPoint = "fs_main",
-        #endif
+            .fragmentShader = RHIShaderDesc{
+            #if defined(SMOL_DXRHI)
+                .path = "Engine/Shader/RainDroplet.pixel.hlsl",
+                .entryPoint = "ps_main"
+            #elif defined(SMOL_METALRHI)
+                .path = "Engine/Shader/RainDroplet.frag.metal",
+                .entryPoint = "fs_main"
+            #endif
+            },
             .blend = RHIBlendState{
                 .alphaToCoverageEnable = false,
                 .independentBlendEnable = false,

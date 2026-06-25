@@ -48,7 +48,7 @@ namespace Smol
 
         void BeginRenderPass(
             std::span<RHITexture*> renderTargets,
-            const RHIClearColor& clearColor,
+            const Color& clearColor,
             RHITexture* depthTarget,
             const RHIClearDepthStencil& clearDS,
             RHILoadAction loadAction,
@@ -58,7 +58,7 @@ namespace Smol
 
         void BeginRenderPass(
             RHISwapchain& swapchain,
-            const RHIClearColor& clearColor,
+            const Color& clearColor,
             RHITexture* depthTarget,
             const RHIClearDepthStencil& clearDS,
             RHILoadAction loadAction,
@@ -191,7 +191,7 @@ namespace Smol
     private:
         void beginRenderPass(
             std::span<const MTL::Texture*> texes,
-            const RHIClearColor& clearColor,
+            const Color& clearColor,
             RHITexture* depthTarget,
             const RHIClearDepthStencil& clearDS,
             RHILoadAction loadAction,

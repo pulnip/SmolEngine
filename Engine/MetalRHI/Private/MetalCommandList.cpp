@@ -113,7 +113,7 @@ namespace Smol
 
     void MetalCommandList::BeginRenderPass(
         std::span<RHITexture*> renderTargets,
-        const RHIClearColor& clearColor,
+        const Color& clearColor,
         RHITexture* depthTarget,
         const RHIClearDepthStencil& clearDS,
         RHILoadAction loadAction,
@@ -142,7 +142,7 @@ namespace Smol
 
     void MetalCommandList::BeginRenderPass(
         RHISwapchain& swapchain,
-        const RHIClearColor& clearColor,
+        const Color& clearColor,
         RHITexture* depthTarget,
         const RHIClearDepthStencil& clearDS,
         RHILoadAction loadAction,
@@ -623,7 +623,7 @@ namespace Smol
 
     void MetalCommandList::beginRenderPass(
         std::span<const MTL::Texture*> texes,
-        const RHIClearColor& clearColor,
+        const Color& clearColor,
         RHITexture* depthTarget,
         const RHIClearDepthStencil& clearDS,
         RHILoadAction loadAction,
@@ -648,7 +648,10 @@ namespace Smol
             colorAttach.setLoadAction(convert(loadAction));
             colorAttach.setStoreAction(convert(storeAction));
             colorAttach.setClearColor(MTL::ClearColor::Make(
-                clearColor.v[0], clearColor.v[1], clearColor.v[2], clearColor.v[3]
+                clearColor.x,
+                clearColor.y,
+                clearColor.z,
+                clearColor.w
             ));
         }
 

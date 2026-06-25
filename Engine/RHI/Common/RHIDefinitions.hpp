@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <filesystem>
 #include <limits>
 #include <optional>
@@ -247,6 +248,31 @@ namespace Smol
         u32 instanceDataStepRate; // For per-instance data
     };
 
+    struct RHIShaderDesc{
+        std::filesystem::path path;
+        Str entryPoint = "main";
+    };
+
+    struct RHILegacyFrontendDesc{
+        std::optional<std::span<const RHIVertexElement>> vertexLayout = std::nullopt;
+        RHIPrimitiveTopology topology = RHIPrimitiveTopology::TriangleList;
+
+        RHIShaderDesc vertexShader{
+            .entryPoint = "vs_main"
+        };
+    };
+
+    struct RHIMeshFrontendDesc{
+        // Amplification Shader
+        std::optional<RHIShaderDesc> amplificationShader = std::nullopt;
+        RHIShaderDesc meshShader;
+    };
+
+    using RHIPreRasterizerDesc = std::variant<
+        RHILegacyFrontendDesc,
+        RHIMeshFrontendDesc
+    >;
+
     enum class RHICullMode: u8{
         CullNone,
         Front,
@@ -364,29 +390,29 @@ namespace Smol
         RHIColorWriteMask writeMask = RHIColorWriteEnableAll;
     };
 
+    constexpr u32 RHI_MAX_RENDER_TARGETS = 8;
+
     struct RHIBlendState{
         bool alphaToCoverageEnable = false;
         bool independentBlendEnable = false;
-        RHIRenderTargetBlendState renderTargets[8];
+        std::array<RHIRenderTargetBlendState, RHI_MAX_RENDER_TARGETS> renderTargets;
     };
 
-    constexpr u32 RHI_MAX_RENDER_TARGETS = 8;
-
     struct RHIGraphicsPipelineStateDesc{
-        std::optional<std::span<const RHIVertexElement>> vertexLayout = std::nullopt;
-        RHIPrimitiveTopology topology = RHIPrimitiveTopology::TriangleList;
+        // Geometry Frontend
+        RHIPreRasterizerDesc preRasterizer;
 
-        std::filesystem::path vertexShaderPath;
-        Str vertexShaderEntryPoint = "vs_main";
+        // Geometry Backend
         RHIRasterizerState rasterizer = {};
-        std::filesystem::path fragmentShaderPath;
-        Str fragmentShaderEntryPoint = "fs_main";
+        RHIShaderDesc fragmentShader{
+            .entryPoint = "fs_main"
+        };
 
         std::optional<RHIDepthStencilState> depthStencil = std::nullopt;
         std::optional<RHIBlendState> blend = std::nullopt;
 
-        RHIPixelFormat renderTargetFormats[RHI_MAX_RENDER_TARGETS] = {};
-        u32 renderTargetCount = 1;
+        std::array<RHIPixelFormat, RHI_MAX_RENDER_TARGETS> renderTargetFormats;
+        usize renderTargetCount = 1;
     };
 
     struct RHISize3D{
@@ -401,8 +427,9 @@ namespace Smol
     }
 
     struct RHIComputePipelineStateDesc{
-        std::filesystem::path computeShaderPath;
-        Str computeShaderEntryPoint = "cs_main";
+        RHIShaderDesc computeShader{
+            .entryPoint = "cs_main"
+        };
         RHISize3D gridSize;
         std::optional<RHISize3D> threadGroupSize = std::nullopt;
     };

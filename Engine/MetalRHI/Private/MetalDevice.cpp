@@ -1,3 +1,4 @@
+#include "RHIDefinitions.hpp"
 extern "C"{
     // Debug AutoreleasePool
     void _objc_autoreleasePoolPrint(void);
@@ -82,7 +83,13 @@ namespace Smol
             const RHIGraphicsPipelineStateDesc& desc,
             StrView name
         ){
-            return std::make_unique<MetalGraphicsPipelineState>(*device, desc, name);
+            if(std::get_if<RHILegacyFrontendDesc>(&desc.preRasterizer)){
+                return std::make_unique<MetalGraphicsPipelineState>(*device, desc, name);
+            }
+            else{
+                // TODO. use Mesh Shader
+                throw std::runtime_error("Unimplemented Graphics Pipeline Frontend");
+            }
         }
 
         RHIComputePipelineStateRAII CreatePipelineState(

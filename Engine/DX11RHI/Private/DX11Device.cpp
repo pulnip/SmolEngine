@@ -133,7 +133,13 @@ namespace Smol
             const RHIGraphicsPipelineStateDesc& desc,
             StrView name
         ){
-            return std::make_unique<DX11GraphicsPipelineState>(*device.Get(), desc, name);
+            if(std::get_if<RHILegacyFrontendDesc>(&desc.preRasterizer)){
+                return std::make_unique<DX11GraphicsPipelineState>(*device.Get(), desc, name);
+            }
+            else{
+                // cannot use Mesh Shader in DirectX 11
+                throw std::runtime_error("Unsupported Graphics Pipeline Frontend");
+            }
         }
 
         RHIComputePipelineStateRAII CreatePipelineState(
