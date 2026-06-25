@@ -281,9 +281,7 @@ namespace Smol
 
         // TODO. use integrated Renderer class
         // Begin RenderPass for sceneTexture
-        RHIClearColor sceneClearColor{.v = {
-            0.5f, 0.5f, 0.5f, 1.0f
-        }};
+        Color sceneClearColor = Colors::Grey;
         RHITexture* renderTargets[1] = {scene.get()};
         cmdList.BeginRenderPass(renderTargets,
             sceneClearColor,

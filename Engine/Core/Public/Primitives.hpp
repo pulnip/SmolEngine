@@ -177,6 +177,8 @@ namespace Smol
         constexpr Color Magenta = {1, 0, 1, 1};
         constexpr Color Yellow  = {1, 1, 0, 1};
         constexpr Color White   = {1, 1, 1, 1};
+
+        constexpr Color Grey    = {0.5f, 0.5f, 0.5f, 1};
     }
 
     inline constexpr Vec2::operator Vec3() const noexcept{

@@ -59,7 +59,7 @@ int main(void){
 
     resourceManager.DrainCompletions();
 
-    RHIClearColor clearColor{.v = {0.5f, 0.5f, 0.5f, 1.0f}};
+    Color clearColor = Colors::Grey;
     auto cmdList = device->CreateCommandList();
 
     while(true){

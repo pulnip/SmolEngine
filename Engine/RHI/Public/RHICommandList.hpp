@@ -21,7 +21,7 @@ namespace Smol
         // Render pass control
         virtual void BeginRenderPass(
             std::span<RHITexture*> renderTargets,
-            const RHIClearColor& clearColor = {},
+            const Color& clearColor = {},
             RHITexture* depthTarget = nullptr,
             const RHIClearDepthStencil& clearDS = {},
             RHILoadAction loadAction = RHILoadAction::Load,
@@ -31,7 +31,7 @@ namespace Smol
 
         virtual void BeginRenderPass(
             RHISwapchain& backBuffer,
-            const RHIClearColor& clearColor = {},
+            const Color& clearColor = {},
             RHITexture* depthTarget = nullptr,
             const RHIClearDepthStencil& clearDS = {},
             RHILoadAction loadAction  = RHILoadAction::Load,

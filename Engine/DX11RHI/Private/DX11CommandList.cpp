@@ -57,7 +57,7 @@ namespace Smol
 
     void DX11CommandList::BeginRenderPass(
         std::span<RHITexture*> renderTargets,
-        const RHIClearColor& clearColor,
+        const Color& clearColor,
         RHITexture* depthTarget,
         const RHIClearDepthStencil& clearDS,
         RHILoadAction loadAction,
@@ -99,7 +99,7 @@ namespace Smol
 
     void DX11CommandList::BeginRenderPass(
         RHISwapchain& swapchain,
-        const RHIClearColor& clearColor,
+        const Color& clearColor,
         RHITexture* depthTarget,
         const RHIClearDepthStencil& clearDS,
         RHILoadAction loadAction,
@@ -706,7 +706,7 @@ namespace Smol
 
     void DX11CommandList::beginRenderPass(
         std::span<ID3D11RenderTargetView*> rtvs,
-        const RHIClearColor& clearColor,
+        const Color& clearColor,
         ID3D11DepthStencilView* dsv,
         const RHIClearDepthStencil& clearDS,
         RHILoadAction loadAction,
@@ -721,7 +721,7 @@ namespace Smol
 
         if(loadAction == RHILoadAction::Clear){
             for(usize i=0; i<rtvs.size(); ++i)
-                context.ClearRenderTargetView(rtvs[i], clearColor.v);
+                context.ClearRenderTargetView(rtvs[i], &clearColor[0]);
 
             if(dsv != nullptr)
                 context.ClearDepthStencilView(dsv,

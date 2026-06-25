@@ -38,7 +38,7 @@ namespace Smol
 
         void BeginRenderPass(
             std::span<RHITexture*> renderTargets,
-            const RHIClearColor& clearColor,
+            const Color& clearColor,
             RHITexture* depthTarget,
             const RHIClearDepthStencil& clearDS,
             RHILoadAction loadAction,
@@ -48,7 +48,7 @@ namespace Smol
 
         void BeginRenderPass(
             RHISwapchain& swapchain,
-            const RHIClearColor& clearColor,
+            const Color& clearColor,
             RHITexture* depthTarget,
             const RHIClearDepthStencil& clearDS,
             RHILoadAction loadAction,
@@ -187,7 +187,7 @@ namespace Smol
     private:
         void beginRenderPass(
             std::span<ID3D11RenderTargetView*> rtvs,
-            const RHIClearColor& clearColor,
+            const Color& clearColor,
             ID3D11DepthStencilView* dsv,
             const RHIClearDepthStencil& clearDS,
             RHILoadAction loadAction,

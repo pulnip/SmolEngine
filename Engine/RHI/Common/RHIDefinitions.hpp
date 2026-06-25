@@ -179,10 +179,6 @@ namespace Smol
         Predication
     };
 
-    struct RHIClearColor{
-        f32 v[4] = { 0, 0, 0, 1 };
-    };
-
     struct RHIClearDepthStencil{
         f32 depth = 1.0f;
         u8 stencil = 0;
@@ -198,7 +194,7 @@ namespace Smol
         RHITextureUsage usage = RHITextureUsage::None;
         RHIMemoryAccess access = RHIMemoryAccess::GPUOnly;
         RHIResourceState initialState = RHIResourceState::Common;
-        RHIClearColor clearColor{};
+        Color clearColor = Colors::Black;
         RHIClearDepthStencil clearDepthStencil{};
         const void* initialData = nullptr;
     };
@@ -438,7 +434,7 @@ namespace Smol
 
         u32 maxAnisotropy = 1;
         RHIComparisonFunc compareFunc = RHIComparisonFunc::Never;
-        f32 borderColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+        Color borderColor = Colors::Black;
     };
 
     constexpr RHISamplerState LINEAR_WRAP_SAMPLER{
