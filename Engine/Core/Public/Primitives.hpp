@@ -165,6 +165,20 @@ namespace Smol
 #endif
     static_assert(std::is_standard_layout_v<Vec4>);
 
+    // xyzw = rgba
+    using Color = Vec4;
+
+    namespace Colors{
+        constexpr Color Black   = {0, 0, 0, 1};
+        constexpr Color Red     = {1, 0, 0, 1};
+        constexpr Color Green   = {0, 1, 0, 1};
+        constexpr Color Blue    = {0, 0, 1, 1};
+        constexpr Color Cyan    = {0, 1, 1, 1};
+        constexpr Color Magenta = {1, 0, 1, 1};
+        constexpr Color Yellow  = {1, 1, 0, 1};
+        constexpr Color White   = {1, 1, 1, 1};
+    }
+
     inline constexpr Vec2::operator Vec3() const noexcept{
         return {x, y, 0.0f};
     }

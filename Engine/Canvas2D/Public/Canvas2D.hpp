@@ -7,20 +7,6 @@
 
 namespace Smol
 {
-    // xyzw = rgba
-    using Color = Vec4;
-
-    namespace Colors{
-        constexpr Color Black   = {0, 0, 0, 1};
-        constexpr Color Red     = {1, 0, 0, 1};
-        constexpr Color Green   = {0, 1, 0, 1};
-        constexpr Color Blue    = {0, 0, 1, 1};
-        constexpr Color Cyan    = {0, 1, 1, 1};
-        constexpr Color Magenta = {1, 0, 1, 1};
-        constexpr Color Yellow  = {1, 1, 0, 1};
-        constexpr Color White   = {1, 1, 1, 1};
-    }
-
     struct StrokeStyle{
         Color color = Colors::Red;
         f32 width = 1.0f;
