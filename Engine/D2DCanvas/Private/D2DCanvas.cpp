@@ -8,6 +8,7 @@
 #include "Assert.hpp"
 #include "Canvas2D.hpp"
 #include "D2DCanvas.hpp"
+#include "DX11Texture.hpp"
 #include "HashUtil.hpp"
 #include "LinearAlgebra.hpp"
 #include "RHIDevice.hpp"
@@ -190,9 +191,9 @@ namespace Smol
     D2DCanvas::~D2DCanvas() = default;
 
     void D2DCanvas::Begin(RHISwapchain& swapchain){
-        auto texture = static_cast<ID3D11Texture2D*>(
-            swapchain.GetCurrentNativeTexture()
-        );
+        auto texture = static_cast<DX11Texture&>(
+            swapchain.GetCurrentTexture()
+        ).Get();
         impl->Begin(texture);
     }
 

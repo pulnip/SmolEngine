@@ -334,7 +334,7 @@ namespace Smol
         for(usize i = 0; i < desc.renderTargetCount; ++i){
             auto colorAttach = pipelineDesc->colorAttachments()->object(i);
             colorAttach->setPixelFormat(
-                convertPixelFormat(desc.renderTargetFormats[i])
+                convert(desc.renderTargetFormats[i])
             );
             MTL::ColorWriteMask writeMask = MTL::ColorWriteMaskAll;
 
@@ -387,7 +387,7 @@ namespace Smol
             SMOL_ASSERT(depthStencilFormat != RHIPixelFormat::Unknown);
 
             pipelineDesc->setDepthAttachmentPixelFormat(
-                convertPixelFormat(depthStencilFormat)
+                convert(depthStencilFormat)
             );
         }
 

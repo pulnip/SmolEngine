@@ -118,7 +118,7 @@ namespace Smol
             StrView name
         ){
             return std::make_unique<DX11Texture>(
-                *device.Get(), *context.Get(),
+                *device.Get(),
                 desc, name
             );
         }

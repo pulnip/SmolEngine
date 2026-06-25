@@ -206,7 +206,7 @@ namespace Smol
             [&desc](const RHIBufferViewDesc::TypedConfig& c){
                 const u32 bpp = getBytesPerPixel(c.format);
                 return D3D11_SHADER_RESOURCE_VIEW_DESC{
-                    .Format = convertPixelFormat(c.format),
+                    .Format = convert(c.format),
                     .ViewDimension = D3D11_SRV_DIMENSION_BUFFER,
                     .Buffer = {
                         .FirstElement = desc.offset / bpp,
@@ -259,7 +259,7 @@ namespace Smol
             [&desc](const RHIBufferViewDesc::TypedConfig& c){
                 const u32 bpp = getBytesPerPixel(c.format);
                 return D3D11_UNORDERED_ACCESS_VIEW_DESC{
-                    .Format = convertPixelFormat(c.format),
+                    .Format = convert(c.format),
                     .ViewDimension = D3D11_UAV_DIMENSION_BUFFER,
                     .Buffer = {
                         .FirstElement = desc.offset / bpp,

@@ -78,13 +78,13 @@ namespace Smol
         RTV* rtvs[RHI_MAX_RENDER_TARGETS];
         for(usize i=0; i<renderTargets.size(); ++i){
             auto tex = static_cast<DX11Texture*>(renderTargets[i]);
-            rtvs[i] = tex->GetOrCreateRTV({.format = tex->GetFormat()});
+            rtvs[i] = tex->GetOrCreateRTV();
         }
 
         DSV* dsv = nullptr;
         if(depthTarget != nullptr){
             auto tex = static_cast<DX11Texture*>(depthTarget);
-            dsv = tex->GetOrCreateDSV({.format = tex->GetFormat()});
+            dsv = tex->GetOrCreateDSV();
         }
 
         beginRenderPass(
@@ -116,7 +116,9 @@ namespace Smol
             "Already in a compute pass. Did you call RHICommandList::endComputePass()?"
         );
         ID3D11RenderTargetView* rtvs[1] = {
-            static_cast<DX11Swapchain&>(swapchain).GetCurrentRTV()
+            static_cast<DX11Texture&>(
+                swapchain.GetCurrentTexture()
+            ).GetOrCreateRTV()
         };
 
         DSV* dsv = nullptr;
@@ -304,9 +306,7 @@ namespace Smol
 
         switch(access){
         case ReadOnly: {
-            const auto view = dxTex.GetOrCreateSRV({
-                .format = texture.GetFormat()
-            });
+            const auto view = dxTex.GetOrCreateSRV();
             switch(stage){
             case VertexShader:
             #if defined(_DEBUG) || !defined(NDEBUG)
@@ -688,8 +688,10 @@ namespace Smol
         RHITexture& src,
         RHISwapchain& dst
     ){
+        auto& texture = static_cast<DX11Texture&>(dst.GetCurrentTexture());
+
         context.CopyResource(
-            static_cast<DX11Swapchain&>(dst).GetCurrentTexture(),
+            texture.Get(),
             static_cast<DX11Texture&>(src).Get()
         );
     }

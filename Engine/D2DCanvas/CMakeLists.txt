@@ -12,6 +12,7 @@ target_link_libraries(SmolD2DCanvas
 PUBLIC
     Smol::Canvas2D
 PRIVATE
+    Smol::DX11RHI::Private
     d2d1.lib
     dwrite.lib
     Smol::Log

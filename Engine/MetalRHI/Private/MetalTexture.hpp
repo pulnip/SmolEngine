@@ -1,17 +1,17 @@
 #pragma once
 
 #include <Metal/Metal.hpp>
+#include <QuartzCore/CAMetalDrawable.hpp>
 #include "RHIAPI.hpp"
 #include "RHIDefinitions.hpp"
 #include "RHITexture.hpp"
+#include "MetalUtil.hpp"
 
 namespace Smol
 {
     class MetalTexture final: public RHITexture{
     private:
         MTL::Texture* texture;
-        usize width, height;
-        RHIPixelFormat format = RHIPixelFormat::Unknown;
         RHIResourceState currentState = RHIResourceState::Common;
 
     public:
@@ -19,6 +19,9 @@ namespace Smol
             MTL::Device& device,
             const RHITextureCreateDesc& desc,
             StrView name = {}
+        );
+        MetalTexture(
+            CA::MetalDrawable*
         );
         ~MetalTexture();
 
@@ -31,13 +34,13 @@ namespace Smol
         MTL::Texture* Get() const{ return texture; }
 
         RHIPixelFormat GetFormat() const noexcept RHI_OVERRIDE{
-            return format;
+            return convert(texture->pixelFormat());
         }
         usize GetWidth() const noexcept RHI_OVERRIDE{
-            return width;
+            return texture->width();
         }
         usize GetHeight() const noexcept RHI_OVERRIDE{
-            return height;
+            return texture->height();
         }
 
         RHIResourceState GetState() const noexcept RHI_OVERRIDE{

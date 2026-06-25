@@ -54,7 +54,7 @@ namespace{
             .StencilFailOp = convertStencilOp(desc.stencilFailOp),
             .StencilDepthFailOp = convertStencilOp(desc.depthFailOp),
             .StencilPassOp = convertStencilOp(desc.passOp),
-            .StencilFunc = convertCompareFunc(desc.func),
+            .StencilFunc = convert(desc.func),
         };
     }
 
@@ -250,7 +250,7 @@ namespace Smol
     #endif
     {
         auto& frontend = std::get<RHILegacyFrontendDesc>(desc.preRasterizer);
-        primitiveTopology = convert(frontend.topology);
+        primitiveTopology = ::convert(frontend.topology);
 
         auto vsBytecode = CompiledShader(
             frontend.vertexShader.path,
@@ -277,7 +277,7 @@ namespace Smol
 
                 dst.SemanticName = src.semanticName;
                 dst.SemanticIndex = src.semanticIndex;
-                dst.Format = convertPixelFormat(src.format);
+                dst.Format = convert(src.format);
                 dst.InputSlot = src.inputSlot;
                 dst.AlignedByteOffset = src.alignedByteOffset;
                 dst.InputSlotClass = src.classification == RHIInputClassification::PerVertex ?
@@ -340,7 +340,7 @@ namespace Smol
             dsDesc.DepthEnable = TRUE;
             dsDesc.DepthWriteMask = depthStencil.depthWriteEnable ?
                 D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
-            dsDesc.DepthFunc = convertCompareFunc(depthStencil.depthFunc);
+            dsDesc.DepthFunc = convert(depthStencil.depthFunc);
 
             if(depthStencil.stencil.has_value()){
                 const auto& stencil = depthStencil.stencil.value();

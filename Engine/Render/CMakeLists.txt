@@ -14,6 +14,13 @@ PRIVATE
 smol_rhi_macro(Render)
 smol_declare_private_interface(Render)
 
+if(RENDER_BACKEND STREQUAL "Metal")
+    target_link_libraries(SmolRender
+    PRIVATE
+        Smol::MetalRHI::Private
+    )
+endif()
+
 if(SMOL_ENABLE_TEST)
     add_subdirectory(Sample)
 endif()

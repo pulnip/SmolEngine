@@ -151,7 +151,7 @@ namespace Smol
     ){
         auto& mtlSwapchain = static_cast<MetalSwapchain&>(swapchain);
         std::array<const MTL::Texture*, 1> renderTarget{
-            mtlSwapchain.GetCurrentTexture()
+            static_cast<MetalTexture&>(mtlSwapchain.GetCurrentTexture()).Get()
         };
 
         beginRenderPass(
@@ -548,10 +548,10 @@ namespace Smol
 
         auto& mtlSwapchain = static_cast<MetalSwapchain&>(swapchain);
 
-        auto srcTex = static_cast<MetalTexture&>(src).Get();
-        auto dstTex = mtlSwapchain.GetCurrentTexture();
+        auto& srcTex = static_cast<MetalTexture&>(src);
+        auto& dstTex = static_cast<MetalTexture&>(mtlSwapchain.GetCurrentTexture());
 
-        blitEncoder->copyFromTexture(srcTex, dstTex);
+        blitEncoder->copyFromTexture(srcTex.Get(), dstTex.Get());
     }
 
     void MetalCommandList::Copy(
@@ -645,8 +645,8 @@ namespace Smol
         for(usize i=0; i<texes.size(); ++i){
             auto& colorAttach = *passDesc->colorAttachments()->object(i);
             colorAttach.setTexture(texes[i]);
-            colorAttach.setLoadAction(convert(loadAction));
-            colorAttach.setStoreAction(convert(storeAction));
+            colorAttach.setLoadAction(::convert(loadAction));
+            colorAttach.setStoreAction(::convert(storeAction));
             colorAttach.setClearColor(MTL::ClearColor::Make(
                 clearColor.x,
                 clearColor.y,
@@ -662,8 +662,8 @@ namespace Smol
             );
             auto& depthAttach = *passDesc->depthAttachment();
             depthAttach.setTexture(depthTex);
-            depthAttach.setLoadAction(convert(loadAction));
-            depthAttach.setStoreAction(convert(storeAction));
+            depthAttach.setLoadAction(::convert(loadAction));
+            depthAttach.setStoreAction(::convert(storeAction));
             depthAttach.setClearDepth(clearDS.depth);
         }
 

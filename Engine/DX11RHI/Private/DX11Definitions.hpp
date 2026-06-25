@@ -1,6 +1,7 @@
 #pragma once
 
 #include <d3d11.h>
+#include <dxgi1_6.h>
 #include <wrl/client.h>
 
 namespace Smol
