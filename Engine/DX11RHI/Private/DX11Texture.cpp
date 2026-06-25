@@ -118,14 +118,14 @@ namespace Smol
         return convert(desc.Format);
     }
 
-    usize DX11Texture::GetWidth() const noexcept{
+    u32 DX11Texture::GetWidth() const noexcept{
         D3D11_TEXTURE2D_DESC desc;
         texture->GetDesc(&desc);
 
         return desc.Width;
     }
 
-    usize DX11Texture::GetHeight() const noexcept{
+    u32 DX11Texture::GetHeight() const noexcept{
         D3D11_TEXTURE2D_DESC desc;
         texture->GetDesc(&desc);
 

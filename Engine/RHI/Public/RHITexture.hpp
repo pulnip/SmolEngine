@@ -18,8 +18,8 @@ namespace Smol
         ) = 0;
 
         virtual RHIPixelFormat GetFormat() const noexcept = 0;
-        virtual usize GetWidth() const noexcept = 0;
-        virtual usize GetHeight() const noexcept = 0;
+        virtual u32 GetWidth() const noexcept = 0;
+        virtual u32 GetHeight() const noexcept = 0;
 
         virtual void* GetNative() const noexcept = 0;
 

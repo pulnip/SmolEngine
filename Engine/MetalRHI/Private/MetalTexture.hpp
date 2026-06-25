@@ -36,10 +36,10 @@ namespace Smol
         RHIPixelFormat GetFormat() const noexcept RHI_OVERRIDE{
             return convert(texture->pixelFormat());
         }
-        usize GetWidth() const noexcept RHI_OVERRIDE{
+        u32 GetWidth() const noexcept RHI_OVERRIDE{
             return texture->width();
         }
-        usize GetHeight() const noexcept RHI_OVERRIDE{
+        u32 GetHeight() const noexcept RHI_OVERRIDE{
             return texture->height();
         }
 

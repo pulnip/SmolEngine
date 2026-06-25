@@ -41,8 +41,8 @@ namespace Smol
         ) RHI_OVERRIDE;
 
         RHIPixelFormat GetFormat() const noexcept RHI_OVERRIDE;
-        usize GetWidth() const noexcept RHI_OVERRIDE;
-        usize GetHeight() const noexcept RHI_OVERRIDE;
+        u32 GetWidth() const noexcept RHI_OVERRIDE;
+        u32 GetHeight() const noexcept RHI_OVERRIDE;
 
         void* GetNative() const noexcept RHI_OVERRIDE{
             return texture.Get();
