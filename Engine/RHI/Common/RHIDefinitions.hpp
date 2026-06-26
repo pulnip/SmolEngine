@@ -482,7 +482,10 @@ namespace Smol
     constexpr RHISamplerState LINEAR_WRAP_SAMPLER{
         .minFilter = RHIFilter::Linear,
         .magFilter = RHIFilter::Linear,
-        .mipFilter = RHIFilter::Linear
+        .mipFilter = RHIFilter::Linear,
+        .addressU = RHIAddressMode::Wrap,
+        .addressV = RHIAddressMode::Wrap,
+        .addressW = RHIAddressMode::Wrap
     };
     constexpr RHISamplerState LINEAR_CLAMP_SAMPLER{
         .minFilter = RHIFilter::Linear,
@@ -492,10 +495,54 @@ namespace Smol
         .addressV = RHIAddressMode::Clamp,
         .addressW = RHIAddressMode::Clamp
     };
+    constexpr RHISamplerState LINEAR_MIRROR_SAMPLER{
+        .minFilter = RHIFilter::Linear,
+        .magFilter = RHIFilter::Linear,
+        .mipFilter = RHIFilter::Linear,
+        .addressU = RHIAddressMode::Mirror,
+        .addressV = RHIAddressMode::Mirror,
+        .addressW = RHIAddressMode::Mirror
+    };
+    constexpr RHISamplerState LINEAR_BORDER_SAMPLER{
+        .minFilter = RHIFilter::Linear,
+        .magFilter = RHIFilter::Linear,
+        .mipFilter = RHIFilter::Linear,
+        .addressU = RHIAddressMode::Border,
+        .addressV = RHIAddressMode::Border,
+        .addressW = RHIAddressMode::Border
+    };
+
     constexpr RHISamplerState NEAREST_WRAP_SAMPLER{
         .minFilter = RHIFilter::Nearest,
         .magFilter = RHIFilter::Nearest,
-        .mipFilter = RHIFilter::Nearest
+        .mipFilter = RHIFilter::Nearest,
+        .addressU = RHIAddressMode::Wrap,
+        .addressV = RHIAddressMode::Wrap,
+        .addressW = RHIAddressMode::Wrap
+    };
+    constexpr RHISamplerState NEAREST_CLAMP_SAMPLER{
+        .minFilter = RHIFilter::Nearest,
+        .magFilter = RHIFilter::Nearest,
+        .mipFilter = RHIFilter::Nearest,
+        .addressU = RHIAddressMode::Clamp,
+        .addressV = RHIAddressMode::Clamp,
+        .addressW = RHIAddressMode::Clamp
+    };
+    constexpr RHISamplerState NEAREST_MIRROR_SAMPLER{
+        .minFilter = RHIFilter::Nearest,
+        .magFilter = RHIFilter::Nearest,
+        .mipFilter = RHIFilter::Nearest,
+        .addressU = RHIAddressMode::Mirror,
+        .addressV = RHIAddressMode::Mirror,
+        .addressW = RHIAddressMode::Mirror
+    };
+    constexpr RHISamplerState NEAREST_BORDER_SAMPLER{
+        .minFilter = RHIFilter::Nearest,
+        .magFilter = RHIFilter::Nearest,
+        .mipFilter = RHIFilter::Nearest,
+        .addressU = RHIAddressMode::Border,
+        .addressV = RHIAddressMode::Border,
+        .addressW = RHIAddressMode::Border
     };
 
     constexpr u32 RHI_FRAMES_IN_FLIGHT = 3;
