@@ -90,7 +90,11 @@ int main(void){
                 .path = "Engine/Shader/ParallaxMountains.frag.metal",
                 .entryPoint = "fs_main"
             #endif
-            }
+            },
+            .renderTargetFormats = {
+                RHIPixelFormat::RGBA8_UNORM
+            },
+            .renderTargetCount = 1
         });
         auto& reflInfo = pipeline->GetInfo();
         auto& fsInfo = reflInfo.fsInfo;
@@ -194,6 +198,7 @@ int main(void){
                 break;
 
             timer.NewFrame();
+            swapchain->AcquireNextImage();
 
             cmdList->Begin();
 

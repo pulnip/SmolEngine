@@ -50,7 +50,11 @@ int main(void){
                     .dstBlend = RHIBlend::InvSrcAlpha
                 }
             }
-        }
+        },
+        .renderTargetFormats = {
+            RHIPixelFormat::RGBA8_UNORM
+        },
+        .renderTargetCount = 1
     });
 
     WindowConfig windowConfig{
@@ -110,6 +114,7 @@ int main(void){
         if(!keepRunning) [[unlikely]]
             break;
 
+        swapchain->AcquireNextImage();
         cmdList->Begin();
 
         std::array colorAttachments = {
