@@ -9,7 +9,7 @@ PRIVATE
     Smol::RHI
 )
 
-smol_rhi_macro(UI)
+smol_rhi_macro(SmolUI)
 if(RENDER_BACKEND STREQUAL "DX11")
     target_link_libraries(SmolUI
     PRIVATE

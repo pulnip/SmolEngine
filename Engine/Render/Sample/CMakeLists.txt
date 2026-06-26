@@ -1,9 +1,9 @@
 function(smol_render_sample NAME)
     cmake_parse_arguments(ARG "" "SOURCES" "DEPENDS" ${ARGN})
 
-    add_executable(Smol${NAME}Sample ${ARG_SOURCES})
+    add_executable(${NAME}Sample ${ARG_SOURCES})
 
-    target_link_libraries(Smol${NAME}Sample
+    target_link_libraries(${NAME}Sample
     PRIVATE
         ${RENDER_BACKEND_TARGET}
         Smol::Render
