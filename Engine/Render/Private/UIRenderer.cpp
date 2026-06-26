@@ -1,3 +1,4 @@
+#include <array>
 #include <imgui_impl_sdl3.h>
 #include "UIRenderer.hpp"
 #include "StringUtil.hpp"
@@ -87,12 +88,16 @@ namespace Smol
         ImGui::Render();
         ImDrawData* draw_data = ImGui::GetDrawData();
 
-        cmdList.BeginRenderPass(*swapchain,
-            {},
-            nullptr,
-            {},
-            RHILoadAction::Load
-        );
+        std::array colorAttachments = {
+            RHIColorAttachment{
+                .texture = &swapchain->GetCurrentTexture(),
+                .loadAction = RHILoadAction::Load,
+                .storeAction = RHIStoreAction::Store
+            }
+        };
+        cmdList.BeginRenderPass(RHIRenderPassDesc{
+            .colorAttachments = colorAttachments
+        });
         cmdList.SetViewport(RHIViewport{
             .x = 0, .y = 0,
             .width = static_cast<f32>(swapchain->GetWidth()),
@@ -107,6 +112,7 @@ namespace Smol
 #elif defined(SMOL_METALRHI)
 
 #include <imgui_impl_metal.h>
+#include "RHITexture.hpp"
 
 namespace Smol
 {
@@ -139,7 +145,7 @@ namespace Smol
         colorAttachment->setLoadAction(MTL::LoadActionLoad);
         colorAttachment->setStoreAction(MTL::StoreActionStore);
         colorAttachment->setTexture(static_cast<MTL::Texture*>(
-            swapchain->GetCurrentNativeTexture()
+            swapchain->GetCurrentTexture().GetNative()
         ));
 
         ImGui_ImplMetal_NewFrame(uiPassDesc);

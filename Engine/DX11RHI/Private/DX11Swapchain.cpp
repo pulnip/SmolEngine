@@ -3,6 +3,7 @@
 #include "DX11Definitions.hpp"
 #include "DX11Util.hpp"
 #include "DX11Swapchain.hpp"
+#include "DX11Texture.hpp"
 
 namespace Smol
 {
@@ -14,14 +15,11 @@ namespace Smol
         : device(device)
         , vsync(desc.vsync)
         , allowTearing(desc.allowTearing)
-        , width(desc.bufferDesc.width)
-        , height(desc.bufferDesc.height)
-        , format(desc.bufferDesc.format)
     {
         DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {
             .Width = desc.bufferDesc.width,
             .Height = desc.bufferDesc.height,
-            .Format = convertPixelFormat(desc.bufferDesc.format),
+            .Format = convert(desc.bufferDesc.format),
             .Stereo = FALSE,
             // No MSAA for swapchain
             .SampleDesc = {1, 0},
@@ -48,7 +46,12 @@ namespace Smol
             nullptr,
             &swapchain
         );
-        createBackBufferResource();
+
+        backBuffer = std::make_unique<DX11Texture>(
+            device,
+            *swapchain.Get()
+        );
+
     #if defined(_DEBUG) || !defined(NDEBUG)
         if(!desc.debugName.empty()){
             swapchain->SetPrivateData(
@@ -73,11 +76,33 @@ namespace Smol
             0, newWidth, newHeight,
             DXGI_FORMAT_UNKNOWN, desc.Flags
         );
-        // cache new size
-        width = newWidth;
-        height = newHeight;
 
-        createBackBufferResource();
+        // recreate back buffer resource
+        backBuffer = std::make_unique<DX11Texture>(
+            device,
+            *swapchain.Get()
+        );
+    }
+
+    RHIPixelFormat DX11Swapchain::GetFormat() const noexcept{
+        DXGI_SWAP_CHAIN_DESC1 desc;
+        swapchain->GetDesc1(&desc);
+
+        return convert(desc.Format);
+    }
+
+    u32 DX11Swapchain::GetWidth() const noexcept{
+        DXGI_SWAP_CHAIN_DESC1 desc;
+        swapchain->GetDesc1(&desc);
+
+        return desc.Width;
+    }
+
+    u32 DX11Swapchain::GetHeight() const noexcept{
+        DXGI_SWAP_CHAIN_DESC1 desc;
+        swapchain->GetDesc1(&desc);
+
+        return desc.Height;
     }
 
     void DX11Swapchain::Present() const{
@@ -88,27 +113,6 @@ namespace Smol
         swapchain->Present(
             syncInterval,
             flags
-        );
-    }
-
-    Texture* DX11Swapchain::GetCurrentTexture() const noexcept{
-        return backBuffer.Get();
-    }
-
-    RTV* DX11Swapchain::GetCurrentRTV() const noexcept{
-        return rtv.Get();
-    }
-
-    void DX11Swapchain::createBackBufferResource(){
-        swapchain->GetBuffer(
-            0,
-            __uuidof(Texture),
-            reinterpret_cast<void**>(backBuffer.GetAddressOf())
-        );
-        device.CreateRenderTargetView(
-            backBuffer.Get(),
-            nullptr,
-            &rtv
         );
     }
 }

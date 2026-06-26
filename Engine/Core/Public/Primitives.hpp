@@ -165,6 +165,22 @@ namespace Smol
 #endif
     static_assert(std::is_standard_layout_v<Vec4>);
 
+    // xyzw = rgba
+    using Color = Vec4;
+
+    namespace Colors{
+        constexpr Color Black   = {0, 0, 0, 1};
+        constexpr Color Red     = {1, 0, 0, 1};
+        constexpr Color Green   = {0, 1, 0, 1};
+        constexpr Color Blue    = {0, 0, 1, 1};
+        constexpr Color Cyan    = {0, 1, 1, 1};
+        constexpr Color Magenta = {1, 0, 1, 1};
+        constexpr Color Yellow  = {1, 1, 0, 1};
+        constexpr Color White   = {1, 1, 1, 1};
+
+        constexpr Color Grey    = {0.5f, 0.5f, 0.5f, 1};
+    }
+
     inline constexpr Vec2::operator Vec3() const noexcept{
         return {x, y, 0.0f};
     }
@@ -423,6 +439,17 @@ namespace Smol
     struct Size2D{
         u32 x = 0, y = 0;
     };
+
+    struct Size3D{
+        u32 x = 1, y = 1, z = 1;
+    };
+
+    inline bool operator==(const Size3D& lhs, const Size3D& rhs) noexcept{
+        return lhs.x==rhs.x && lhs.y==rhs.y && lhs.z==rhs.z;
+    }
+    inline bool operator<=(const Size3D& lhs, const Size3D& rhs) noexcept{
+        return lhs.x<=rhs.x && lhs.y<=rhs.y && lhs.z<=rhs.z;
+    }
 
     struct Transform;
 

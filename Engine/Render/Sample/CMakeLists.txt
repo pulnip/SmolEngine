@@ -1,9 +1,9 @@
 function(smol_render_sample NAME)
     cmake_parse_arguments(ARG "" "SOURCES" "DEPENDS" ${ARGN})
 
-    add_executable(Smol${NAME}Sample ${ARG_SOURCES})
+    add_executable(${NAME}Sample ${ARG_SOURCES})
 
-    target_link_libraries(Smol${NAME}Sample
+    target_link_libraries(${NAME}Sample
     PRIVATE
         ${RENDER_BACKEND_TARGET}
         Smol::Render
@@ -11,6 +11,8 @@ function(smol_render_sample NAME)
         Smol::Log
         ${ARG_DEPENDS}
     )
+
+    smol_rhi_macro(${NAME}Sample)
 endfunction()
 
 smol_render_sample(SpriteRenderer
@@ -26,3 +28,24 @@ DEPENDS
     SDL3::SDL3
     Smol::Platform::Private
 )
+
+smol_render_sample(ParallaxMountain
+SOURCES ParallaxMountains.cpp
+DEPENDS
+    SDL3::SDL3
+    Smol::Platform::Private
+)
+
+if(RENDER_BACKEND STREQUAL "DX11")
+    target_link_libraries(ParallaxMountainSample
+    PRIVATE
+        Smol::DX11RHI
+        Smol::D2DCanvas
+    )
+elseif(RENDER_BACKEND STREQUAL "Metal")
+    target_link_libraries(ParallaxMountainSample
+    PRIVATE
+        Smol::MetalRHI
+        Smol::ImGuiCanvas
+    )
+endif()

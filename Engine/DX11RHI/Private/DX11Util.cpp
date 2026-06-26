@@ -3,7 +3,7 @@
 
 namespace Smol
 {
-    DXGI_FORMAT convertPixelFormat(RHIPixelFormat format, bool isShaderResource, bool isDepthTarget){
+    DXGI_FORMAT convert(RHIPixelFormat format, bool isShaderResource, bool isDepthTarget){
         using enum RHIPixelFormat;
 
         switch(format){
@@ -81,7 +81,7 @@ namespace Smol
         }
     }
 
-    D3D11_COMPARISON_FUNC convertCompareFunc(RHIComparisonFunc func){
+    D3D11_COMPARISON_FUNC convert(RHIComparisonFunc func){
         using enum RHIComparisonFunc;
 
         switch(func){
@@ -95,6 +95,76 @@ namespace Smol
         case Always:       return D3D11_COMPARISON_ALWAYS;
         default:
             std::unreachable();
+        }
+    }
+
+    RHIPixelFormat convert(DXGI_FORMAT format){
+        using enum RHIPixelFormat;
+
+        switch(format){
+        case DXGI_FORMAT_UNKNOWN:              return Unknown;
+        // 8-bit formats
+        case DXGI_FORMAT_R8_UNORM:             return R8_UNORM;
+        case DXGI_FORMAT_R8_SNORM:             return R8_SNORM;
+        case DXGI_FORMAT_R8_UINT:              return R8_UINT;
+        case DXGI_FORMAT_R8_SINT:              return R8_SINT;
+        // 16-bit formats
+        case DXGI_FORMAT_R16_UNORM:            return R16_UNORM;
+        case DXGI_FORMAT_R16_SNORM:            return R16_SNORM;
+        case DXGI_FORMAT_R16_UINT:             return R16_UINT;
+        case DXGI_FORMAT_R16_SINT:             return R16_SINT;
+        case DXGI_FORMAT_R16_FLOAT:            return R16_FLOAT;
+
+        case DXGI_FORMAT_R8G8_UNORM:           return RG8_UNORM;
+        case DXGI_FORMAT_R8G8_SNORM:           return RG8_SNORM;
+        case DXGI_FORMAT_R8G8_UINT:            return RG8_UINT;
+        case DXGI_FORMAT_R8G8_SINT:            return RG8_SINT;
+        // 32-bit formats
+        case DXGI_FORMAT_R32_UINT:             return R32_UINT;
+        case DXGI_FORMAT_R32_SINT:             return R32_SINT;
+        case DXGI_FORMAT_R32_FLOAT:            return R32_FLOAT;
+
+        case DXGI_FORMAT_R16G16_UNORM:         return RG16_UNORM;
+        case DXGI_FORMAT_R16G16_SNORM:         return RG16_SNORM;
+        case DXGI_FORMAT_R16G16_UINT:          return RG16_UINT;
+        case DXGI_FORMAT_R16G16_SINT:          return RG16_SINT;
+        case DXGI_FORMAT_R16G16_FLOAT:         return RG16_FLOAT;
+
+        case DXGI_FORMAT_R8G8B8A8_UNORM:       return RGBA8_UNORM;
+        case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:  return RGBA8_UNORM_SRGB;
+        case DXGI_FORMAT_R8G8B8A8_SNORM:       return RGBA8_SNORM;
+        case DXGI_FORMAT_R8G8B8A8_UINT:        return RGBA8_UINT;
+        case DXGI_FORMAT_R8G8B8A8_SINT:        return RGBA8_SINT;
+
+        case DXGI_FORMAT_B8G8R8A8_UNORM:       return BGRA8_UNORM;
+        case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:  return BGRA8_UNORM_SRGB;
+
+        // 64-bit formats
+        case DXGI_FORMAT_R32G32_UINT:          return RG32_UINT;
+        case DXGI_FORMAT_R32G32_SINT:          return RG32_SINT;
+        case DXGI_FORMAT_R32G32_FLOAT:         return RG32_FLOAT;
+
+        // 96-bit formats
+        case DXGI_FORMAT_R32G32B32_FLOAT:      return RGB32_FLOAT;
+
+        case DXGI_FORMAT_R16G16B16A16_UNORM:   return RGBA16_UNORM;
+        case DXGI_FORMAT_R16G16B16A16_SNORM:   return RGBA16_SNORM;
+        case DXGI_FORMAT_R16G16B16A16_UINT:    return RGBA16_UINT;
+        case DXGI_FORMAT_R16G16B16A16_SINT:    return RGBA16_SINT;
+        case DXGI_FORMAT_R16G16B16A16_FLOAT:   return RGBA16_FLOAT;
+
+        // 128-bit formats
+        case DXGI_FORMAT_R32G32B32A32_UINT:    return RGBA32_UINT;
+        case DXGI_FORMAT_R32G32B32A32_SINT:    return RGBA32_SINT;
+        case DXGI_FORMAT_R32G32B32A32_FLOAT:   return RGBA32_FLOAT;
+
+        // Depth/stencil formats
+        case DXGI_FORMAT_D16_UNORM:            return D16_UNORM;
+        case DXGI_FORMAT_D24_UNORM_S8_UINT:    return D24_UNORM_S8_UINT;
+        case DXGI_FORMAT_D32_FLOAT:            return D32_FLOAT;
+        case DXGI_FORMAT_D32_FLOAT_S8X24_UINT: return D32_FLOAT_S8_UINT;
+        default:
+            return Unknown;
         }
     }
 }

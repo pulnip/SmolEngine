@@ -1,6 +1,3 @@
-#include <array>
-#include <cstddef>
-#include <span>
 #include <stdexcept>
 #include <utility>
 #include <Metal/Metal.hpp>
@@ -11,6 +8,7 @@
 #include "MetalSampler.hpp"
 #include "MetalSwapchain.hpp"
 #include "MetalTexture.hpp"
+#include "RHIDefinitions.hpp"
 
 #include "MetalCommandList.hpp"
 
@@ -111,55 +109,52 @@ namespace Smol
         }
     }
 
-    void MetalCommandList::BeginRenderPass(
-        std::span<RHITexture*> renderTargets,
-        const RHIClearColor& clearColor,
-        RHITexture* depthTarget,
-        const RHIClearDepthStencil& clearDS,
-        RHILoadAction loadAction,
-        RHIStoreAction storeAction,
-        CStr debugName
-    ){
-        SMOL_ASSERT(renderTargets.size() > 0);
+    void MetalCommandList::BeginRenderPass(const RHIRenderPassDesc& desc){
+        SMOL_ASSERT(renderEncoder == nullptr,
+            "Did you call RHICommandList::endRenderPass()?"
+        );
+        SMOL_ASSERT(computeEncoder == nullptr);
+        if(blitEncoder != nullptr){
+            blitEncoder->endEncoding();
+            blitEncoder = nullptr;
+        }
+        SMOL_ASSERT(desc.colorAttachments.size() > 0);
 
-        std::vector<const MTL::Texture*> texes;
-        texes.reserve(renderTargets.size());
+        auto passDesc = MTL::RenderPassDescriptor::alloc()->init();
 
-        for(const auto& renderTarget: renderTargets){
-            auto tex = static_cast<MetalTexture*>(renderTarget)->Get();
-
-            SMOL_ASSERT(tex != nullptr);
-            texes.push_back(tex);
+        // Color Attachment
+        for(usize i=0; i<desc.colorAttachments.size(); ++i){
+            auto& attachment = desc.colorAttachments[i];
+            auto& mtlAttach = *passDesc->colorAttachments()->object(i);
+            mtlAttach.setTexture(static_cast<MetalTexture*>(attachment.texture)->Get());
+            mtlAttach.setLoadAction(::convert(attachment.loadAction));
+            mtlAttach.setStoreAction(::convert(attachment.storeAction));
+            mtlAttach.setClearColor(MTL::ClearColor::Make(
+                attachment.clearColor.x,
+                attachment.clearColor.y,
+                attachment.clearColor.z,
+                attachment.clearColor.w
+            ));
         }
 
-        beginRenderPass(
-            texes, clearColor,
-            depthTarget, clearDS,
-            loadAction, storeAction,
-            debugName
-        );
-    }
+        // Depth Attachment
+        if(desc.depthAttachment.has_value()){
+            auto& attachment = *desc.depthAttachment;
+            auto& mtlAttach = *passDesc->depthAttachment();
+            mtlAttach.setTexture(static_cast<MetalTexture*>(attachment.texture)->Get());
+            mtlAttach.setLoadAction(::convert(attachment.loadAction));
+            mtlAttach.setStoreAction(::convert(attachment.storeAction));
+            mtlAttach.setClearDepth(attachment.clearDepthStencil.depth);
+        }
 
-    void MetalCommandList::BeginRenderPass(
-        RHISwapchain& swapchain,
-        const RHIClearColor& clearColor,
-        RHITexture* depthTarget,
-        const RHIClearDepthStencil& clearDS,
-        RHILoadAction loadAction,
-        RHIStoreAction storeAction,
-        CStr debugName
-    ){
-        auto& mtlSwapchain = static_cast<MetalSwapchain&>(swapchain);
-        std::array<const MTL::Texture*, 1> renderTarget{
-            mtlSwapchain.GetCurrentTexture()
-        };
+        renderEncoder = commandBuffer->renderCommandEncoder(passDesc);
+        if(!desc.debugName.empty()){
+            renderEncoder->setLabel(
+                NS::String::string(desc.debugName.c_str(), NS::UTF8StringEncoding)
+            );
+        }
 
-        beginRenderPass(
-            renderTarget, clearColor,
-            depthTarget, clearDS,
-            loadAction, storeAction,
-            debugName
-        );
+        passDesc->release();
     }
 
     void MetalCommandList::EndRenderPass(){
@@ -474,7 +469,7 @@ namespace Smol
         computeEncoder = nullptr;
     }
 
-    void MetalCommandList::Dispatch(RHISize3D gridSize){
+    void MetalCommandList::Dispatch(Size3D gridSize){
         SMOL_ASSERT(computeEncoder != nullptr,
             "Did you call RHICommandList::beginCompute()?"
         );
@@ -548,10 +543,10 @@ namespace Smol
 
         auto& mtlSwapchain = static_cast<MetalSwapchain&>(swapchain);
 
-        auto srcTex = static_cast<MetalTexture&>(src).Get();
-        auto dstTex = mtlSwapchain.GetCurrentTexture();
+        auto& srcTex = static_cast<MetalTexture&>(src);
+        auto& dstTex = static_cast<MetalTexture&>(mtlSwapchain.GetCurrentTexture());
 
-        blitEncoder->copyFromTexture(srcTex, dstTex);
+        blitEncoder->copyFromTexture(srcTex.Get(), dstTex.Get());
     }
 
     void MetalCommandList::Copy(
@@ -619,59 +614,6 @@ namespace Smol
         else if(blitEncoder != nullptr){
             blitEncoder->insertDebugSignpost(str);
         }
-    }
-
-    void MetalCommandList::beginRenderPass(
-        std::span<const MTL::Texture*> texes,
-        const RHIClearColor& clearColor,
-        RHITexture* depthTarget,
-        const RHIClearDepthStencil& clearDS,
-        RHILoadAction loadAction,
-        RHIStoreAction storeAction,
-        CStr debugName
-    ) noexcept{
-        SMOL_ASSERT(renderEncoder == nullptr,
-            "Did you call RHICommandList::endRenderPass()?"
-        );
-        SMOL_ASSERT(computeEncoder == nullptr);
-        if(blitEncoder != nullptr){
-            blitEncoder->endEncoding();
-            blitEncoder = nullptr;
-        }
-
-        auto passDesc = MTL::RenderPassDescriptor::alloc()->init();
-
-        // Color Attachment
-        for(usize i=0; i<texes.size(); ++i){
-            auto& colorAttach = *passDesc->colorAttachments()->object(i);
-            colorAttach.setTexture(texes[i]);
-            colorAttach.setLoadAction(convert(loadAction));
-            colorAttach.setStoreAction(convert(storeAction));
-            colorAttach.setClearColor(MTL::ClearColor::Make(
-                clearColor.v[0], clearColor.v[1], clearColor.v[2], clearColor.v[3]
-            ));
-        }
-
-        // Depth Attachment
-        if(depthTarget != nullptr){
-            auto depthTex = static_cast<MTL::Texture*>(
-                static_cast<MetalTexture&>(*depthTarget).Get()
-            );
-            auto& depthAttach = *passDesc->depthAttachment();
-            depthAttach.setTexture(depthTex);
-            depthAttach.setLoadAction(convert(loadAction));
-            depthAttach.setStoreAction(convert(storeAction));
-            depthAttach.setClearDepth(clearDS.depth);
-        }
-
-        renderEncoder = commandBuffer->renderCommandEncoder(passDesc);
-        if(debugName != nullptr){
-            renderEncoder->setLabel(
-                NS::String::string(debugName, NS::UTF8StringEncoding)
-            );
-        }
-
-        passDesc->release();
     }
 
     void MetalCommandList::ensureBlitEncoder(){

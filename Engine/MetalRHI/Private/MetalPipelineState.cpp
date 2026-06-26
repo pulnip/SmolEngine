@@ -160,9 +160,11 @@ namespace{
 
     MTL::Function* compileShader(
         MTL::Device& device,
-        const std::filesystem::path& filePath,
-        Smol::StrView entryPoint
+        const Smol::RHIShaderDesc& desc
     ){
+        auto& filePath = desc.path;
+        auto& entryPoint = desc.entryPoint;
+
         using namespace Smol;
 
         NS::Error* error = nullptr;
@@ -282,27 +284,28 @@ namespace Smol
         const RHIGraphicsPipelineStateDesc& desc,
         StrView name
     )
-        : vs(compileShader(device, desc.vertexShaderPath, desc.vertexShaderEntryPoint))
-        , fs(compileShader(device, desc.fragmentShaderPath, desc.fragmentShaderEntryPoint))
-        , debugName(name)
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        : debugName(name)
+    #endif
     {
         AutoreleasePoolScope _;
 
-        if(vs == nullptr || fs == nullptr){
-            throw std::runtime_error("Vertex shader or Fragment shader is null");
-        }
-
+        auto& frontend = std::get<RHILegacyFrontendDesc>(desc.preRasterizer);
         auto pipelineDesc = MTL::RenderPipelineDescriptor::alloc()->init();
-        pipelineDesc->setVertexFunction(vs);
-        pipelineDesc->setFragmentFunction(fs);
+
+        topology = ::convert(frontend.topology);
+
+        pipelineDesc->setVertexFunction(
+            compileShader(device, frontend.vertexShader)
+        );
 
         // Vertex Layout
-        if(desc.vertexLayout.has_value()){
-            const auto& vertexLayout = desc.vertexLayout.value();
+        if(frontend.vertexLayout.has_value()){
+            const auto& vertexLayout = frontend.vertexLayout.value();
             auto vertexDesc = MTL::VertexDescriptor::alloc()->init();
-            size_t stride = 0;
+            NS::UInteger stride = 0;
 
-            for(u32 i = 0; i < vertexLayout.size(); ++i){
+            for(usize i = 0; i < vertexLayout.size(); ++i){
                 const auto& elem = vertexLayout[i];
                 auto attr = vertexDesc->attributes()->object(i);
 
@@ -323,11 +326,15 @@ namespace Smol
             vertexDesc->release();
         }
 
+        pipelineDesc->setFragmentFunction(
+            compileShader(device, desc.fragmentShader)
+        );
+
         // Render Target Formats & Blend States
-        for(u32 i = 0; i < desc.renderTargetCount; ++i){
+        for(usize i = 0; i < desc.renderTargetCount; ++i){
             auto colorAttach = pipelineDesc->colorAttachments()->object(i);
             colorAttach->setPixelFormat(
-                convertPixelFormat(desc.renderTargetFormats[i])
+                convert(desc.renderTargetFormats[i])
             );
             MTL::ColorWriteMask writeMask = MTL::ColorWriteMaskAll;
 
@@ -380,7 +387,7 @@ namespace Smol
             SMOL_ASSERT(depthStencilFormat != RHIPixelFormat::Unknown);
 
             pipelineDesc->setDepthAttachmentPixelFormat(
-                convertPixelFormat(depthStencilFormat)
+                convert(depthStencilFormat)
             );
         }
 
@@ -417,7 +424,6 @@ namespace Smol
 
         // Store rasterizer state for command list
         rasterizerState = desc.rasterizer;
-        topology = ::convert(desc.topology);
     }
 
     MetalGraphicsPipelineState::~MetalGraphicsPipelineState(){
@@ -428,14 +434,6 @@ namespace Smol
         if(depthStencilState != nullptr){
             depthStencilState->release();
             depthStencilState = nullptr;
-        }
-        if(fs != nullptr){
-            fs->release();
-            fs = nullptr;
-        }
-        if(vs != nullptr){
-            vs->release();
-            vs = nullptr;
         }
     }
 
@@ -504,7 +502,7 @@ namespace Smol
         const RHIComputePipelineStateDesc& desc,
         StrView name
     )
-        : cs(compileShader(device, desc.computeShaderPath, desc.computeShaderEntryPoint))
+        : cs(compileShader(device, desc.computeShader))
         , debugName(name)
     {
         AutoreleasePoolScope _;
@@ -569,7 +567,7 @@ namespace Smol
 
     MTL::Size MetalComputePipelineState::DefaultGroupSize(
         u32 numThreads,
-        const RHISize3D& gridSize
+        const Size3D& gridSize
     ) noexcept{
         auto width = std::min(numThreads, gridSize.x);
         numThreads /= width;

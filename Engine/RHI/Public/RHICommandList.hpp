@@ -1,6 +1,5 @@
 #pragma once
 
-#include <span>
 #include "RHIFWD.hpp"
 #include "Semantics.hpp"
 #include "RHIDefinitions.hpp"
@@ -19,26 +18,7 @@ namespace Smol
         virtual void Reset() = 0;
 
         // Render pass control
-        virtual void BeginRenderPass(
-            std::span<RHITexture*> renderTargets,
-            const RHIClearColor& clearColor = {},
-            RHITexture* depthTarget = nullptr,
-            const RHIClearDepthStencil& clearDS = {},
-            RHILoadAction loadAction = RHILoadAction::Load,
-            RHIStoreAction storeAction = RHIStoreAction::Store,
-            CStr debugName = nullptr
-        ) = 0;
-
-        virtual void BeginRenderPass(
-            RHISwapchain& backBuffer,
-            const RHIClearColor& clearColor = {},
-            RHITexture* depthTarget = nullptr,
-            const RHIClearDepthStencil& clearDS = {},
-            RHILoadAction loadAction  = RHILoadAction::Load,
-            RHIStoreAction storeAction = RHIStoreAction::Store,
-            CStr debugName = nullptr
-        ) = 0;
-
+        virtual void BeginRenderPass(const RHIRenderPassDesc&) = 0;
         virtual void EndRenderPass() = 0;
 
         // Pipeline state
@@ -128,7 +108,7 @@ namespace Smol
 
         // Compute dispatch
         virtual void Dispatch(
-            RHISize3D gridSize
+            Size3D gridSize
         ) = 0;
 
         // Resource barriers (state transitions)

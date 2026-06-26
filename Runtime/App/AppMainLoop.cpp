@@ -281,16 +281,18 @@ namespace Smol
 
         // TODO. use integrated Renderer class
         // Begin RenderPass for sceneTexture
-        RHIClearColor sceneClearColor{.v = {
-            0.5f, 0.5f, 0.5f, 1.0f
-        }};
-        RHITexture* renderTargets[1] = {scene.get()};
-        cmdList.BeginRenderPass(renderTargets,
-            sceneClearColor,
-            nullptr,
-            {},
-            RHILoadAction::Clear
-        );
+        Color sceneClearColor = Colors::Grey;
+        std::array colorAttachments = {
+            RHIColorAttachment{
+                .texture = scene.get(),
+                .loadAction = RHILoadAction::Clear,
+                .storeAction = RHIStoreAction::Store,
+                .clearColor = sceneClearColor
+            }
+        };
+        cmdList.BeginRenderPass(RHIRenderPassDesc{
+            .colorAttachments = colorAttachments
+        });
         cmdList.SetViewport(RHIViewport{
             .x = 0, .y = 0,
             // fill all sceneTexture

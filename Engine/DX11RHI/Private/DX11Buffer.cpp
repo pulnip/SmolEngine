@@ -18,7 +18,6 @@ namespace Smol
         StrView name
     )
         : device(device), context(context)
-        , usage(desc.usage), size(desc.size)
     {
         using enum RHIBufferUsage;
         using enum RHIMemoryAccess;
@@ -114,7 +113,7 @@ namespace Smol
             u32 srcSize,
             u32 offset
         ){
-            SMOL_ASSERT(srcSize <= size - offset);
+            SMOL_ASSERT(srcSize <= GetSize() - offset);
 
             D3D11_MAPPED_SUBRESOURCE mapped;
             context.Map(
@@ -142,7 +141,7 @@ namespace Smol
         u32 dstSize,
         u32 offset
     ){
-        SMOL_ASSERT(dstSize <= size - offset);
+        SMOL_ASSERT(dstSize <= GetSize() - offset);
         SMOL_ASSERT(stagingBuffer != nullptr,
             "download() requires RHIMemoryAccess::CPURead"
         );
@@ -186,6 +185,13 @@ namespace Smol
         );
     }
 
+    u32 DX11Buffer::GetSize() const noexcept{
+        D3D11_BUFFER_DESC desc;
+        buffer->GetDesc(&desc);
+
+        return desc.ByteWidth;
+    }
+
     SRV* DX11Buffer::GetOrCreateSRV(const RHIBufferViewDesc& desc){
         if(auto it = srvs.find(desc); it != srvs.end())
             return it->second.Get();
@@ -206,7 +212,7 @@ namespace Smol
             [&desc](const RHIBufferViewDesc::TypedConfig& c){
                 const u32 bpp = getBytesPerPixel(c.format);
                 return D3D11_SHADER_RESOURCE_VIEW_DESC{
-                    .Format = convertPixelFormat(c.format),
+                    .Format = convert(c.format),
                     .ViewDimension = D3D11_SRV_DIMENSION_BUFFER,
                     .Buffer = {
                         .FirstElement = desc.offset / bpp,
@@ -259,7 +265,7 @@ namespace Smol
             [&desc](const RHIBufferViewDesc::TypedConfig& c){
                 const u32 bpp = getBytesPerPixel(c.format);
                 return D3D11_UNORDERED_ACCESS_VIEW_DESC{
-                    .Format = convertPixelFormat(c.format),
+                    .Format = convert(c.format),
                     .ViewDimension = D3D11_UAV_DIMENSION_BUFFER,
                     .Buffer = {
                         .FirstElement = desc.offset / bpp,

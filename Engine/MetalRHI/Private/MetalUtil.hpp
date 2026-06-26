@@ -6,6 +6,8 @@
 
 namespace Smol
 {
-    MTL::PixelFormat convertPixelFormat(RHIPixelFormat);
+    MTL::PixelFormat convert(RHIPixelFormat);
     MTL::CompareFunction convert(RHIComparisonFunc);
+
+    RHIPixelFormat convert(MTL::PixelFormat);
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <filesystem>
 #include <limits>
 #include <optional>
@@ -9,6 +10,7 @@
 #include "EnumUtil.hpp"
 #include "HashUtil.hpp"
 #include "Primitives.hpp"
+#include "RHIFWD.hpp"
 #include "StringUtil.hpp"
 
 namespace Smol
@@ -21,7 +23,9 @@ namespace Smol
     enum class RHIMemoryAccess: u8{
         GPUOnly  = 0,
         CPUWrite = 1,
-        CPURead  = 2
+        CPURead  = 2,
+        // for TBDR.
+        Transient = 3
     };
 
     enum class RHIBufferUsage: u16{
@@ -179,10 +183,6 @@ namespace Smol
         Predication
     };
 
-    struct RHIClearColor{
-        f32 v[4] = { 0, 0, 0, 1 };
-    };
-
     struct RHIClearDepthStencil{
         f32 depth = 1.0f;
         u8 stencil = 0;
@@ -198,9 +198,10 @@ namespace Smol
         RHITextureUsage usage = RHITextureUsage::None;
         RHIMemoryAccess access = RHIMemoryAccess::GPUOnly;
         RHIResourceState initialState = RHIResourceState::Common;
-        RHIClearColor clearColor{};
-        RHIClearDepthStencil clearDepthStencil{};
         const void* initialData = nullptr;
+        // ClearColor for optimize (only Valid at D3D12)
+        Color clearColor = Colors::Black;
+        RHIClearDepthStencil clearDepthStencil{};
     };
 
     enum class RHIShaderStage: u8{
@@ -218,6 +219,28 @@ namespace Smol
     enum class RHIStoreAction: u8{
         Store,    // Save contents
         DontCare, // Don't care about existing contents
+    };
+
+    struct RHIColorAttachment{
+        RHITexture* texture = nullptr;
+        RHILoadAction loadAction = RHILoadAction::Clear;
+        RHIStoreAction storeAction = RHIStoreAction::Store;
+        Color clearColor = Colors::Black;
+    };
+
+    struct RHIDepthAttachment{
+        RHITexture* texture = nullptr;
+        RHILoadAction loadAction = RHILoadAction::Clear;
+        RHIStoreAction storeAction = RHIStoreAction::Store;
+        RHIClearDepthStencil clearDepthStencil{};
+    };
+
+    struct RHIRenderPassDesc{
+        std::span<const RHIColorAttachment> colorAttachments;
+        std::optional<RHIDepthAttachment> depthAttachment = std::nullopt;
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        Str debugName;
+    #endif
     };
 
     enum class RHIIndexFormat{
@@ -250,6 +273,31 @@ namespace Smol
         RHIInputClassification classification;
         u32 instanceDataStepRate; // For per-instance data
     };
+
+    struct RHIShaderDesc{
+        std::filesystem::path path;
+        Str entryPoint = "main";
+    };
+
+    struct RHILegacyFrontendDesc{
+        std::optional<std::span<const RHIVertexElement>> vertexLayout = std::nullopt;
+        RHIPrimitiveTopology topology = RHIPrimitiveTopology::TriangleList;
+
+        RHIShaderDesc vertexShader{
+            .entryPoint = "vs_main"
+        };
+    };
+
+    struct RHIMeshFrontendDesc{
+        // Amplification Shader
+        std::optional<RHIShaderDesc> amplificationShader = std::nullopt;
+        RHIShaderDesc meshShader;
+    };
+
+    using RHIPreRasterizerDesc = std::variant<
+        RHILegacyFrontendDesc,
+        RHIMeshFrontendDesc
+    >;
 
     enum class RHICullMode: u8{
         CullNone,
@@ -368,47 +416,37 @@ namespace Smol
         RHIColorWriteMask writeMask = RHIColorWriteEnableAll;
     };
 
+    constexpr u32 RHI_MAX_RENDER_TARGETS = 8;
+
     struct RHIBlendState{
         bool alphaToCoverageEnable = false;
         bool independentBlendEnable = false;
-        RHIRenderTargetBlendState renderTargets[8];
+        std::array<RHIRenderTargetBlendState, RHI_MAX_RENDER_TARGETS> renderTargets;
     };
 
-    constexpr u32 RHI_MAX_RENDER_TARGETS = 8;
-
     struct RHIGraphicsPipelineStateDesc{
-        std::optional<std::span<const RHIVertexElement>> vertexLayout = std::nullopt;
-        RHIPrimitiveTopology topology = RHIPrimitiveTopology::TriangleList;
+        // Geometry Frontend
+        RHIPreRasterizerDesc preRasterizer;
 
-        std::filesystem::path vertexShaderPath;
-        Str vertexShaderEntryPoint = "vs_main";
+        // Geometry Backend
         RHIRasterizerState rasterizer = {};
-        std::filesystem::path fragmentShaderPath;
-        Str fragmentShaderEntryPoint = "fs_main";
+        RHIShaderDesc fragmentShader{
+            .entryPoint = "fs_main"
+        };
 
         std::optional<RHIDepthStencilState> depthStencil = std::nullopt;
         std::optional<RHIBlendState> blend = std::nullopt;
 
-        RHIPixelFormat renderTargetFormats[RHI_MAX_RENDER_TARGETS] = {};
-        u32 renderTargetCount = 1;
+        std::array<RHIPixelFormat, RHI_MAX_RENDER_TARGETS> renderTargetFormats;
+        usize renderTargetCount = 1;
     };
-
-    struct RHISize3D{
-        u32 x = 1, y = 1, z = 1;
-    };
-
-    inline bool operator==(const RHISize3D& lhs, const RHISize3D& rhs) noexcept{
-        return lhs.x==rhs.x && lhs.y==rhs.y && lhs.z==rhs.z;
-    }
-    inline bool operator<=(const RHISize3D& lhs, const RHISize3D& rhs) noexcept{
-        return lhs.x<=rhs.x && lhs.y<=rhs.y && lhs.z<=rhs.z;
-    }
 
     struct RHIComputePipelineStateDesc{
-        std::filesystem::path computeShaderPath;
-        Str computeShaderEntryPoint = "cs_main";
-        RHISize3D gridSize;
-        std::optional<RHISize3D> threadGroupSize = std::nullopt;
+        RHIShaderDesc computeShader{
+            .entryPoint = "cs_main"
+        };
+        Size3D gridSize = Size3D{1, 1, 1};
+        std::optional<Size3D> threadGroupSize = std::nullopt;
     };
 
     enum class RHIFilter: u8{
@@ -438,13 +476,16 @@ namespace Smol
 
         u32 maxAnisotropy = 1;
         RHIComparisonFunc compareFunc = RHIComparisonFunc::Never;
-        f32 borderColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+        Color borderColor = Colors::Black;
     };
 
     constexpr RHISamplerState LINEAR_WRAP_SAMPLER{
         .minFilter = RHIFilter::Linear,
         .magFilter = RHIFilter::Linear,
-        .mipFilter = RHIFilter::Linear
+        .mipFilter = RHIFilter::Linear,
+        .addressU = RHIAddressMode::Wrap,
+        .addressV = RHIAddressMode::Wrap,
+        .addressW = RHIAddressMode::Wrap
     };
     constexpr RHISamplerState LINEAR_CLAMP_SAMPLER{
         .minFilter = RHIFilter::Linear,
@@ -454,10 +495,54 @@ namespace Smol
         .addressV = RHIAddressMode::Clamp,
         .addressW = RHIAddressMode::Clamp
     };
+    constexpr RHISamplerState LINEAR_MIRROR_SAMPLER{
+        .minFilter = RHIFilter::Linear,
+        .magFilter = RHIFilter::Linear,
+        .mipFilter = RHIFilter::Linear,
+        .addressU = RHIAddressMode::Mirror,
+        .addressV = RHIAddressMode::Mirror,
+        .addressW = RHIAddressMode::Mirror
+    };
+    constexpr RHISamplerState LINEAR_BORDER_SAMPLER{
+        .minFilter = RHIFilter::Linear,
+        .magFilter = RHIFilter::Linear,
+        .mipFilter = RHIFilter::Linear,
+        .addressU = RHIAddressMode::Border,
+        .addressV = RHIAddressMode::Border,
+        .addressW = RHIAddressMode::Border
+    };
+
     constexpr RHISamplerState NEAREST_WRAP_SAMPLER{
         .minFilter = RHIFilter::Nearest,
         .magFilter = RHIFilter::Nearest,
-        .mipFilter = RHIFilter::Nearest
+        .mipFilter = RHIFilter::Nearest,
+        .addressU = RHIAddressMode::Wrap,
+        .addressV = RHIAddressMode::Wrap,
+        .addressW = RHIAddressMode::Wrap
+    };
+    constexpr RHISamplerState NEAREST_CLAMP_SAMPLER{
+        .minFilter = RHIFilter::Nearest,
+        .magFilter = RHIFilter::Nearest,
+        .mipFilter = RHIFilter::Nearest,
+        .addressU = RHIAddressMode::Clamp,
+        .addressV = RHIAddressMode::Clamp,
+        .addressW = RHIAddressMode::Clamp
+    };
+    constexpr RHISamplerState NEAREST_MIRROR_SAMPLER{
+        .minFilter = RHIFilter::Nearest,
+        .magFilter = RHIFilter::Nearest,
+        .mipFilter = RHIFilter::Nearest,
+        .addressU = RHIAddressMode::Mirror,
+        .addressV = RHIAddressMode::Mirror,
+        .addressW = RHIAddressMode::Mirror
+    };
+    constexpr RHISamplerState NEAREST_BORDER_SAMPLER{
+        .minFilter = RHIFilter::Nearest,
+        .magFilter = RHIFilter::Nearest,
+        .mipFilter = RHIFilter::Nearest,
+        .addressU = RHIAddressMode::Border,
+        .addressV = RHIAddressMode::Border,
+        .addressW = RHIAddressMode::Border
     };
 
     constexpr u32 RHI_FRAMES_IN_FLIGHT = 3;
@@ -602,7 +687,7 @@ namespace Smol
 
     struct RHIComputeBindingInfo{
         RHIShaderBindingInfo csInfo;
-        RHISize3D reflectedSize = RHISize3D{1, 1, 1};
+        Size3D reflectedSize = Size3D{1, 1, 1};
     };
 }
 

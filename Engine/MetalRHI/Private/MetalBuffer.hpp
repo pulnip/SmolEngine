@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Foundation/NSTypes.hpp>
 #include <Metal/MTLDevice.hpp>
 #include <Metal/MTLBuffer.hpp>
 #include "RHIAPI.hpp"
@@ -11,8 +12,7 @@ namespace Smol
     class MetalBuffer final: public RHIBuffer{
     private:
         MTL::Buffer* buffer;
-        usize size = 0;
-        RHIBufferUsage usage = RHIBufferUsage::None;
+
         bool isManaged = false;
         RHIResourceState currentState = RHIResourceState::Common;
 
@@ -37,7 +37,7 @@ namespace Smol
         ) RHI_OVERRIDE;
 
         u32 GetSize() const noexcept RHI_OVERRIDE{
-            return size;
+            return buffer->length();
         }
 
         MTL::Buffer* Get() const noexcept{ return buffer; }

@@ -5,9 +5,11 @@
 
 namespace Smol
 {
-    DXGI_FORMAT convertPixelFormat(RHIPixelFormat,
+    DXGI_FORMAT convert(RHIPixelFormat,
         bool isShaderResource=true,
         bool isDepthTarget=false
     );
-    D3D11_COMPARISON_FUNC convertCompareFunc(RHIComparisonFunc);
+    D3D11_COMPARISON_FUNC convert(RHIComparisonFunc);
+
+    RHIPixelFormat convert(DXGI_FORMAT);
 }

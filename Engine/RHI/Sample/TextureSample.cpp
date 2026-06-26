@@ -17,20 +17,30 @@ CStr IMAGE_PATH = "Content/Assets/Sprite/hollow_knight.png";
 int main(void){
     auto device = CreateDevice();
     auto pipeline = device->CreatePipelineState(RHIGraphicsPipelineStateDesc{
-        .topology = RHIPrimitiveTopology::TriangleStrip,
-    #if defined(SMOL_DXRHI)
-        .vertexShaderPath = "Engine/Shader/FullscreenQuad.vert.hlsl",
-        .vertexShaderEntryPoint = "vs_main",
-    #elif defined(SMOL_METALRHI)
-    #endif
+        .preRasterizer = RHILegacyFrontendDesc{
+            .topology = RHIPrimitiveTopology::TriangleStrip,
+            .vertexShader = {
+            #if defined(SMOL_DXRHI)
+                .path = "Engine/Shader/SpriteQuad.vert.hlsl",
+                .entryPoint = "vs_main"
+            #elif defined(SMOL_METALRHI)
+                .path = "Engine/Shader/SpriteQuad.metal",
+                .entryPoint = "vs_main"
+            #endif
+            }
+        },
         .rasterizer = RHIRasterizerState{
             .frontCounterClockwise = false
         },
-    #if defined(SMOL_DXRHI)
-        .fragmentShaderPath = "Engine/Shader/Sprite.pixel.hlsl",
-        .fragmentShaderEntryPoint = "ps_main",
-    #elif defined(SMOL_METALRHI)
-    #endif
+        .fragmentShader = {
+        #if defined(SMOL_DXRHI)
+            .path = "Engine/Shader/Sprite.pixel.hlsl",
+            .entryPoint = "ps_main"
+        #elif defined(SMOL_METALRHI)
+            .path = "Engine/Shader/SpriteQuad.metal",
+            .entryPoint = "fs_main"
+        #endif
+        },
         .blend = RHIBlendState{
             .independentBlendEnable = false,
             .renderTargets = {
@@ -70,7 +80,7 @@ int main(void){
     });
     auto sampler = device->CreateSampler(LINEAR_WRAP_SAMPLER);
 
-    RHIClearColor clearColor{.v = {0.5f, 0.5f, 0.5f, 1.0f}};
+    Color clearColor = Colors::Grey;
     auto cmdList = device->CreateCommandList();
 
     while(true){
@@ -101,12 +111,18 @@ int main(void){
             break;
 
         cmdList->Begin();
-        cmdList->BeginRenderPass(*swapchain,
-            clearColor,
-            nullptr,
-            {},
-            RHILoadAction::Clear
-        );
+
+        std::array colorAttachments = {
+            RHIColorAttachment{
+                .texture = &swapchain->GetCurrentTexture(),
+                .loadAction = RHILoadAction::Clear,
+                .storeAction = RHIStoreAction::Store,
+                .clearColor = clearColor
+            }
+        };
+        cmdList->BeginRenderPass(RHIRenderPassDesc{
+            .colorAttachments = colorAttachments
+        });
 
         cmdList->SetPipelineState(*pipeline);
         cmdList->SetViewport(RHIViewport{

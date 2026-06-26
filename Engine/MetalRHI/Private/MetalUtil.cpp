@@ -4,7 +4,7 @@
 
 namespace Smol
 {
-    MTL::PixelFormat convertPixelFormat(RHIPixelFormat format){
+    MTL::PixelFormat convert(RHIPixelFormat format){
         using enum RHIPixelFormat;
         using namespace MTL;
 
@@ -85,6 +85,74 @@ namespace Smol
         case NotEqual:     return CompareFunctionNotEqual;
         case GreaterEqual: return CompareFunctionGreaterEqual;
         case Always:       return CompareFunctionAlways;
+        default:
+            std::unreachable();
+        }
+    }
+
+    RHIPixelFormat convert(MTL::PixelFormat format){
+        using enum RHIPixelFormat;
+        using namespace MTL;
+
+        switch(format){
+        case PixelFormatInvalid:               return Unknown;
+        // 8-bit formats
+        case PixelFormatR8Unorm:               return R8_UNORM;
+        case PixelFormatR8Snorm:               return R8_SNORM;
+        case PixelFormatR8Uint:                return R8_UINT;
+        case PixelFormatR8Sint:                return R8_SINT;
+        // 16-bit formats
+        case PixelFormatR16Unorm:              return R16_UNORM;
+        case PixelFormatR16Snorm:              return R16_SNORM;
+        case PixelFormatR16Uint:               return R16_UINT;
+        case PixelFormatR16Sint:               return R16_SINT;
+        case PixelFormatR16Float:              return R16_FLOAT;
+
+        case PixelFormatRG8Unorm:              return RG8_UNORM;
+        case PixelFormatRG8Snorm:              return RG8_SNORM;
+        case PixelFormatRG8Uint:               return RG8_UINT;
+        case PixelFormatRG8Sint:               return RG8_SINT;
+        // 32-bit formats
+        case PixelFormatR32Uint:               return R32_UINT;
+        case PixelFormatR32Sint:               return R32_SINT;
+        case PixelFormatR32Float:              return R32_FLOAT;
+
+        case PixelFormatRG16Unorm:             return RG16_UNORM;
+        case PixelFormatRG16Snorm:             return RG16_SNORM;
+        case PixelFormatRG16Uint:              return RG16_UINT;
+        case PixelFormatRG16Sint:              return RG16_SINT;
+        case PixelFormatRG16Float:             return RG16_FLOAT;
+
+        case PixelFormatRGBA8Unorm:            return RGBA8_UNORM;
+        case PixelFormatRGBA8Unorm_sRGB:       return RGBA8_UNORM_SRGB;
+        case PixelFormatRGBA8Snorm:            return RGBA8_SNORM;
+        case PixelFormatRGBA8Uint:             return RGBA8_UINT;
+        case PixelFormatRGBA8Sint:             return RGBA8_SINT;
+
+        case PixelFormatBGRA8Unorm:            return BGRA8_UNORM;
+        case PixelFormatBGRA8Unorm_sRGB:       return BGRA8_UNORM_SRGB;
+
+        // 64-bit formats
+        case PixelFormatRG32Uint:              return RG32_UINT;
+        case PixelFormatRG32Sint:              return RG32_SINT;
+        case PixelFormatRG32Float:             return RG32_FLOAT;
+
+        case PixelFormatRGBA16Unorm:           return RGBA16_UNORM;
+        case PixelFormatRGBA16Snorm:           return RGBA16_SNORM;
+        case PixelFormatRGBA16Uint:            return RGBA16_UINT;
+        case PixelFormatRGBA16Sint:            return RGBA16_SINT;
+        case PixelFormatRGBA16Float:           return RGBA16_FLOAT;
+
+        // 128-bit formats
+        case PixelFormatRGBA32Uint:            return RGBA32_UINT;
+        case PixelFormatRGBA32Sint:            return RGBA32_SINT;
+        case PixelFormatRGBA32Float:           return RGBA32_FLOAT;
+
+        // Depth/stencil formats
+        case PixelFormatDepth16Unorm:          return D16_UNORM;
+        case PixelFormatDepth24Unorm_Stencil8: return D24_UNORM_S8_UINT;
+        case PixelFormatDepth32Float:          return D32_FLOAT;
+        case PixelFormatDepth32Float_Stencil8: return D32_FLOAT_S8_UINT;
         default:
             std::unreachable();
         }

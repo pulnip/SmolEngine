@@ -11,12 +11,9 @@ namespace Smol
     class DX11Texture final: public RHITexture{
     private:
         TextureRAII texture = nullptr;
-        usize width, height;
-        RHIPixelFormat format = RHIPixelFormat::Unknown;
         RHIResourceState currentState = RHIResourceState::Common;
 
         Device& device;
-        DeviceContext& context;
 
         std::unordered_map<RHITextureViewDesc, SRVRAII> srvs;
         std::unordered_map<RHITextureViewDesc, RTVRAII> rtvs;
@@ -26,9 +23,13 @@ namespace Smol
     public:
         DX11Texture(
             Device& device,
-            DeviceContext& context,
             const RHITextureCreateDesc& desc,
             StrView name
+        );
+        DX11Texture(
+            Device& device,
+            Swapchain& swapchain,
+            StrView name = {}
         );
 
         ~DX11Texture();
@@ -39,14 +40,12 @@ namespace Smol
             u32 arraySlice
         ) RHI_OVERRIDE;
 
-        RHIPixelFormat GetFormat() const noexcept RHI_OVERRIDE{
-            return format;
-        }
-        usize GetWidth() const noexcept RHI_OVERRIDE{
-            return width;
-        }
-        usize GetHeight() const noexcept RHI_OVERRIDE{
-            return height;
+        RHIPixelFormat GetFormat() const noexcept RHI_OVERRIDE;
+        u32 GetWidth() const noexcept RHI_OVERRIDE;
+        u32 GetHeight() const noexcept RHI_OVERRIDE;
+
+        void* GetNative() const noexcept RHI_OVERRIDE{
+            return texture.Get();
         }
 
         RHIResourceState GetState() const RHI_OVERRIDE{
@@ -63,5 +62,10 @@ namespace Smol
         RTV* GetOrCreateRTV(const RHITextureViewDesc&);
         UAV* GetOrCreateUAV(const RHITextureViewDesc&);
         DSV* GetOrCreateDSV(const RHITextureViewDesc&);
+
+        SRV* GetOrCreateSRV();
+        RTV* GetOrCreateRTV();
+        UAV* GetOrCreateUAV();
+        DSV* GetOrCreateDSV();
     };
 }

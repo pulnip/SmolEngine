@@ -36,26 +36,7 @@ namespace Smol
         void Close() noexcept RHI_OVERRIDE;
         void Reset() noexcept RHI_OVERRIDE;
 
-        void BeginRenderPass(
-            std::span<RHITexture*> renderTargets,
-            const RHIClearColor& clearColor,
-            RHITexture* depthTarget,
-            const RHIClearDepthStencil& clearDS,
-            RHILoadAction loadAction,
-            RHIStoreAction storeAction,
-            CStr debugName
-        ) RHI_OVERRIDE;
-
-        void BeginRenderPass(
-            RHISwapchain& swapchain,
-            const RHIClearColor& clearColor,
-            RHITexture* depthTarget,
-            const RHIClearDepthStencil& clearDS,
-            RHILoadAction loadAction,
-            RHIStoreAction storeAction,
-            CStr debugName
-        ) RHI_OVERRIDE;
-
+        void BeginRenderPass(const RHIRenderPassDesc&) RHI_OVERRIDE;
         void EndRenderPass() RHI_OVERRIDE;
 
         void SetPipelineState(RHIGraphicsPipelineState& pso) RHI_OVERRIDE;
@@ -129,7 +110,7 @@ namespace Smol
         void BeginCompute() noexcept RHI_OVERRIDE;
         void EndCompute() noexcept RHI_OVERRIDE;
 
-        void Dispatch(RHISize3D gridSize) RHI_OVERRIDE;
+        void Dispatch(Size3D gridSize) RHI_OVERRIDE;
 
         void TransitionBarrier(
             RHITexture&,
@@ -183,16 +164,5 @@ namespace Smol
         void SetMarker(CStr name) noexcept RHI_OVERRIDE{
             // TODO
         }
-
-    private:
-        void beginRenderPass(
-            std::span<ID3D11RenderTargetView*> rtvs,
-            const RHIClearColor& clearColor,
-            ID3D11DepthStencilView* dsv,
-            const RHIClearDepthStencil& clearDS,
-            RHILoadAction loadAction,
-            RHIStoreAction storeAction,
-            CStr debugName
-        );
     };
 }

@@ -5,6 +5,7 @@
 #include <Metal/MTLTexture.hpp>
 #include <QuartzCore/CAMetalDrawable.hpp>
 #include <SDL3/SDL_metal.h>
+#include "MetalTexture.hpp"
 #include "Primitives.hpp"
 #include "RHIAPI.hpp"
 #include "RHIDefinitions.hpp"
@@ -19,9 +20,7 @@ namespace Smol
         CA::MetalLayer* metalLayer = nullptr;
         CA::MetalDrawable* currentDrawable = nullptr;
 
-        u32 width = 0;
-        u32 height = 0;
-        RHIPixelFormat format = RHIPixelFormat::Unknown;
+        RAII<MetalTexture> backBuffer;
 
     public:
         MetalSwapchain(
@@ -36,22 +35,20 @@ namespace Smol
         void Resize(u32 newWidth, u32 newHeight) RHI_OVERRIDE;
 
         RHIPixelFormat GetFormat() const noexcept RHI_OVERRIDE{
-            return format;
+            return backBuffer->GetFormat();
         }
         u32 GetWidth() const noexcept RHI_OVERRIDE{
-            return width;
+            return backBuffer->GetWidth();
         }
         u32 GetHeight() const noexcept RHI_OVERRIDE{
-            return height;
+            return backBuffer->GetHeight();
         }
 
         void Present(MTL::CommandBuffer&) const;
 
-        void* GetCurrentNativeTexture() const noexcept RHI_OVERRIDE{
-            return GetCurrentTexture();
+        RHITexture& GetCurrentTexture() const RHI_OVERRIDE{
+            return *backBuffer;
         }
-
-        MTL::Texture* GetCurrentTexture() const noexcept;
 
         CA::MetalDrawable* GetCurrentDrawable() const noexcept{
             return currentDrawable;

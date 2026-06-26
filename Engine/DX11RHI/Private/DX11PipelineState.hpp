@@ -43,7 +43,7 @@ namespace Smol
     private:
         ComputeShaderRAII computeShader = nullptr;
         RHIComputeBindingInfo bindingInfo;
-        RHISize3D threadGroupSize = {256, 1, 1};
+        Size3D threadGroupSize = {256, 1, 1};
 
     #if defined(_DEBUG) || !defined(NDEBUG)
         const std::string debugName;
@@ -64,7 +64,7 @@ namespace Smol
 
         void Bind(DeviceContext& ctx) const;
 
-        RHISize3D getThreadGroupSize() const{
+        Size3D getThreadGroupSize() const{
             return threadGroupSize;
         }
     };

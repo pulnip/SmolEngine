@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <optional>
 #include <type_traits>
 #include <variant>
 #include "Primitives.hpp"
@@ -10,10 +11,85 @@ namespace Smol
     // Defined at Lower layer
     struct UIContext;
 
+    struct IntField{
+        Str label;
+        std::function<void(UIContext&, int)> onChanged = [](UIContext&, int){};
+        int v = 0;
+        std::optional<std::function<int()>> get = std::nullopt;
+
+        void submit(UIContext&);
+    };
+
+    struct FloatField{
+        Str label;
+        std::function<void(UIContext&, float)> onChanged = [](UIContext&, float){};
+        float v = 0;
+        std::optional<std::function<float()>> get = std::nullopt;
+
+        void submit(UIContext&);
+    };
+
+    struct Float2Field{
+        Str label;
+        std::function<void(UIContext&, Vec2)> onChanged = [](UIContext&, Vec2){};
+        Vec2 v{0, 0};
+        std::optional<std::function<Vec2()>> get = std::nullopt;
+
+        void submit(UIContext&);
+    };
+
+    struct Float3Field{
+        Str label;
+        std::function<void(UIContext&, Vec3)> onChanged = [](UIContext&, Vec3){};
+        Vec3 v{0, 0, 0};
+        std::optional<std::function<Vec3()>> get = std::nullopt;
+
+        void submit(UIContext&);
+    };
+
+    struct Float4Field{
+        Str label;
+        std::function<void(UIContext&, Vec4)> onChanged = [](UIContext&, Vec4){};
+        Vec4 v{0, 0, 0, 0};
+        std::optional<std::function<Vec4()>> get = std::nullopt;
+
+        void submit(UIContext&);
+    };
+
     struct Checkbox{
         Str label;
         std::function<void(UIContext&, bool)> onChanged = [](UIContext&, bool){};
         bool v;
+
+        void submit(UIContext&);
+    };
+
+    struct TextButton{
+        Str label;
+        std::function<void(UIContext&)> onPressed = [](UIContext&){};
+
+        void submit(UIContext&);
+    };
+
+    struct Slider{
+        Str label;
+        std::function<void(UIContext&, float)> onChanged = [](UIContext&, float){};
+        float v = 0.0f;
+        float v_min = 0.0f, v_max = 1.0f;
+
+        void submit(UIContext&);
+    };
+
+    struct Text{
+        Str data;
+
+        void submit(UIContext&);
+    };
+
+    struct SearchBar{
+        Str label;
+        std::function<void(UIContext&, StrView)> onChanged = [](UIContext&, StrView){};
+        Str str;
 
         void submit(UIContext&);
     };
@@ -68,7 +144,8 @@ namespace Smol
     };
 
     using Widget = std::variant<
-        Checkbox,
+        IntField, FloatField, Float2Field, Float3Field, Float4Field,
+        Checkbox, TextButton, Slider, Text, SearchBar,
         Box
     >;
 

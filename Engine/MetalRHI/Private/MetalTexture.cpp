@@ -31,9 +31,7 @@ namespace Smol
         const RHITextureCreateDesc& desc,
         StrView name
     )
-        : width(desc.width), height(desc.height)
-        , format(desc.format)
-        , currentState(desc.initialState)
+        : currentState(desc.initialState)
     {
         auto texDesc = MTL::TextureDescriptor::alloc()->init();
         texDesc->setWidth(desc.width);
@@ -42,7 +40,7 @@ namespace Smol
         texDesc->setMipmapLevelCount(desc.mipLevels);
         texDesc->setArrayLength(desc.arraySize);
 
-        texDesc->setPixelFormat(convertPixelFormat(desc.format));
+        texDesc->setPixelFormat(convert(desc.format));
         texDesc->setTextureType(
             desc.depth > 1 ? MTL::TextureType3D :
                 (desc.arraySize > 1 ? MTL::TextureType2DArray
@@ -72,6 +70,13 @@ namespace Smol
             Upload(desc.initialData);
     }
 
+    MetalTexture::MetalTexture(
+        CA::MetalDrawable* drawable
+    ){
+        texture = drawable->texture();
+        texture->retain();
+    }
+
     MetalTexture::~MetalTexture(){
         texture->release();
     }
@@ -81,9 +86,14 @@ namespace Smol
         u32 mipLevel,
         u32 arraySlice
     ){
-        auto bytesPerPixel = getBytesPerPixel(format);
-        auto bytesPerRow = width * bytesPerPixel;
-        auto region = MTL::Region::Make2D(0, 0, width, height);
+        auto bytesPerPixel = getBytesPerPixel(GetFormat());
+        auto bytesPerRow = GetWidth() * bytesPerPixel;
+        auto region = MTL::Region::Make2D(
+            0,
+            0,
+            GetWidth(),
+            GetHeight()
+        );
 
         texture->replaceRegion(
             region,

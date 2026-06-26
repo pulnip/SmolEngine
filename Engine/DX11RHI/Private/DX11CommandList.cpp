@@ -30,7 +30,7 @@ namespace Smol
 
     void DX11CommandList::Begin() noexcept{
         SMOL_ASSERT(!isRecording,
-            "Did you call RHICommandList::close()?"
+            "Did you call RHICommandList::Close()?"
         );
         SMOL_ASSERT(!inRenderPass && !inComputePass);
 
@@ -40,7 +40,7 @@ namespace Smol
 
     void DX11CommandList::Close() noexcept{
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(!inRenderPass && !inComputePass);
 
@@ -55,92 +55,71 @@ namespace Smol
         }
     }
 
-    void DX11CommandList::BeginRenderPass(
-        std::span<RHITexture*> renderTargets,
-        const RHIClearColor& clearColor,
-        RHITexture* depthTarget,
-        const RHIClearDepthStencil& clearDS,
-        RHILoadAction loadAction,
-        RHIStoreAction storeAction,
-        CStr debugName
-    ){
+    void DX11CommandList::BeginRenderPass(const RHIRenderPassDesc& desc){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(!inRenderPass,
-            "Already in a render pass. Did you call RHICommandList::endRenderPass()?"
+            "Already in a render pass. Did you call RHICommandList::EndRenderPass()?"
         );
         SMOL_ASSERT(!inComputePass,
-            "Already in a compute pass. Did you call RHICommandList::endComputePass()?"
+            "Already in a compute pass. Did you call RHICommandList::EndCompute()?"
         );
-        SMOL_ASSERT(renderTargets.size() > 0);
+        SMOL_ASSERT(desc.colorAttachments.size() > 0);
 
-        RTV* rtvs[RHI_MAX_RENDER_TARGETS];
-        for(usize i=0; i<renderTargets.size(); ++i){
-            auto tex = static_cast<DX11Texture*>(renderTargets[i]);
-            rtvs[i] = tex->GetOrCreateRTV({.format = tex->GetFormat()});
+        std::array<RTV*, RHI_MAX_RENDER_TARGETS> rtvs;
+        for(usize i=0; i<desc.colorAttachments.size(); ++i){
+            auto& attachment = desc.colorAttachments[i];
+            auto tex = static_cast<DX11Texture*>(attachment.texture);
+
+            rtvs[i] = tex->GetOrCreateRTV();
         }
 
         DSV* dsv = nullptr;
-        if(depthTarget != nullptr){
-            auto tex = static_cast<DX11Texture*>(depthTarget);
-            dsv = tex->GetOrCreateDSV({.format = tex->GetFormat()});
+        if(desc.depthAttachment.has_value()){
+            auto& attachment = *desc.depthAttachment;
+            auto tex = static_cast<DX11Texture*>(attachment.texture);
+
+            dsv = tex->GetOrCreateDSV();
         }
 
-        beginRenderPass(
-            std::span<RTV*>(rtvs, renderTargets.size()), clearColor,
-            dsv, clearDS,
-            loadAction, storeAction,
-            debugName
+        context.OMSetRenderTargets(
+            desc.colorAttachments.size(),
+            rtvs.data(),
+            dsv
         );
 
-        inRenderPass = true;
-    }
+        for(usize i=0; i<desc.colorAttachments.size(); ++i){
+            auto& attachment = desc.colorAttachments[i];
+            if(attachment.loadAction != RHILoadAction::Clear)
+                continue;
 
-    void DX11CommandList::BeginRenderPass(
-        RHISwapchain& swapchain,
-        const RHIClearColor& clearColor,
-        RHITexture* depthTarget,
-        const RHIClearDepthStencil& clearDS,
-        RHILoadAction loadAction,
-        RHIStoreAction storeAction,
-        CStr debugName
-    ){
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
-        );
-        SMOL_ASSERT(!inRenderPass,
-            "Already in a render pass. Did you call RHICommandList::endRenderPass()?"
-        );
-        SMOL_ASSERT(!inComputePass,
-            "Already in a compute pass. Did you call RHICommandList::endComputePass()?"
-        );
-        ID3D11RenderTargetView* rtvs[1] = {
-            static_cast<DX11Swapchain&>(swapchain).GetCurrentRTV()
-        };
-
-        DSV* dsv = nullptr;
-        if(depthTarget != nullptr){
-            auto tex = static_cast<DX11Texture*>(depthTarget);
-            dsv = tex->GetOrCreateDSV({.format = tex->GetFormat()});
+            context.ClearRenderTargetView(
+                rtvs[i],
+                &attachment.clearColor[0]
+            );
         }
 
-        beginRenderPass(
-            rtvs, clearColor,
-            dsv, clearDS,
-            loadAction, storeAction,
-            debugName
-        );
+        if(dsv != nullptr){
+            auto& attachment = *desc.depthAttachment;
+
+            context.ClearDepthStencilView(
+                dsv,
+                D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+                attachment.clearDepthStencil.depth,
+                attachment.clearDepthStencil.stencil
+            );
+        }
 
         inRenderPass = true;
     }
 
     void DX11CommandList::EndRenderPass(){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass,
-            "Not in a render pass. Did you call RHICommandList::beginRenderPass()?"
+            "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
         SMOL_ASSERT(!inComputePass);
 
@@ -169,10 +148,10 @@ namespace Smol
 
     void DX11CommandList::SetPipelineState(RHIGraphicsPipelineState& pso){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass,
-            "Not in a render pass. Did you call RHICommandList::beginRenderPass()?"
+            "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
         SMOL_ASSERT(!inComputePass);
 
@@ -182,10 +161,10 @@ namespace Smol
 
     void DX11CommandList::SetPipelineState(RHIComputePipelineState& pso){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inComputePass,
-            "Not in a compute pass. Did you call RHICommandList::beginComputePass()?"
+            "Not in a compute pass. Did you call RHICommandList::BeginCompute()?"
         );
         SMOL_ASSERT(!inRenderPass);
 
@@ -202,10 +181,10 @@ namespace Smol
         u32 offset
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass,
-            "Not in a render pass. Did you call RHICommandList::beginRenderPass()?"
+            "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
         SMOL_ASSERT(!inComputePass);
 
@@ -225,10 +204,10 @@ namespace Smol
         u32 offset
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass,
-            "Not in a render pass. Did you call RHICommandList::beginRenderPass()?"
+            "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
         SMOL_ASSERT(!inComputePass);
 
@@ -248,10 +227,10 @@ namespace Smol
         u32 offset
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass != inComputePass,
-            "Not in a pass. Did you call RHICommandList::beginPass()?"
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
         );
 
         using enum RHIShaderStage;
@@ -292,10 +271,10 @@ namespace Smol
         RHIShaderStage stage
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass != inComputePass,
-            "Not in a pass. Did you call RHICommandList::beginPass()?"
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
         );
 
         using enum RHIBindingAccess;
@@ -304,9 +283,7 @@ namespace Smol
 
         switch(access){
         case ReadOnly: {
-            const auto view = dxTex.GetOrCreateSRV({
-                .format = texture.GetFormat()
-            });
+            const auto view = dxTex.GetOrCreateSRV();
             switch(stage){
             case VertexShader:
             #if defined(_DEBUG) || !defined(NDEBUG)
@@ -372,10 +349,10 @@ namespace Smol
         RHIShaderStage stage
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass != inComputePass,
-            "Not in a pass. Did you call RHICommandList::beginPass()?"
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
         );
 
         using enum RHIBindingAccess;
@@ -493,10 +470,10 @@ namespace Smol
         RHIShaderStage stage
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass != inComputePass,
-            "Not in a pass. Did you call RHICommandList::beginPass()?"
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
         );
 
         using enum RHIShaderStage;
@@ -552,10 +529,10 @@ namespace Smol
         u32 startInstance
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass,
-            "Not in a render pass. Did you call RHICommandList::beginRenderPass()?"
+            "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
         SMOL_ASSERT(!inComputePass);
 
@@ -581,10 +558,10 @@ namespace Smol
         u32 startInstance
     ){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inRenderPass,
-            "Not in a render pass. Did you call RHICommandList::beginRenderPass()?"
+            "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
         SMOL_ASSERT(!inComputePass);
 
@@ -606,13 +583,13 @@ namespace Smol
 
     void DX11CommandList::BeginCompute() noexcept{
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(!inComputePass,
-            "Already in a compute pass. Did you call RHICommandList::endComputePass()?"
+            "Already in a compute pass. Did you call RHICommandList::EndCompute()?"
         );
         SMOL_ASSERT(!inRenderPass,
-            "Already in a render pass. Did you call RHICommandList::endRenderPass()?"
+            "Already in a render pass. Did you call RHICommandList::EndRenderPass()?"
         );
 
         inComputePass = true;
@@ -621,25 +598,25 @@ namespace Smol
 
     void DX11CommandList::EndCompute() noexcept{
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inComputePass,
-            "Not in a compute pass. Did you call RHICommandList::beginComputePass()?"
+            "Not in a compute pass. Did you call RHICommandList::BeginCompute()?"
         );
         SMOL_ASSERT(!inRenderPass);
 
         inComputePass = false;
     }
 
-    void DX11CommandList::Dispatch(RHISize3D gridSize){
+    void DX11CommandList::Dispatch(Size3D gridSize){
         SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::begin()?"
+            "Did you call RHICommandList::Begin()?"
         );
         SMOL_ASSERT(inComputePass,
-            "Not in a compute pass. Did you call RHICommandList::beginComputePass()?"
+            "Not in a compute pass. Did you call RHICommandList::BeginCompute()?"
         );
         SMOL_ASSERT(currentComputePSO != nullptr,
-            "Did you call RHICommandList::setPipelineState(ComputePSO)?"
+            "Did you call RHICommandList::SetPipelineState(ComputePSO)?"
         );
         auto threadGroupSize = currentComputePSO->getThreadGroupSize();
 
@@ -688,8 +665,10 @@ namespace Smol
         RHITexture& src,
         RHISwapchain& dst
     ){
+        auto& texture = static_cast<DX11Texture&>(dst.GetCurrentTexture());
+
         context.CopyResource(
-            static_cast<DX11Swapchain&>(dst).GetCurrentTexture(),
+            texture.Get(),
             static_cast<DX11Texture&>(src).Get()
         );
     }
@@ -702,32 +681,5 @@ namespace Smol
     ){
         // TODO.
         throw std::runtime_error("Unimplemented");
-    }
-
-    void DX11CommandList::beginRenderPass(
-        std::span<ID3D11RenderTargetView*> rtvs,
-        const RHIClearColor& clearColor,
-        ID3D11DepthStencilView* dsv,
-        const RHIClearDepthStencil& clearDS,
-        RHILoadAction loadAction,
-        RHIStoreAction storeAction,
-        CStr debugName
-    ){
-        context.OMSetRenderTargets(
-            rtvs.size(),
-            rtvs.data(),
-            dsv
-        );
-
-        if(loadAction == RHILoadAction::Clear){
-            for(usize i=0; i<rtvs.size(); ++i)
-                context.ClearRenderTargetView(rtvs[i], clearColor.v);
-
-            if(dsv != nullptr)
-                context.ClearDepthStencilView(dsv,
-                    D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
-                    clearDS.depth, clearDS.stencil
-                );
-        }
     }
 }

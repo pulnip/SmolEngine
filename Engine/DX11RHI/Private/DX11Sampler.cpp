@@ -57,7 +57,7 @@ namespace Smol
             .AddressW = convertAddressMode(desc.addressW),
             .MipLODBias = desc.mipLODBias,
             .MaxAnisotropy = desc.maxAnisotropy,
-            .ComparisonFunc = convertCompareFunc(desc.compareFunc),
+            .ComparisonFunc = convert(desc.compareFunc),
             .BorderColor = {
                 desc.borderColor[0], desc.borderColor[1],
                 desc.borderColor[2], desc.borderColor[3]

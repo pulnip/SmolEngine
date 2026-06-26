@@ -12,6 +12,7 @@
 #include "LinearAlgebra.hpp"
 #include "RHIDevice.hpp"
 #include "RHISwapchain.hpp"
+#include "RHITexture.hpp"
 #include "RHIFWD.hpp"
 #include "StringUtil.hpp"
 
@@ -191,7 +192,7 @@ namespace Smol
 
     void D2DCanvas::Begin(RHISwapchain& swapchain){
         auto texture = static_cast<ID3D11Texture2D*>(
-            swapchain.GetCurrentNativeTexture()
+            swapchain.GetCurrentTexture().GetNative()
         );
         impl->Begin(texture);
     }

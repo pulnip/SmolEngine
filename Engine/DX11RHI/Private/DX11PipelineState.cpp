@@ -54,7 +54,7 @@ namespace{
             .StencilFailOp = convertStencilOp(desc.stencilFailOp),
             .StencilDepthFailOp = convertStencilOp(desc.depthFailOp),
             .StencilPassOp = convertStencilOp(desc.passOp),
-            .StencilFunc = convertCompareFunc(desc.func),
+            .StencilFunc = convert(desc.func),
         };
     }
 
@@ -233,7 +233,7 @@ namespace{
 
         return Smol::RHIComputeBindingInfo{
             .csInfo = extractBindingInfo(refl),
-            .reflectedSize = Smol::RHISize3D{threadX, threadY, threadZ}
+            .reflectedSize = Smol::Size3D{threadX, threadY, threadZ}
         };
     }
 }
@@ -245,14 +245,16 @@ namespace Smol
         const RHIGraphicsPipelineStateDesc& desc,
         StrView name
     )
-        : primitiveTopology(convert(desc.topology))
     #if defined(_DEBUG) || !defined(NDEBUG)
-        , debugName(name)
+        : debugName(name)
     #endif
     {
+        auto& frontend = std::get<RHILegacyFrontendDesc>(desc.preRasterizer);
+        primitiveTopology = ::convert(frontend.topology);
+
         auto vsBytecode = CompiledShader(
-            desc.vertexShaderPath,
-            desc.vertexShaderEntryPoint,
+            frontend.vertexShader.path,
+            frontend.vertexShader.entryPoint,
             "vs_5_0"
         );
         if(FAILED(device.CreateVertexShader(
@@ -265,8 +267,8 @@ namespace Smol
         }
 
         // Input Layout
-        if(desc.vertexLayout.has_value()){
-            const auto& vertexLayout = desc.vertexLayout.value();
+        if(frontend.vertexLayout.has_value()){
+            const auto& vertexLayout = frontend.vertexLayout.value();
 
             std::vector<D3D11_INPUT_ELEMENT_DESC> elements(vertexLayout.size());
             for(usize i=0; i<vertexLayout.size(); ++i){
@@ -275,7 +277,7 @@ namespace Smol
 
                 dst.SemanticName = src.semanticName;
                 dst.SemanticIndex = src.semanticIndex;
-                dst.Format = convertPixelFormat(src.format);
+                dst.Format = convert(src.format);
                 dst.InputSlot = src.inputSlot;
                 dst.AlignedByteOffset = src.alignedByteOffset;
                 dst.InputSlotClass = src.classification == RHIInputClassification::PerVertex ?
@@ -314,8 +316,8 @@ namespace Smol
         }
 
         auto psBytecode = CompiledShader(
-            desc.fragmentShaderPath,
-            desc.fragmentShaderEntryPoint,
+            desc.fragmentShader.path,
+            desc.fragmentShader.entryPoint,
             "ps_5_0"
         );
         if(FAILED(device.CreatePixelShader(
@@ -338,7 +340,7 @@ namespace Smol
             dsDesc.DepthEnable = TRUE;
             dsDesc.DepthWriteMask = depthStencil.depthWriteEnable ?
                 D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
-            dsDesc.DepthFunc = convertCompareFunc(depthStencil.depthFunc);
+            dsDesc.DepthFunc = convert(depthStencil.depthFunc);
 
             if(depthStencil.stencil.has_value()){
                 const auto& stencil = depthStencil.stencil.value();
@@ -461,8 +463,8 @@ namespace Smol
     #endif
     {
         auto csBytecode = CompiledShader(
-            desc.computeShaderPath,
-            desc.computeShaderEntryPoint,
+            desc.computeShader.path,
+            desc.computeShader.entryPoint,
             "cs_5_0"
         );
 
