@@ -74,7 +74,7 @@ int main(void){
                     .path = "Engine/Shader/FullscreenQuad.vert.hlsl",
                     .entryPoint = "vs_main"
                 #elif defined(SMOL_METALRHI)
-                    .path = "Engine/Shader/FullscreenQuad.metal",
+                    .path = "Engine/Shader/FullscreenQuad.vert.metal",
                     .entryPoint = "vs_main"
                 #endif
                 }
