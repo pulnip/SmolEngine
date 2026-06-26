@@ -29,9 +29,23 @@ DEPENDS
     Smol::Platform::Private
 )
 
-smol_render_sample(ParallaxMountains
+smol_render_sample(ParallaxMountain
 SOURCES ParallaxMountains.cpp
 DEPENDS
     SDL3::SDL3
     Smol::Platform::Private
 )
+
+if(RENDER_BACKEND STREQUAL "DX11")
+    target_link_libraries(ParallaxMountainSample
+    PRIVATE
+        Smol::DX11RHI
+        Smol::D2DCanvas
+    )
+elseif(RENDER_BACKEND STREQUAL "Metal")
+    target_link_libraries(ParallaxMountainSample
+    PRIVATE
+        Smol::MetalRHI
+        Smol::ImGuiCanvas
+    )
+endif()

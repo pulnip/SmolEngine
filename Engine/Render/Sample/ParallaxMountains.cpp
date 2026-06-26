@@ -1,4 +1,5 @@
 #include <print>
+#include <imgui_impl_sdl3.h>
 #include "Primitives.hpp"
 #include "RHIBuffer.hpp"
 #include "RHIDefinitions.hpp"
@@ -9,6 +10,8 @@
 #include "RuntimeConfig.hpp"
 #include "SDLWindow.hpp"
 #include "Timer.hpp"
+#include "UIRenderer.hpp"
+#include "Widget.hpp"
 
 using namespace Smol;
 
@@ -31,6 +34,33 @@ namespace{
         f32 elapsedTime;
         f32 pad[3];
     };
+
+    Widget LayerParamUI(Str layerName, MountainLayer& layer){
+        return Column({
+            Text{layerName},
+            Slider{
+                .label = layerName + "Speed",
+                .onChanged = [&](UIContext&, float f){
+                    layer.scrollSpeed = f;
+                },
+                .v = layer.scrollSpeed
+            },
+            Slider{
+                .label = layerName + "Height",
+                .onChanged = [&](UIContext&, float f){
+                    layer.baseHeight = f;
+                },
+                .v = layer.baseHeight
+            },
+            Slider{
+                .label = layerName + "Freq",
+                .onChanged = [&](UIContext&, float f){
+                    layer.frequency = f;
+                },
+                .v = layer.frequency
+            }
+        });
+    }
 }
 
 int main(void){
@@ -102,6 +132,11 @@ int main(void){
             .access = RHIMemoryAccess::CPUWrite,
             .initialData = &mountainParam
         }, "mountainParam");
+        auto widget = Column({
+            LayerParamUI("Far", mountainParam.layers[0]),
+            LayerParamUI("Mid", mountainParam.layers[1]),
+            LayerParamUI("Near", mountainParam.layers[2])
+        });
 
         WindowConfig windowConfig{
             .title = "ParallaxMountains",
@@ -120,6 +155,13 @@ int main(void){
             .bufferDesc = backBufferDesc
         });
 
+        UIRenderer uiRenderer(
+            window.GetWindow(),
+            *device,
+            "Content/",
+            std::move(widget)
+        );
+
         Timer timer;
         auto cmdList = device->CreateCommandList();
 
@@ -128,6 +170,7 @@ int main(void){
 
             SDL_Event event;
             while(SDL_PollEvent(&event)){
+                ImGui_ImplSDL3_ProcessEvent(&event);
                 switch(event.type){
                 case SDL_EVENT_QUIT: [[unlikely]]
                     keepRunning = false;
@@ -184,6 +227,9 @@ int main(void){
             cmdList->Draw(4);
 
             cmdList->EndRenderPass();
+
+            uiRenderer.Draw(*cmdList, swapchain.get());
+
             cmdList->Close();
 
             device->Submit(*cmdList, swapchain.get());
