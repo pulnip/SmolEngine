@@ -440,6 +440,17 @@ namespace Smol
         u32 x = 0, y = 0;
     };
 
+    struct Size3D{
+        u32 x = 1, y = 1, z = 1;
+    };
+
+    inline bool operator==(const Size3D& lhs, const Size3D& rhs) noexcept{
+        return lhs.x==rhs.x && lhs.y==rhs.y && lhs.z==rhs.z;
+    }
+    inline bool operator<=(const Size3D& lhs, const Size3D& rhs) noexcept{
+        return lhs.x<=rhs.x && lhs.y<=rhs.y && lhs.z<=rhs.z;
+    }
+
     struct Transform;
 
     struct Transform2D{

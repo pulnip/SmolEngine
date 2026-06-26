@@ -567,7 +567,7 @@ namespace Smol
 
     MTL::Size MetalComputePipelineState::DefaultGroupSize(
         u32 numThreads,
-        const RHISize3D& gridSize
+        const Size3D& gridSize
     ) noexcept{
         auto width = std::min(numThreads, gridSize.x);
         numThreads /= width;

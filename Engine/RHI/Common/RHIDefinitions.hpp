@@ -441,23 +441,12 @@ namespace Smol
         usize renderTargetCount = 1;
     };
 
-    struct RHISize3D{
-        u32 x = 1, y = 1, z = 1;
-    };
-
-    inline bool operator==(const RHISize3D& lhs, const RHISize3D& rhs) noexcept{
-        return lhs.x==rhs.x && lhs.y==rhs.y && lhs.z==rhs.z;
-    }
-    inline bool operator<=(const RHISize3D& lhs, const RHISize3D& rhs) noexcept{
-        return lhs.x<=rhs.x && lhs.y<=rhs.y && lhs.z<=rhs.z;
-    }
-
     struct RHIComputePipelineStateDesc{
         RHIShaderDesc computeShader{
             .entryPoint = "cs_main"
         };
-        RHISize3D gridSize;
-        std::optional<RHISize3D> threadGroupSize = std::nullopt;
+        Size3D gridSize = Size3D{1, 1, 1};
+        std::optional<Size3D> threadGroupSize = std::nullopt;
     };
 
     enum class RHIFilter: u8{
@@ -651,7 +640,7 @@ namespace Smol
 
     struct RHIComputeBindingInfo{
         RHIShaderBindingInfo csInfo;
-        RHISize3D reflectedSize = RHISize3D{1, 1, 1};
+        Size3D reflectedSize = Size3D{1, 1, 1};
     };
 }
 

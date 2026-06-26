@@ -469,7 +469,7 @@ namespace Smol
         computeEncoder = nullptr;
     }
 
-    void MetalCommandList::Dispatch(RHISize3D gridSize){
+    void MetalCommandList::Dispatch(Size3D gridSize){
         SMOL_ASSERT(computeEncoder != nullptr,
             "Did you call RHICommandList::beginCompute()?"
         );

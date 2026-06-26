@@ -110,7 +110,7 @@ namespace Smol
         void BeginCompute() noexcept RHI_OVERRIDE;
         void EndCompute() noexcept RHI_OVERRIDE;
 
-        void Dispatch(RHISize3D gridSize) RHI_OVERRIDE;
+        void Dispatch(Size3D gridSize) RHI_OVERRIDE;
 
         void TransitionBarrier(
             RHITexture&,

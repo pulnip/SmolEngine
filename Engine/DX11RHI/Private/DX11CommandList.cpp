@@ -608,7 +608,7 @@ namespace Smol
         inComputePass = false;
     }
 
-    void DX11CommandList::Dispatch(RHISize3D gridSize){
+    void DX11CommandList::Dispatch(Size3D gridSize){
         SMOL_ASSERT(isRecording,
             "Did you call RHICommandList::Begin()?"
         );

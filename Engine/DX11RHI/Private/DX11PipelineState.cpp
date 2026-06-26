@@ -233,7 +233,7 @@ namespace{
 
         return Smol::RHIComputeBindingInfo{
             .csInfo = extractBindingInfo(refl),
-            .reflectedSize = Smol::RHISize3D{threadX, threadY, threadZ}
+            .reflectedSize = Smol::Size3D{threadX, threadY, threadZ}
         };
     }
 }

@@ -81,7 +81,7 @@ namespace Smol
     private:
         static MTL::Size DefaultGroupSize(
             u32 numThreads,
-            const RHISize3D& gridSize
+            const Size3D& gridSize
         ) noexcept;
     };
 }

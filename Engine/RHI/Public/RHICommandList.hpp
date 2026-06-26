@@ -108,7 +108,7 @@ namespace Smol
 
         // Compute dispatch
         virtual void Dispatch(
-            RHISize3D gridSize
+            Size3D gridSize
         ) = 0;
 
         // Resource barriers (state transitions)
