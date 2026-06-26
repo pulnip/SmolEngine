@@ -1,5 +1,6 @@
 #include <d3d11.h>
 #include <SDL3/SDL_video.h>
+#include <stdexcept>
 #include "DX11Definitions.hpp"
 #include "DX11Util.hpp"
 #include "DX11Swapchain.hpp"
@@ -72,10 +73,13 @@ namespace Smol
         DXGI_SWAP_CHAIN_DESC1 desc;
         swapchain->GetDesc1(&desc);
 
-        swapchain->ResizeBuffers(
+        backBuffer.reset();
+        if(FAILED(swapchain->ResizeBuffers(
             0, newWidth, newHeight,
             DXGI_FORMAT_UNKNOWN, desc.Flags
-        );
+        ))){
+            throw std::runtime_error("Failed to resize Swapchain buffer");
+        }
 
         // recreate back buffer resource
         backBuffer = std::make_unique<DX11Texture>(
