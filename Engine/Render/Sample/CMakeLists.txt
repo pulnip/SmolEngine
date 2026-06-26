@@ -11,6 +11,8 @@ function(smol_render_sample NAME)
         Smol::Log
         ${ARG_DEPENDS}
     )
+
+    smol_rhi_macro(${NAME}Sample)
 endfunction()
 
 smol_render_sample(SpriteRenderer
@@ -22,6 +24,13 @@ DEPENDS
 
 smol_render_sample(SpriteRendererAnim
 SOURCES SpriteRendererAnimSample.cpp
+DEPENDS
+    SDL3::SDL3
+    Smol::Platform::Private
+)
+
+smol_render_sample(ParallaxMountains
+SOURCES ParallaxMountains.cpp
 DEPENDS
     SDL3::SDL3
     Smol::Platform::Private
