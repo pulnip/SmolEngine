@@ -47,7 +47,7 @@ namespace Smol
                         .srcBlendAlpha = RHIBlend::Zero,
                         .dstBlendAlpha = RHIBlend::One,
                         .blendOpAlpha = RHIBlendOp::Add,
-                        .writeMask = RHIColorWriteEnableColor
+                        .writeMask = RHIColorWriteMask::EnableColor
                     }
                 }
             },
@@ -99,7 +99,7 @@ namespace Smol
                         .srcBlendAlpha = RHIBlend::Zero,
                         .dstBlendAlpha = RHIBlend::One,
                         .blendOpAlpha = RHIBlendOp::Add,
-                        .writeMask = RHIColorWriteEnableColor
+                        .writeMask = RHIColorWriteMask::EnableColor
                     }
                 }
             },

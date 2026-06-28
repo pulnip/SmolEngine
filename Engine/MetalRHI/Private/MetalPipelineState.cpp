@@ -13,6 +13,7 @@
 #include <Metal/Metal.hpp>
 #include "Assert.hpp"
 #include "AutoreleasePoolScope.hpp"
+#include "EnumUtil.hpp"
 #include "MetalUtil.hpp"
 #include "RHIDefinitions.hpp"
 #include "StringUtil.hpp"

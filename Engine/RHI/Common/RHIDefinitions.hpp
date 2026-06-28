@@ -7,7 +7,6 @@
 #include <span>
 #include <utility>
 #include <variant>
-#include "EnumUtil.hpp"
 #include "HashUtil.hpp"
 #include "Primitives.hpp"
 #include "RHIFWD.hpp"
@@ -384,17 +383,10 @@ namespace Smol
         EnableRed   = 1 << 0,
         EnableGreen = 1 << 1,
         EnableBlue  = 1 << 2,
-        EnableAlpha = 1 << 3
+        EnableColor = EnableRed | EnableGreen | EnableBlue,
+        EnableAlpha = 1 << 3,
+        EnableAll = EnableColor | EnableAlpha,
     };
-    constexpr auto RHIColorWriteEnableColor = combine(
-        RHIColorWriteMask::EnableRed,
-        RHIColorWriteMask::EnableGreen,
-        RHIColorWriteMask::EnableBlue
-    );
-    constexpr auto RHIColorWriteEnableAll = combine(
-        RHIColorWriteEnableColor,
-        RHIColorWriteMask::EnableAlpha
-    );
 
     struct RHIRenderTargetBlendState{
         bool blendEnable = false;
@@ -404,7 +396,7 @@ namespace Smol
         RHIBlend srcBlendAlpha = RHIBlend::One;
         RHIBlend dstBlendAlpha = RHIBlend::Zero;
         RHIBlendOp blendOpAlpha = RHIBlendOp::Add;
-        RHIColorWriteMask writeMask = RHIColorWriteEnableAll;
+        RHIColorWriteMask writeMask = RHIColorWriteMask::EnableAll;
     };
 
     constexpr u32 RHI_MAX_RENDER_TARGETS = 8;
