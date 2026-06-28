@@ -126,7 +126,7 @@ namespace{
         using namespace MTL;
 
         switch(mode){
-        case CullNone: return CullModeNone;
+        case None:     return CullModeNone;
         case Front:    return CullModeFront;
         case Back:     return CullModeBack;
         default:

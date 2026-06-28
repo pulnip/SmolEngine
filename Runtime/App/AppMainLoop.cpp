@@ -239,8 +239,8 @@ namespace Smol
                 .height = os.GetWindow().GetHeight(),
                 .format = RHIPixelFormat::RGBA8_UNORM,
                 .usage = combine(
-                    RHITextureUsage::AllowRenderTarget,
-                    RHITextureUsage::AllowShaderRead
+                    RHITextureUsage::RenderTarget,
+                    RHITextureUsage::ShaderRead
                 )
             }
         );

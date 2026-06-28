@@ -79,7 +79,7 @@ int main(void){
     auto texture = device->CreateTexture(RHITextureCreateDesc{
         .width = image.GetWidth(), .height = image.GetHeight(),
         .format = RHIPixelFormat::RGBA8_UNORM,
-        .usage = RHITextureUsage::AllowShaderRead,
+        .usage = RHITextureUsage::ShaderRead,
         .initialData = image.GetBufferPointer()
     });
     auto sampler = device->CreateSampler(LINEAR_WRAP_SAMPLER);

@@ -23,10 +23,10 @@ namespace Smol
 
         SMOL_ASSERT(desc.depth == 1);
 
-        auto isShaderResource  = hasFlag(desc.usage, AllowShaderRead);
-        auto isRenderTarget    = hasFlag(desc.usage, AllowRenderTarget);
-        auto isDepthTarget     = hasFlag(desc.usage, AllowDepthStencil);
-        auto isUnorderedAccess = hasFlag(desc.usage, AllowShaderWrite);
+        auto isShaderResource  = hasFlag(desc.usage, ShaderResource);
+        auto isRenderTarget    = hasFlag(desc.usage, RenderTarget);
+        auto isDepthTarget     = hasFlag(desc.usage, DepthStencil);
+        auto isUnorderedAccess = hasFlag(desc.usage, UnorderedAccess);
 
         UINT bindFlags = 0;
         if(isShaderResource ) bindFlags |= D3D11_BIND_SHADER_RESOURCE;

@@ -24,7 +24,7 @@ namespace{
         using enum Smol::RHICullMode;
 
         switch(mode){
-        case CullNone: return D3D11_CULL_NONE;
+        case None:     return D3D11_CULL_NONE;
         case Front:    return D3D11_CULL_FRONT;
         case Back:     return D3D11_CULL_BACK;
         default:
@@ -68,10 +68,10 @@ namespace{
         case InvSrcColor:    return D3D11_BLEND_INV_SRC_COLOR;
         case SrcAlpha:       return D3D11_BLEND_SRC_ALPHA;
         case InvSrcAlpha:    return D3D11_BLEND_INV_SRC_ALPHA;
-        case DestAlpha:      return D3D11_BLEND_DEST_ALPHA;
-        case InvDestAlpha:   return D3D11_BLEND_INV_DEST_ALPHA;
-        case DestColor:      return D3D11_BLEND_DEST_COLOR;
-        case InvDestColor:   return D3D11_BLEND_INV_DEST_COLOR;
+        case DstAlpha:       return D3D11_BLEND_DEST_ALPHA;
+        case InvDstAlpha:    return D3D11_BLEND_INV_DEST_ALPHA;
+        case DstColor:       return D3D11_BLEND_DEST_COLOR;
+        case InvDstColor:    return D3D11_BLEND_INV_DEST_COLOR;
         case SrcAlphaSat:    return D3D11_BLEND_SRC_ALPHA_SAT;
         case BlendFactor:    return D3D11_BLEND_BLEND_FACTOR;
         case InvBlendFactor: return D3D11_BLEND_INV_BLEND_FACTOR;

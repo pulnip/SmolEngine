@@ -34,19 +34,17 @@ namespace Smol
         VertexBuffer     = 1 << 0,
         IndexBuffer      = 1 << 1,
         ConstantBuffer   = 1 << 2,
+        // Indirect Draw Argument Buffer
+        IndirectArgument = 1 << 3,
         // view capability
-        AllowShaderRead  = 1 << 4,
-        AllowShaderWrite = 1 << 5,
-        // others
-        IndirectArgs     = 1 << 6,
-        CopySource       = 1 << 7,
-        CopyDest         = 1 << 8
+        ShaderResource   = 1 << 4,
+        ShaderRead       = ShaderResource,
+        UnorderedAccess  = 1 << 5,
+        ShaderWrite      = UnorderedAccess,
+        // (D3D12) blit pass capability
+        CopySrc          = 1 << 6,
+        CopyDst          = 1 << 7
     };
-
-    constexpr auto BUF_AllowShaderRW = combine(
-        RHIBufferUsage::AllowShaderRead,
-        RHIBufferUsage::AllowShaderWrite
-    );
 
     struct RHIBufferCreateDesc{
         u32 size;
@@ -128,59 +126,52 @@ namespace Smol
         D24_UNORM_S8_UINT,
         D32_FLOAT,
         D32_FLOAT_S8_UINT,
-
-        // Compressed formats
-        BC1_UNORM,
-        BC1_UNORM_SRGB,
-        BC2_UNORM,
-        BC2_UNORM_SRGB,
-        BC3_UNORM,
-        BC3_UNORM_SRGB,
-        BC4_UNORM,
-        BC4_SNORM,
-        BC5_UNORM,
-        BC5_SNORM,
-        BC6H_UF16,
-        BC6H_SF16,
-        BC7_UNORM,
-        BC7_UNORM_SRGB,
     };
 
     enum class RHITextureUsage: u8{
         None              = 0,
-        AllowShaderRead   = 1 << 0,
-        AllowRenderTarget = 1 << 1,
-        AllowDepthStencil = 1 << 2,
-        AllowShaderWrite  = 1 << 3,
-        CopySource        = 1 << 4,
-        CopyDest          = 1 << 5,
+        // view capability
+        ShaderResource = 1 << 0,
+        ShaderRead      = ShaderResource,
+        RenderTarget    = 1 << 1,
+        DepthStencil    = 1 << 2,
+        UnorderedAccess = 1 << 3,
+        ShaderWrite     = UnorderedAccess,
+        // (D3D12) blit pass capability
+        CopySrc         = 1 << 4,
+        CopyDst         = 1 << 5,
     };
 
-    constexpr auto TEX_AllowShaderRW = combine(
-        RHITextureUsage::AllowShaderRead,
-        RHITextureUsage::AllowShaderWrite
-    );
-
+    // for Resource Barrier,
+    // used at D3D12 or Metal without hazard tracking
     enum class RHIResourceState: u16{
         Common                    = 0,
+        Present                   = Common,
         VertexAndConstantBuffer   = 1 << 0,
         IndexBuffer               = 1 << 1,
         RenderTarget              = 1 << 2,
         UnorderedAccess           = 1 << 3,
         DepthWrite                = 1 << 4,
         DepthRead                 = 1 << 5,
+        // VertexShader, MeshShader, ComputeShader
         NonFragmentShaderResource = 1 << 6,
         FragmentShaderResource    = 1 << 7,
         StreamOut                 = 1 << 8,
         IndirectArgument          = 1 << 9,
-        CopyDest                  = 1 << 10,
-        CopySource                = 1 << 11,
-        ResolveDest               = 1 << 12,
-        ResolveSource             = 1 << 13,
-        GenericRead               =(1 << 14),
-        AllShaderResource,
-        Present,
-        Predication
+        Predication               = IndirectArgument,
+        CopyDst                   = 1 << 10,
+        CopySrc                   = 1 << 11,
+        ResolveDst                = 1 << 12,
+        ResolveSrc                = 1 << 13,
+        ShaderResource =
+            NonFragmentShaderResource |
+            FragmentShaderResource,
+        GenericRead =
+            VertexAndConstantBuffer |
+            IndexBuffer |
+            ShaderResource |
+            IndirectArgument |
+            CopySrc,
     };
 
     struct RHIClearDepthStencil{
@@ -194,7 +185,7 @@ namespace Smol
         u32 depth = 1;
         u32 mipLevels = 1;
         u32 arraySize = 1;
-        RHIPixelFormat format = RHIPixelFormat::BGRA8_UNORM;
+        RHIPixelFormat format = RHIPixelFormat::RGBA8_UNORM;
         RHITextureUsage usage = RHITextureUsage::None;
         RHIMemoryAccess access = RHIMemoryAccess::GPUOnly;
         RHIResourceState initialState = RHIResourceState::Common;
@@ -300,7 +291,7 @@ namespace Smol
     >;
 
     enum class RHICullMode: u8{
-        CullNone,
+        None,
         Front,
         Back,
     };
@@ -372,10 +363,10 @@ namespace Smol
         InvSrcColor,
         SrcAlpha,
         InvSrcAlpha,
-        DestAlpha,
-        InvDestAlpha,
-        DestColor,
-        InvDestColor,
+        DstAlpha,
+        InvDstAlpha,
+        DstColor,
+        InvDstColor,
         SrcAlphaSat,
         BlendFactor,
         InvBlendFactor,
