@@ -92,10 +92,10 @@ namespace{
         case InvSrcColor:    return BlendFactorOneMinusSourceColor;
         case SrcAlpha:       return BlendFactorSourceAlpha;
         case InvSrcAlpha:    return BlendFactorOneMinusSourceAlpha;
-        case DestAlpha:      return BlendFactorDestinationAlpha;
-        case InvDestAlpha:   return BlendFactorOneMinusDestinationAlpha;
-        case DestColor:      return BlendFactorDestinationColor;
-        case InvDestColor:   return BlendFactorOneMinusDestinationColor;
+        case DstAlpha:       return BlendFactorDestinationAlpha;
+        case InvDstAlpha:    return BlendFactorOneMinusDestinationAlpha;
+        case DstColor:       return BlendFactorDestinationColor;
+        case InvDstColor:    return BlendFactorOneMinusDestinationColor;
         case SrcAlphaSat:    return BlendFactorSourceAlphaSaturated;
         case BlendFactor:    return BlendFactorBlendColor;
         case InvBlendFactor: return BlendFactorOneMinusBlendColor;
