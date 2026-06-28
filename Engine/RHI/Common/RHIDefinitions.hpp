@@ -128,22 +128,6 @@ namespace Smol
         D24_UNORM_S8_UINT,
         D32_FLOAT,
         D32_FLOAT_S8_UINT,
-
-        // Compressed formats
-        BC1_UNORM,
-        BC1_UNORM_SRGB,
-        BC2_UNORM,
-        BC2_UNORM_SRGB,
-        BC3_UNORM,
-        BC3_UNORM_SRGB,
-        BC4_UNORM,
-        BC4_SNORM,
-        BC5_UNORM,
-        BC5_SNORM,
-        BC6H_UF16,
-        BC6H_SF16,
-        BC7_UNORM,
-        BC7_UNORM_SRGB,
     };
 
     enum class RHITextureUsage: u8{
@@ -300,7 +284,7 @@ namespace Smol
     >;
 
     enum class RHICullMode: u8{
-        CullNone,
+        None,
         Front,
         Back,
     };
@@ -372,10 +356,10 @@ namespace Smol
         InvSrcColor,
         SrcAlpha,
         InvSrcAlpha,
-        DestAlpha,
-        InvDestAlpha,
-        DestColor,
-        InvDestColor,
+        DstAlpha,
+        InvDstAlpha,
+        DstColor,
+        InvDstColor,
         SrcAlphaSat,
         BlendFactor,
         InvBlendFactor,
