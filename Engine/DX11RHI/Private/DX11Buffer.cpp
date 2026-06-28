@@ -5,6 +5,7 @@
 #include "DX11Definitions.hpp"
 #include "EnumUtil.hpp"
 #include "PtrUtil.hpp"
+#include "RHIDefinitions.hpp"
 #include "VariantUtil.hpp"
 #include "DX11Buffer.hpp"
 #include "DX11Util.hpp"
@@ -25,8 +26,8 @@ namespace Smol
         const auto hasVertexUsage = hasFlag(desc.usage, VertexBuffer);
         const auto hasIndexUsage = hasFlag(desc.usage, IndexBuffer);
         const auto hasConstantUsage = hasFlag(desc.usage, ConstantBuffer);
-        const auto isShaderResource = hasFlag(desc.usage, AllowShaderRead);
-        const auto isUnorderedAccess = hasFlag(desc.usage, AllowShaderWrite);
+        const auto isShaderResource = hasFlag(desc.usage, ShaderResource);
+        const auto isUnorderedAccess = hasFlag(desc.usage, UnorderedAccess);
 
         const auto isCPUWrite = (desc.access == RHIMemoryAccess::CPUWrite);
         const auto isCPURead  = (desc.access == RHIMemoryAccess::CPURead);
@@ -47,7 +48,7 @@ namespace Smol
         // Raw buffer views require this flag (ByteAddressBuffer / RWByteAddressBuffer)
         if(isShaderResource || isUnorderedAccess)
             miscFlags |= D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
-        if(hasFlag(desc.usage, IndirectArgs))
+        if(hasFlag(desc.usage, IndirectArgument))
             miscFlags |= D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS;
 
         // DYNAMIC+UAV is invalid in DX11; use DEFAULT when UAV binding is needed

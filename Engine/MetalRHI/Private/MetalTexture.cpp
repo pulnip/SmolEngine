@@ -11,13 +11,13 @@ namespace{
         using enum RHITextureUsage;
         MTL::TextureUsage mtlUsage = 0;
 
-        if(hasFlag(usage, AllowShaderRead))
+        if(hasFlag(usage, ShaderRead))
             mtlUsage |= MTL::TextureUsageShaderRead;
-        if(hasFlag(usage, AllowRenderTarget))
+        if(hasFlag(usage, RenderTarget))
             mtlUsage |= MTL::TextureUsageRenderTarget;
-        if(hasFlag(usage, AllowDepthStencil))
+        if(hasFlag(usage, DepthStencil))
             mtlUsage |= MTL::TextureUsageRenderTarget;
-        if(hasFlag(usage, AllowShaderWrite))
+        if(hasFlag(usage, ShaderWrite))
             mtlUsage |= MTL::TextureUsageShaderWrite;
 
         return mtlUsage;

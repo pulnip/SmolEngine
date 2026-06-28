@@ -25,7 +25,7 @@ namespace Smol
             RHITextureCreateDesc{
                 .width = image.GetWidth(), .height = image.GetHeight(),
                 .format = RHIPixelFormat::RGBA8_UNORM,
-                .usage = RHITextureUsage::AllowShaderRead,
+                .usage = RHITextureUsage::ShaderRead,
                 .initialData = image.GetBufferPointer()
             }
         );
