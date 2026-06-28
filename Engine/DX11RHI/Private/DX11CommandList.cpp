@@ -175,7 +175,7 @@ namespace Smol
     }
 
     void DX11CommandList::SetVertexBuffer(
-        const RHIBuffer& buffer,
+        RHIBuffer& buffer,
         u32 slot,
         u32 stride,
         u32 offset
@@ -188,7 +188,7 @@ namespace Smol
         );
         SMOL_ASSERT(!inComputePass);
 
-        auto buf = static_cast<const DX11Buffer&>(buffer).Get();
+        auto buf = static_cast<DX11Buffer&>(buffer).Get();
         context.IASetVertexBuffers(
             slot,
             1,
@@ -199,7 +199,7 @@ namespace Smol
     }
 
     void DX11CommandList::SetIndexBuffer(
-        const RHIBuffer& buffer,
+        RHIBuffer& buffer,
         RHIIndexFormat format,
         u32 offset
     ){
@@ -211,7 +211,7 @@ namespace Smol
         );
         SMOL_ASSERT(!inComputePass);
 
-        auto buf = static_cast<const DX11Buffer&>(buffer).Get();
+        auto buf = static_cast<DX11Buffer&>(buffer).Get();
         context.IASetIndexBuffer(
             buf,
             format == RHIIndexFormat::UInt16 ?
@@ -221,7 +221,7 @@ namespace Smol
     }
 
     void DX11CommandList::SetConstantBuffer(
-        const RHIBuffer& buffer,
+        RHIBuffer& buffer,
         u32 slot,
         RHIShaderStage stage,
         u32 offset
@@ -235,7 +235,7 @@ namespace Smol
 
         using enum RHIShaderStage;
 
-        auto buf = static_cast<const DX11Buffer&>(buffer).Get();
+        auto buf = static_cast<DX11Buffer&>(buffer).Get();
 
         switch(stage){
         case VertexShader:
@@ -465,7 +465,7 @@ namespace Smol
     }
 
     void DX11CommandList::SetSampler(
-        const RHISampler& sampler,
+        RHISampler& sampler,
         u32 slot,
         RHIShaderStage stage
     ){
@@ -477,7 +477,7 @@ namespace Smol
         );
 
         using enum RHIShaderStage;
-        auto s = static_cast<const DX11Sampler&>(sampler).Get();
+        auto s = static_cast<DX11Sampler&>(sampler).Get();
 
         switch(stage){
         case VertexShader:

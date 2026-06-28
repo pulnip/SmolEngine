@@ -18,6 +18,7 @@ namespace Smol
 
         ~DX11Sampler();
 
-        Sampler* Get() const noexcept{ return sampler.Get(); }
+        Sampler* Get() noexcept{ return sampler.Get(); }
+        const Sampler* Get() const noexcept{ return sampler.Get(); }
     };
 }

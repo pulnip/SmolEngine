@@ -43,20 +43,20 @@ namespace Smol
         void SetPipelineState(RHIComputePipelineState& pso) RHI_OVERRIDE;
 
         void SetVertexBuffer(
-            const RHIBuffer& buffer,
+            RHIBuffer& buffer,
             u32 slot,
             u32 stride,
             u32 offset
         ) RHI_OVERRIDE;
 
         void SetIndexBuffer(
-            const RHIBuffer& buffer,
+            RHIBuffer& buffer,
             RHIIndexFormat format,
             u32 offset
         ) RHI_OVERRIDE;
 
         void SetConstantBuffer(
-            const RHIBuffer& buffer,
+            RHIBuffer& buffer,
             u32 slot,
             RHIShaderStage stage,
             u32 offset
@@ -84,7 +84,7 @@ namespace Smol
         ) RHI_OVERRIDE;
 
         void SetSampler(
-            const RHISampler& sampler,
+            RHISampler& sampler,
             u32 slot,
             RHIShaderStage stage
         ) RHI_OVERRIDE;

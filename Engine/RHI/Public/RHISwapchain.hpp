@@ -20,6 +20,7 @@ namespace Smol
         virtual u32 GetWidth() const noexcept = 0;
         virtual u32 GetHeight() const noexcept = 0;
 
-        virtual RHITexture& GetCurrentTexture() const = 0;
+        virtual RHITexture& GetCurrentTexture() = 0;
+        virtual const RHITexture& GetCurrentTexture() const = 0;
     };
 }

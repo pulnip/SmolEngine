@@ -28,21 +28,21 @@ namespace Smol
         // Vertex and index buffers
         // stride = sizeof(Vertex)
         virtual void SetVertexBuffer(
-            const RHIBuffer&,
+            RHIBuffer&,
             u32 slot,
             u32 stride,
             u32 offset = 0
         ) = 0;
 
         virtual void SetIndexBuffer(
-            const RHIBuffer&,
+            RHIBuffer&,
             RHIIndexFormat format = RHIIndexFormat::UInt32,
             u32 offset = 0
         ) = 0;
 
         // for Data shared within Multiple Draw Call
         virtual void SetConstantBuffer(
-            const RHIBuffer&,
+            RHIBuffer&,
             u32 slot,
             RHIShaderStage,
             u32 offset = 0
@@ -77,7 +77,7 @@ namespace Smol
         }
 
         virtual void SetSampler(
-            const RHISampler&,
+            RHISampler&,
             u32 slot,
             RHIShaderStage
         ) = 0;

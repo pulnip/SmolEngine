@@ -21,7 +21,8 @@ namespace Smol
         virtual u32 GetWidth() const noexcept = 0;
         virtual u32 GetHeight() const noexcept = 0;
 
-        virtual void* GetNative() const noexcept = 0;
+        virtual void* GetNative() noexcept = 0;
+        virtual const void* GetNative() const noexcept = 0;
 
         virtual RHIResourceState GetState() const = 0;
         virtual void SetState(RHIResourceState state) = 0;

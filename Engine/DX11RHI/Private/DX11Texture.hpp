@@ -44,7 +44,10 @@ namespace Smol
         u32 GetWidth() const noexcept RHI_OVERRIDE;
         u32 GetHeight() const noexcept RHI_OVERRIDE;
 
-        void* GetNative() const noexcept RHI_OVERRIDE{
+        void* GetNative() noexcept RHI_OVERRIDE{
+            return texture.Get();
+        }
+        const void* GetNative() const noexcept RHI_OVERRIDE{
             return texture.Get();
         }
 
@@ -56,7 +59,8 @@ namespace Smol
             currentState = state;
         }
 
-        Texture* Get() const{ return texture.Get(); }
+        Texture* Get() noexcept{ return texture.Get(); }
+        const Texture* Get() const noexcept{ return texture.Get(); }
 
         SRV* GetOrCreateSRV(const RHITextureViewDesc&);
         RTV* GetOrCreateRTV(const RHITextureViewDesc&);

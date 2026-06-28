@@ -54,7 +54,8 @@ namespace Smol
             currentState = state;
         }
 
-        Buffer* Get() const noexcept{ return buffer.Get(); }
+        Buffer* Get() noexcept{ return buffer.Get(); }
+        const Buffer* Get() const noexcept{ return buffer.Get(); }
 
         SRV* GetOrCreateSRV(const RHIBufferViewDesc&);
         UAV* GetOrCreateUAV(const RHIBufferViewDesc&);
