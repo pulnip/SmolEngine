@@ -40,8 +40,6 @@ namespace Smol
             return buffer->length();
         }
 
-        MTL::Buffer* Get() const noexcept{ return buffer; }
-
         RHIResourceState GetState() const RHI_OVERRIDE{
             return currentState;
         }
@@ -49,5 +47,8 @@ namespace Smol
         void SetState(RHIResourceState state) RHI_OVERRIDE{
             currentState = state;
         }
+
+        MTL::Buffer* Get() noexcept{ return buffer; }
+        const MTL::Buffer* Get() const noexcept{ return buffer; }
     };
 }

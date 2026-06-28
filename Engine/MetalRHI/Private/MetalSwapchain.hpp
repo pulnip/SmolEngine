@@ -46,7 +46,10 @@ namespace Smol
 
         void Present(MTL::CommandBuffer&) const;
 
-        RHITexture& GetCurrentTexture() const RHI_OVERRIDE{
+        RHITexture& GetCurrentTexture() RHI_OVERRIDE{
+            return *backBuffer;
+        }
+        const RHITexture& GetCurrentTexture() const RHI_OVERRIDE{
             return *backBuffer;
         }
 

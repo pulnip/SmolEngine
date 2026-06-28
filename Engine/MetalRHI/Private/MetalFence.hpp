@@ -26,7 +26,10 @@ namespace Smol
 
         bool IsComplete(u64 value) RHI_OVERRIDE;
 
-        MTL::SharedEvent* Get() const noexcept{
+        MTL::SharedEvent* Get() noexcept{
+            return sharedEvent;
+        }
+        const MTL::SharedEvent* Get() const noexcept{
             return sharedEvent;
         }
     };

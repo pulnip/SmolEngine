@@ -31,8 +31,6 @@ namespace Smol
             u32 arraySlice = 0
         ) RHI_OVERRIDE;
 
-        MTL::Texture* Get() const{ return texture; }
-
         RHIPixelFormat GetFormat() const noexcept RHI_OVERRIDE{
             return convert(texture->pixelFormat());
         }
@@ -43,7 +41,10 @@ namespace Smol
             return texture->height();
         }
 
-        virtual void* GetNative() const noexcept RHI_OVERRIDE{
+        virtual void* GetNative() noexcept RHI_OVERRIDE{
+            return texture;
+        }
+        virtual const void* GetNative() const noexcept RHI_OVERRIDE{
             return texture;
         }
 
@@ -54,5 +55,8 @@ namespace Smol
         void SetState(RHIResourceState state) noexcept RHI_OVERRIDE{
             currentState = state;
         }
+
+        MTL::Texture* Get(){ return texture; }
+        const MTL::Texture* Get() const{ return texture; }
     };
 }

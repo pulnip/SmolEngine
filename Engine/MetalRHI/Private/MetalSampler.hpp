@@ -20,6 +20,7 @@ namespace Smol
 
         ~MetalSampler();
 
-        MTL::SamplerState* Get() const{ return sampler; }
+        MTL::SamplerState* Get(){ return sampler; }
+        const MTL::SamplerState* Get() const{ return sampler; }
     };
 }

@@ -187,7 +187,7 @@ namespace Smol
     }
 
     void MetalCommandList::SetVertexBuffer(
-        const RHIBuffer& buffer,
+        RHIBuffer& buffer,
         u32 slot,
         u32 stride,
         u32 offset
@@ -196,12 +196,12 @@ namespace Smol
             "Did you call RHICommandList::beginRenderPass()?"
         );
 
-        auto mtlBuffer = static_cast<const MetalBuffer&>(buffer).Get();
+        auto mtlBuffer = static_cast<MetalBuffer&>(buffer).Get();
         renderEncoder->setVertexBuffer(mtlBuffer, offset, slot);
     }
 
     void MetalCommandList::SetIndexBuffer(
-        const RHIBuffer& buffer,
+        RHIBuffer& buffer,
         RHIIndexFormat format,
         u32 offset
     ){
@@ -209,20 +209,20 @@ namespace Smol
             "Did you call RHICommandList::beginRenderPass()?"
         );
 
-        currentIndexBuffer = static_cast<const MetalBuffer&>(buffer).Get();
+        currentIndexBuffer = static_cast<MetalBuffer&>(buffer).Get();
         currentIndexBufferOffset = offset;
         currentIndexFormat = (format == RHIIndexFormat::UInt16) ?
             MTL::IndexTypeUInt16 : MTL::IndexTypeUInt32;
     }
 
     void MetalCommandList::SetConstantBuffer(
-        const RHIBuffer& buffer,
+        RHIBuffer& buffer,
         u32 slot,
         RHIShaderStage stage,
         u32 offset
     ){
         using enum RHIShaderStage;
-        auto mtlBuffer = static_cast<const MetalBuffer&>(buffer).Get();
+        auto mtlBuffer = static_cast<MetalBuffer&>(buffer).Get();
 
         switch(stage){
         case VertexShader:
@@ -342,12 +342,12 @@ namespace Smol
     }
 
     void MetalCommandList::SetSampler(
-        const RHISampler& sampler,
+        RHISampler& sampler,
         u32 slot,
         RHIShaderStage stage
     ){
         using enum RHIShaderStage;
-        auto mtlSampler = static_cast<const MetalSampler&>(sampler).Get();
+        auto mtlSampler = static_cast<MetalSampler&>(sampler).Get();
 
         switch(stage){
         case VertexShader:
