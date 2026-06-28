@@ -5,7 +5,7 @@
 #include "RHIDefinitions.hpp"
 
 namespace{
-    auto convertAddressMode(Smol::RHIAddressMode mode){
+    auto convert(Smol::RHIAddressMode mode){
         using enum Smol::RHIAddressMode;
 
         switch(mode){
@@ -18,7 +18,7 @@ namespace{
         }
     }
 
-    auto convertFilter(
+    auto convert(
         Smol::RHIFilter min, Smol::RHIFilter mag, Smol::RHIFilter mip,
         bool anisotropy, bool comparison
     ){
@@ -47,14 +47,14 @@ namespace Smol
         const RHISamplerState& desc
     ){
         D3D11_SAMPLER_DESC samplerDesc{
-            .Filter = convertFilter(
+            .Filter = ::convert(
                 desc.minFilter, desc.magFilter, desc.mipFilter,
                 desc.maxAnisotropy > 1,
                 desc.compareFunc != RHIComparisonFunc::Never
             ),
-            .AddressU = convertAddressMode(desc.addressU),
-            .AddressV = convertAddressMode(desc.addressV),
-            .AddressW = convertAddressMode(desc.addressW),
+            .AddressU = ::convert(desc.addressU),
+            .AddressV = ::convert(desc.addressV),
+            .AddressW = ::convert(desc.addressW),
             .MipLODBias = desc.mipLODBias,
             .MaxAnisotropy = desc.maxAnisotropy,
             .ComparisonFunc = convert(desc.compareFunc),

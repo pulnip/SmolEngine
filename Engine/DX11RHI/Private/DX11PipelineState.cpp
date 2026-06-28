@@ -9,7 +9,7 @@
 #include "DX11Util.hpp"
 
 namespace{
-    auto convertFillMode(Smol::RHIFillMode mode){
+    auto convert(Smol::RHIFillMode mode){
         using enum Smol::RHIFillMode;
 
         switch(mode){
@@ -20,7 +20,7 @@ namespace{
         }
     }
 
-    auto convertCullMode(Smol::RHICullMode mode){
+    auto convert(Smol::RHICullMode mode){
         using enum Smol::RHICullMode;
 
         switch(mode){
@@ -32,7 +32,7 @@ namespace{
         }
     }
 
-    auto convertStencilOp(Smol::RHIStencilOp op){
+    auto convert(Smol::RHIStencilOp op){
         using enum Smol::RHIStencilOp;
 
         switch (op){
@@ -49,16 +49,16 @@ namespace{
         }
     }
 
-    auto convertStencilOpDesc(const Smol::RHIStencilOpDesc& desc) {
+    auto convert(const Smol::RHIStencilOpDesc& desc) {
         return D3D11_DEPTH_STENCILOP_DESC{
-            .StencilFailOp = convertStencilOp(desc.stencilFailOp),
-            .StencilDepthFailOp = convertStencilOp(desc.depthFailOp),
-            .StencilPassOp = convertStencilOp(desc.passOp),
+            .StencilFailOp = convert(desc.stencilFailOp),
+            .StencilDepthFailOp = convert(desc.depthFailOp),
+            .StencilPassOp = convert(desc.passOp),
             .StencilFunc = convert(desc.func),
         };
     }
 
-    auto convertBlendFactor(Smol::RHIBlend blend){
+    auto convert(Smol::RHIBlend blend){
         using enum Smol::RHIBlend;
 
         switch (blend) {
@@ -80,7 +80,7 @@ namespace{
         }
     }
 
-    auto convertBlendOp(Smol::RHIBlendOp op){
+    auto convert(Smol::RHIBlendOp op){
         using enum Smol::RHIBlendOp;
 
         switch (op) {
@@ -297,8 +297,8 @@ namespace Smol
 
         // RasterizerState
         D3D11_RASTERIZER_DESC rsDesc{
-            .FillMode = convertFillMode(desc.rasterizer.fillMode),
-            .CullMode = convertCullMode(desc.rasterizer.cullMode),
+            .FillMode = ::convert(desc.rasterizer.fillMode),
+            .CullMode = ::convert(desc.rasterizer.cullMode),
             .FrontCounterClockwise = desc.rasterizer.frontCounterClockwise,
             .DepthBias             = desc.rasterizer.depthBias,
             .DepthBiasClamp        = desc.rasterizer.depthBiasClamp,
@@ -348,8 +348,8 @@ namespace Smol
                 dsDesc.StencilEnable = TRUE;
                 dsDesc.StencilReadMask = stencil.readMask;
                 dsDesc.StencilWriteMask = stencil.writeMask;
-                dsDesc.FrontFace = convertStencilOpDesc(stencil.frontFace);
-                dsDesc.BackFace = convertStencilOpDesc(stencil.backFace);
+                dsDesc.FrontFace = ::convert(stencil.frontFace);
+                dsDesc.BackFace = ::convert(stencil.backFace);
             }
         }
         if(FAILED(device.CreateDepthStencilState(
@@ -379,12 +379,12 @@ namespace Smol
                 static_assert(D3D11_COLOR_WRITE_ENABLE_ALPHA == static_cast<u8>(EnableAlpha));
 
                 dst.BlendEnable    = src.blendEnable;
-                dst.SrcBlend       = convertBlendFactor(src.srcBlend);
-                dst.DestBlend      = convertBlendFactor(src.dstBlend);
-                dst.BlendOp        = convertBlendOp(src.blendOp);
-                dst.SrcBlendAlpha  = convertBlendFactor(src.srcBlendAlpha);
-                dst.DestBlendAlpha = convertBlendFactor(src.dstBlendAlpha);
-                dst.BlendOpAlpha   = convertBlendOp(src.blendOpAlpha);
+                dst.SrcBlend       = ::convert(src.srcBlend);
+                dst.DestBlend      = ::convert(src.dstBlend);
+                dst.BlendOp        = ::convert(src.blendOp);
+                dst.SrcBlendAlpha  = ::convert(src.srcBlendAlpha);
+                dst.DestBlendAlpha = ::convert(src.dstBlendAlpha);
+                dst.BlendOpAlpha   = ::convert(src.blendOpAlpha);
                 dst.RenderTargetWriteMask = static_cast<UINT8>(src.writeMask);
             }
             if(FAILED(device.CreateBlendState(
