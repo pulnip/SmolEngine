@@ -5,14 +5,12 @@ function(smol_render_sample NAME)
 
     target_link_libraries(${NAME}Sample
     PRIVATE
-        ${RENDER_BACKEND_TARGET}
+        ${RENDER_BACKENDS}
         Smol::Render
         Smol::Platform
         Smol::Log
         ${ARG_DEPENDS}
     )
-
-    smol_rhi_macro(${NAME}Sample)
 endfunction()
 
 smol_render_sample(SpriteRenderer
@@ -33,19 +31,6 @@ smol_render_sample(ParallaxMountain
 SOURCES ParallaxMountains.cpp
 DEPENDS
     SDL3::SDL3
-    Smol::ImGuiCanvas
     Smol::Platform::Private
+    ${CANVAS_BACKENDS}
 )
-
-if(RENDER_BACKEND STREQUAL "DX11")
-    target_link_libraries(ParallaxMountainSample
-    PRIVATE
-        Smol::DX11RHI
-        Smol::D2DCanvas
-    )
-elseif(RENDER_BACKEND STREQUAL "Metal")
-    target_link_libraries(ParallaxMountainSample
-    PRIVATE
-        Smol::MetalRHI
-    )
-endif()

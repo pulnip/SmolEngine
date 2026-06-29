@@ -11,7 +11,6 @@ PRIVATE
     imgui
 )
 
-smol_rhi_macro(SmolRender)
 smol_declare_private_interface(Render)
 
 if(SMOL_ENABLE_TEST)

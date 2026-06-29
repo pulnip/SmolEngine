@@ -71,7 +71,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(tomlplusplus)
 
 # Metal-cpp
-if(RENDER_BACKEND STREQUAL "Metal")
+if(APPLE)
     FetchContent_Declare(
         metal-cpp
         URL https://developer.apple.com/metal/cpp/files/metal-cpp_macOS15_iOS18.zip
@@ -113,7 +113,13 @@ PRIVATE
     SDL3::SDL3
 )
 
-if(RENDER_BACKEND STREQUAL "Metal")
+if(WIN32)
+    target_sources(imgui
+    PRIVATE
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_dx11.cpp
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_dx12.cpp
+    )
+elseif(APPLE)
     target_compile_options(imgui
     PRIVATE
         $<$<CXX_COMPILER_ID:Clang,AppleClang,GNU>:-Wno-deprecated-declarations>
@@ -136,11 +142,6 @@ if(RENDER_BACKEND STREQUAL "Metal")
     target_link_libraries(imgui
     PRIVATE
         ${METAL_LIBRARY}
-    )
-elseif(RENDER_BACKEND STREQUAL "DX11")
-    target_sources(imgui
-    PRIVATE
-        ${imgui_SOURCE_DIR}/backends/imgui_impl_dx11.cpp
     )
 endif()
 

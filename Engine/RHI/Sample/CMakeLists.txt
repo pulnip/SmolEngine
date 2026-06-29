@@ -5,13 +5,22 @@ function(smol_rhi_sample NAME)
 
     target_link_libraries(${NAME}Sample
     PRIVATE
-        ${RENDER_BACKEND_TARGET}
         Smol::Platform
         Smol::Log
         ${ARG_DEPENDS}
     )
 
-    smol_rhi_macro(${NAME}Sample)
+    if(WIN32)
+        target_link_libraries(${NAME}Sample
+        PRIVATE
+            Smol::DX11RHI
+        )
+    elseif(APPLE)
+        target_link_libraries(${NAME}Sample
+        PRIVATE
+            Smol::MetalRHI
+        )
+    endif()
 endfunction()
 
 smol_rhi_sample(Texture

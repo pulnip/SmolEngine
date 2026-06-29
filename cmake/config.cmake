@@ -47,28 +47,7 @@ endif()
 
 # OS config
 if(WIN32)
-    set(RENDER_BACKEND "DX11" CACHE STRING "Rendering backend")
-    if(RENDER_BACKEND STREQUAL "Metal")
-        message(FATAL_ERROR "Metal is not supported on Windows.")
-    endif()
-elseif(APPLE)
-    set(RENDER_BACKEND "Metal" CACHE STRING "Rendering backend")
-    if(RENDER_BACKEND STREQUAL "DX11")
-        message(FATAL_ERROR "DX11 is not supported on macOS.")
-    endif()
-
-    execute_process(
-        COMMAND xcrun --sdk macosx --show-sdk-path
-        OUTPUT_VARIABLE MACOSX_SDK_PATH
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    set(CMAKE_OSX_SYSROOT "${MACOSX_SDK_PATH}")
-endif()
-
-set_property(CACHE RENDER_BACKEND PROPERTY STRINGS "Metal" "DX11")
-
-# Graphics API config
-if(RENDER_BACKEND STREQUAL "DX11")
+    # find HLSL compiler
     file(GLOB WINDOWS_SDK_BIN_PATHS
         "$ENV{WindowsSdkDir}/bin/*/x64"
         "C:/Program Files (x86)/Windows Kits/10/bin/*/x64"
@@ -86,16 +65,23 @@ if(RENDER_BACKEND STREQUAL "DX11")
         )
     endif()
 
-    set(RENDER_BACKEND_TARGET Smol::DX11RHI)
-elseif(RENDER_BACKEND STREQUAL "Metal")
+    set(RENDER_BACKENDS Smol::DX11RHI)
+    set(CANVAS_BACKENDS Smol::D2DCanvas Smol::ImGuiCanvas)
+elseif(APPLE)
+    execute_process(
+        COMMAND xcrun --sdk macosx --show-sdk-path
+        OUTPUT_VARIABLE MACOSX_SDK_PATH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    set(CMAKE_OSX_SYSROOT "${MACOSX_SDK_PATH}")
+
     find_library(METAL_LIBRARY Metal REQUIRED)
     find_library(METALKIT_LIBRARY MetalKit REQUIRED)
     find_library(QUARTZCORE_LIBRARY QuartzCore REQUIRED)
     find_library(FOUNDATION_LIBRARY Foundation REQUIRED)
 
-    set(RENDER_BACKEND_TARGET Smol::MetalRHI)
-else()
-    message(FATAL_ERROR "Unsupported RENDER_BACKEND: ${RENDER_BACKEND}")
+    set(RENDER_BACKENDS Smol::MetalRHI)
+    set(CANVAS_BACKENDS Smol::ImGuiCanvas)
 endif()
 
 include(deps)

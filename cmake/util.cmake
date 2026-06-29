@@ -143,18 +143,3 @@ function(smol_declare_test NAME)
         LABELS "${ARG_LABELS}"
     )
 endfunction()
-
-function(smol_rhi_macro NAME)
-    if(RENDER_BACKEND STREQUAL "Metal")
-        target_compile_definitions(${NAME}
-        PRIVATE
-            SMOL_METALRHI
-        )
-    elseif(RENDER_BACKEND STREQUAL "DX11")
-        target_compile_definitions(${NAME}
-        PRIVATE
-            SMOL_DXRHI
-            SMOL_DX11RHI
-        )
-    endif()
-endfunction()

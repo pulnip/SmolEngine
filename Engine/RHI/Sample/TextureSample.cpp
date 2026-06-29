@@ -20,10 +20,10 @@ int main(void){
         .preRasterizer = RHILegacyFrontendDesc{
             .topology = RHIPrimitiveTopology::TriangleStrip,
             .vertexShader = {
-            #if defined(SMOL_DXRHI)
+            #if defined(_WIN32)
                 .path = "Engine/Shader/SpriteQuad.vert.hlsl",
                 .entryPoint = "vs_main"
-            #elif defined(SMOL_METALRHI)
+            #elif defined(__APPLE__)
                 .path = "Engine/Shader/SpriteQuad.metal",
                 .entryPoint = "vs_main"
             #endif
@@ -33,10 +33,10 @@ int main(void){
             .frontCounterClockwise = false
         },
         .fragmentShader = {
-        #if defined(SMOL_DXRHI)
+        #if defined(_WIN32)
             .path = "Engine/Shader/Sprite.pixel.hlsl",
             .entryPoint = "ps_main"
-        #elif defined(SMOL_METALRHI)
+        #elif defined(__APPLE__)
             .path = "Engine/Shader/SpriteQuad.metal",
             .entryPoint = "fs_main"
         #endif
