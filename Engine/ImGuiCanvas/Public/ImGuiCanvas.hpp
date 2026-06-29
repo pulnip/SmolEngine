@@ -10,7 +10,7 @@ namespace Smol
         RAII<Impl> impl;
 
     public:
-        ImGuiCanvas(RHIDevice&);
+        ImGuiCanvas();
         ~ImGuiCanvas();
 
         void Begin(RHISwapchain&) override;

@@ -7,6 +7,13 @@
 
 namespace Smol
 {
+    enum class CanvasBackend{
+    #if defined(_WIN32)
+        Direct2D = 0,
+    #endif
+        ImGui    = 1,
+    };
+
     struct StrokeStyle{
         Color color = Colors::Red;
         f32 width = 1.0f;
@@ -38,6 +45,9 @@ namespace Smol
 
     using Canvas2DRAII = RAII<Canvas2D>;
 
-    // each platform should implement this function
-    Canvas2DRAII CreateCanvas(RHIDevice&);
+#if defined(_WIN32)
+    Canvas2DRAII CreateCanvas(RHIDevice&, CanvasBackend backend = CanvasBackend::Direct2D);
+#else
+    Canvas2DRAII CreateCanvas(RHIDevice&, CanvasBackend backend = CanvasBackend::ImGui);
+#endif
 }

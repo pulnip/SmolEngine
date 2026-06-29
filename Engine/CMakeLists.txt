@@ -14,8 +14,8 @@ if(RENDER_BACKEND STREQUAL "DX11")
     add_subdirectory(D2DCanvas)
 elseif(RENDER_BACKEND STREQUAL "Metal")
     add_subdirectory(MetalRHI)
-    add_subdirectory(ImGuiCanvas)
 endif()
+add_subdirectory(ImGuiCanvas)
 
 add_subdirectory(UI)
 

@@ -33,6 +33,7 @@ smol_render_sample(ParallaxMountain
 SOURCES ParallaxMountains.cpp
 DEPENDS
     SDL3::SDL3
+    Smol::ImGuiCanvas
     Smol::Platform::Private
 )
 
@@ -46,6 +47,5 @@ elseif(RENDER_BACKEND STREQUAL "Metal")
     target_link_libraries(ParallaxMountainSample
     PRIVATE
         Smol::MetalRHI
-        Smol::ImGuiCanvas
     )
 endif()

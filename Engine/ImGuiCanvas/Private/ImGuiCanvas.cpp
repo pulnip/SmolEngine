@@ -39,8 +39,8 @@ namespace Smol
         return m[0].x*m[1].y - m[0].y*m[1].x;
     }
 
-    Canvas2DRAII CreateCanvas(RHIDevice& device){
-        return std::make_unique<ImGuiCanvas>(device);
+    Canvas2DRAII CreateImGuiCanvas(){
+        return std::make_unique<ImGuiCanvas>();
     }
 
     class ImGuiCanvas::Impl{
@@ -75,7 +75,7 @@ namespace Smol
         }
     };
 
-    ImGuiCanvas::ImGuiCanvas(RHIDevice&)
+    ImGuiCanvas::ImGuiCanvas()
         : impl(std::make_unique<Impl>())
     {
         SMOL_ASSERT(ImGui::GetCurrentContext() != nullptr);

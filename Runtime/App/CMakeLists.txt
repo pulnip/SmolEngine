@@ -18,6 +18,7 @@ target_link_libraries(SmolApp
 PRIVATE
     Smol::Core
     "$<LINK_LIBRARY:WHOLE_ARCHIVE,Smol::Gameplay>"
+    Smol::ImGuiCanvas
     Smol::Input
     Smol::Log
     Smol::Platform
@@ -37,6 +38,5 @@ elseif(RENDER_BACKEND STREQUAL "Metal")
     target_link_libraries(SmolApp
     PRIVATE
         Smol::MetalRHI
-        Smol::ImGuiCanvas
     )
 endif()
