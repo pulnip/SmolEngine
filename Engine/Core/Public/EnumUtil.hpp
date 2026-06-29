@@ -8,10 +8,11 @@ namespace Smol
     template<typename T>
     concept EnumType = std::is_enum_v<T>;
 
-    template<typename T>
+    template<EnumType T>
     struct EnumTraits{
         static CStr name;
         static T convert(StrView);
+        static CStr convert(T);
     };
 
     template<EnumType E>

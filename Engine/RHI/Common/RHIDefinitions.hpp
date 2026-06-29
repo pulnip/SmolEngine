@@ -14,6 +14,16 @@
 
 namespace Smol
 {
+    enum class RHIBackend{
+    #if defined(_WIN32)
+        DirectX11 = 0,
+        DirectX12 = 1,
+    #elif defined(__APPLE__)
+        Metal     = 2,
+    #endif
+        WebGPU    = 3,
+    };
+
     struct RHICapabilities{
         bool flipTextureV;
         f32 clipSpaceMinZ;

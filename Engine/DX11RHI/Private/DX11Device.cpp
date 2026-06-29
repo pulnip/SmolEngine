@@ -15,7 +15,7 @@
 
 namespace Smol
 {
-    RHIDeviceRAII CreateDevice(){
+    RHIDeviceRAII CreateDX11Device(){
         return std::make_unique<DX11Device>();
     }
 

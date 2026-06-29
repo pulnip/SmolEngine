@@ -22,7 +22,7 @@ extern "C"{
 
 namespace Smol
 {
-    RHIDeviceRAII CreateDevice(){
+    RHIDeviceRAII CreateMetalDevice(){
         return std::make_unique<MetalDevice>();
     }
 
