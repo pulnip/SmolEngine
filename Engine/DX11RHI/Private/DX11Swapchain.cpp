@@ -5,6 +5,7 @@
 #include "DX11Util.hpp"
 #include "DX11Swapchain.hpp"
 #include "DX11Texture.hpp"
+#include "RHICommandList.hpp"
 
 namespace Smol
 {
@@ -109,7 +110,7 @@ namespace Smol
         return desc.Height;
     }
 
-    void DX11Swapchain::Present(){
+    void DX11Swapchain::Present(RHICommandList&){
         UINT syncInterval = vsync ? 1 : 0;
         UINT flags = (!vsync && allowTearing) ?
             DXGI_PRESENT_ALLOW_TEARING : 0;

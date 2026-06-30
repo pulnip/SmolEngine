@@ -97,7 +97,6 @@ namespace Smol
                 .storeAction = RHIStoreAction::Store
             }
         };
-        cmdList.Begin();
         cmdList.BeginRenderPass(RHIRenderPassDesc{
             .colorAttachments = colorAttachments
         });
@@ -109,7 +108,6 @@ namespace Smol
         });
         ImGui_ImplDX11_RenderDrawData(draw_data);
         cmdList.EndRenderPass();
-        cmdList.Close();
     }
 }
 

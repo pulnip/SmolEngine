@@ -41,6 +41,6 @@ namespace Smol
             return *backBuffer;
         }
 
-        void Present() RHI_OVERRIDE;
+        void Present(RHICommandList&) RHI_OVERRIDE;
     };
 }

@@ -187,6 +187,10 @@ namespace Smol
         }
 
         void Submit(RHICommandList& cmdList){
+            // skip if not deferred context
+            if(&cmdList == immediateCmdList.get())
+                return;
+
             auto list = static_cast<DX11CommandList&>(cmdList).Finish();
             immediateCmdList->Get().ExecuteCommandList(
                 list.Get(),
