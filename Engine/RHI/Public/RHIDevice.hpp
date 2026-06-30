@@ -46,16 +46,16 @@ namespace Smol
 
         virtual void SignalFence(RHICommandList&, RHIFence&, u64 value) = 0;
 
-        virtual void Submit(RHICommandList&, RHISwapchain* swapchain = nullptr) = 0;
+        virtual void Submit(RHICommandList&) = 0;
 
         virtual RHICapabilities GetCapabilities() const noexcept = 0;
 
         // return native type for UI
         // in Metal, MTL::Device
         virtual NativeDeviceHandle Get() noexcept = 0;
-        // DeviceContext for DX11, CommandQueue for DX12
-        // not used at Metal
-        virtual void* GetContextOrQueue() noexcept{ return nullptr; };
+
+        // Immediate DeviceContext for DX11
+        virtual RHICommandList& GetMainCmdList() noexcept = 0;
     };
 
 #if defined(_WIN32)

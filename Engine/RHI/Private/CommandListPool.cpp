@@ -38,7 +38,6 @@ namespace Smol
     }
 
     void CommandListPool::SubmitFrame(
-        RHISwapchain* swapchain,
         RHIFence& fence,
         u64 fenceValue
     ){
@@ -56,7 +55,7 @@ namespace Smol
         device.SignalFence(*slot.cmdLists.back(), fence, fenceValue);
 
         for(auto& cmdList: slot.cmdLists){
-            device.Submit(*cmdList, swapchain);
+            device.Submit(*cmdList);
         }
     }
 }

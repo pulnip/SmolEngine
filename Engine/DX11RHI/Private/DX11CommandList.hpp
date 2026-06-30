@@ -11,8 +11,7 @@ namespace Smol
 {
     class DX11CommandList: public RHICommandList{
     private:
-        // NOTE. Immediate context.
-        DeviceContext& context;
+        DeviceContextRAII context;
         // simulate command recording
         bool isRecording = false;
         bool inRenderPass = false, inComputePass = false;
@@ -26,7 +25,10 @@ namespace Smol
         DX11Buffer inlineBuffer;
 
     public:
-        DX11CommandList(Device& device, DeviceContext& context);
+        // DX11CommandList with immediate context
+        DX11CommandList(Device& device);
+        // DX11CommandList with deferred context
+        DX11CommandList(Device& device, DeviceContext& immediateContext);
         ~DX11CommandList();
 
         void Begin() noexcept RHI_OVERRIDE;
@@ -164,5 +166,11 @@ namespace Smol
         void SetMarker(CStr name) noexcept RHI_OVERRIDE{
             // TODO
         }
+
+        void* GetNative() noexcept RHI_OVERRIDE;
+
+        COMRAII<ID3D11CommandList> Finish();
+
+        DeviceContext& Get(){ return *context.Get(); }
     };
 }

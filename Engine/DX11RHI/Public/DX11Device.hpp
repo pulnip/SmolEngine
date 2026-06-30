@@ -53,9 +53,9 @@ namespace Smol
             // NOTE. No-Op for DX11
         }
 
-        void Submit(RHICommandList&, RHISwapchain* swapchain = nullptr) RHI_OVERRIDE;
+        void Submit(RHICommandList&) RHI_OVERRIDE;
 
         void* Get() noexcept RHI_OVERRIDE;
-        void* GetContextOrQueue() noexcept RHI_OVERRIDE;
+        RHICommandList& GetMainCmdList() noexcept RHI_OVERRIDE;
     };
 }

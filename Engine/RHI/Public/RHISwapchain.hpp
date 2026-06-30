@@ -22,5 +22,7 @@ namespace Smol
 
         virtual RHITexture& GetCurrentTexture() = 0;
         virtual const RHITexture& GetCurrentTexture() const = 0;
+
+        virtual void Present() = 0;
     };
 }

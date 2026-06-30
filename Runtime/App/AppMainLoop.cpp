@@ -263,10 +263,6 @@ namespace Smol
     }
 
     bool AppMainLoop::Render(CommandListPool& pool, RHISwapchain& swapchain){
-        // for single thread model, use single cmdList.
-        auto& cmdList = pool.Acquire();
-        cmdList.Begin();
-
         if(showRain){
             RainStreakParam rainStreakParam{
                 .elapsedTime = static_cast<f32>(timer.GetElapsedTime()),
@@ -278,6 +274,10 @@ namespace Smol
             };
             postRenderer.Upload(rainStreakParam);
         }
+
+        // for single thread model, use single cmdList.
+        auto& cmdList = pool.Acquire();
+        cmdList.Begin();
 
         // TODO. use integrated Renderer class
         // Begin RenderPass for sceneTexture
@@ -313,9 +313,13 @@ namespace Smol
         cmdList.Copy(*scene, swapchain);
         cmdList.Flush();
 
+        cmdList.Close();
+        return true;
+    }
+
+    bool AppMainLoop::RenderUI(RHICommandList& cmdList, RHISwapchain& swapchain){
         uiRenderer.Draw(cmdList, &swapchain);
 
-        cmdList.Close();
         return true;
     }
 

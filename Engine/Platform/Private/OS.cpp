@@ -140,6 +140,12 @@ namespace Smol
             if(!mainLoop.Render(cmdListPool, *swapchain)) [[unlikely]]
                 break;
             EndFrame(device);
+
+            // for Immediate draw of ImGui
+            if(!mainLoop.RenderUI(device.GetMainCmdList(), *swapchain)) [[unlikely]]
+                break;
+
+            swapchain->Present();
         }
 
         mainLoop.Finalize();
@@ -203,7 +209,6 @@ namespace Smol
 
     void OS::Impl::EndFrame(RHIDevice& device){
         cmdListPool.SubmitFrame(
-            swapchain.get(),
             framePacer.GetCurrentFence(),
             framePacer.GetNextFenceValue()
         );

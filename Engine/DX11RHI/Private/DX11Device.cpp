@@ -23,7 +23,7 @@ namespace Smol
     private:
         FactoryRAII factory = nullptr;
         DeviceRAII device = nullptr;
-        DeviceContextRAII context = nullptr;
+        RAII<DX11CommandList> immediateCmdList;
 
     public:
         Impl(){
@@ -94,7 +94,9 @@ namespace Smol
                 throw std::runtime_error("Failed to create DX11 device");
             }
 
-            device->GetImmediateContext(&context);
+            immediateCmdList = std::make_unique<DX11CommandList>(
+                *device.Get()
+            );
         }
 
         ~Impl()= default;
@@ -108,8 +110,10 @@ namespace Smol
             StrView name
         ){
             return std::make_unique<DX11Buffer>(
-                *device.Get(), *context.Get(),
-                desc, name
+                *device.Get(),
+                immediateCmdList->Get(),
+                desc,
+                name
             );
         }
 
@@ -119,14 +123,18 @@ namespace Smol
         ){
             return std::make_unique<DX11Texture>(
                 *device.Get(),
-                desc, name
+                desc,
+                name
             );
         }
 
         RHISamplerRAII CreateSampler(
             const RHISamplerState& desc
         ){
-            return std::make_unique<DX11Sampler>(*device.Get(), desc);
+            return std::make_unique<DX11Sampler>(
+                *device.Get(),
+                desc
+            );
         }
 
         RHIGraphicsPipelineStateRAII CreatePipelineState(
@@ -134,7 +142,11 @@ namespace Smol
             StrView name
         ){
             if(std::get_if<RHILegacyFrontendDesc>(&desc.preRasterizer)){
-                return std::make_unique<DX11GraphicsPipelineState>(*device.Get(), desc, name);
+                return std::make_unique<DX11GraphicsPipelineState>(
+                    *device.Get(),
+                    desc,
+                    name
+                );
             }
             else{
                 // cannot use Mesh Shader in DirectX 11
@@ -146,25 +158,44 @@ namespace Smol
             const RHIComputePipelineStateDesc& desc,
             StrView name
         ){
-            return std::make_unique<DX11ComputePipelineState>(*device.Get(), desc, name);
+            return std::make_unique<DX11ComputePipelineState>(
+                *device.Get(),
+                desc,
+                name
+            );
         }
 
         RHISwapchainRAII CreateSwapchain(
             const RHISwapchainCreateDesc& desc
         ){
-            return std::make_unique<DX11Swapchain>(*device.Get(), *factory.Get(), desc);
+            return std::make_unique<DX11Swapchain>(
+                *device.Get(),
+                *factory.Get(),
+                desc
+            );
         }
 
         RHICommandListRAII CreateCommandList(){
-            return std::make_unique<DX11CommandList>(*device.Get(), *context.Get());
+            return std::make_unique<DX11CommandList>(
+                *device.Get(),
+                immediateCmdList->Get()
+            );
         }
 
         RHIFenceRAII CreateFence(u64 initialValue){
             return std::make_unique<DX11Fence>(*device.Get(), initialValue);
         }
 
+        void Submit(RHICommandList& cmdList){
+            auto list = static_cast<DX11CommandList&>(cmdList).Finish();
+            immediateCmdList->Get().ExecuteCommandList(
+                list.Get(),
+                FALSE
+            );
+        }
+
         Device* Get() noexcept{ return device.Get(); }
-        DeviceContext* GetContext() noexcept{ return context.Get(); }
+        DX11CommandList& GetMainCmdList() noexcept{ return *immediateCmdList; }
     };
 
     DX11Device::DX11Device()
@@ -231,17 +262,14 @@ namespace Smol
         };
     }
 
-    void DX11Device::Submit(RHICommandList&, RHISwapchain* swapchain){
-        if(swapchain != nullptr){
-            auto& dxSwapchain = static_cast<DX11Swapchain&>(*swapchain);
-            dxSwapchain.Present();
-        }
+    void DX11Device::Submit(RHICommandList& cmdList){
+        impl->Submit(cmdList);
     }
 
     void* DX11Device::Get() noexcept{
         return impl->Get();
     }
-    void* DX11Device::GetContextOrQueue() noexcept{
-        return impl->GetContext();
+    RHICommandList& DX11Device::GetMainCmdList() noexcept{
+        return impl->GetMainCmdList();
     }
 }

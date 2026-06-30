@@ -117,7 +117,8 @@ int main(void){
         cmdList->EndRenderPass();
         cmdList->Close();
 
-        device->Submit(*cmdList, swapchain.get());
+        device->Submit(*cmdList);
+        swapchain->Present();
     }
 
     cmdList->WaitUntilCompleted();

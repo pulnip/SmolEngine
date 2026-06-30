@@ -109,7 +109,7 @@ namespace Smol
         return desc.Height;
     }
 
-    void DX11Swapchain::Present() const{
+    void DX11Swapchain::Present(){
         UINT syncInterval = vsync ? 1 : 0;
         UINT flags = (!vsync && allowTearing) ?
             DXGI_PRESENT_ALLOW_TEARING : 0;

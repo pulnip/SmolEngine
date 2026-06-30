@@ -34,13 +34,13 @@ namespace Smol
         u32 GetWidth() const noexcept RHI_OVERRIDE;
         u32 GetHeight() const noexcept RHI_OVERRIDE;
 
-        void Present() const;
-
         RHITexture& GetCurrentTexture() RHI_OVERRIDE{
             return *backBuffer;
         }
         const RHITexture& GetCurrentTexture() const RHI_OVERRIDE{
             return *backBuffer;
         }
+
+        void Present() RHI_OVERRIDE;
     };
 }
