@@ -30,8 +30,7 @@ namespace Smol
     private:
         MTL::Device* device;
         MTL::CommandQueue* commandQueue;
-
-        MTL::CommandBuffer* pendingCommandBuffer = nullptr;
+        RAII<MetalCommandList> cmdList;
 
         AutoreleasePoolScope autoreleasePool;
 
@@ -44,13 +43,23 @@ namespace Smol
             SMOL_ASSERT(commandQueue != nullptr,
                 "Failed to create command queue"
             );
+
+            cmdList = std::make_unique<MetalCommandList>(
+                commandQueue
+            );
         }
 
         ~Impl(){
-            if(commandQueue != nullptr)
+            cmdList = nullptr;
+
+            if(commandQueue != nullptr){
                 commandQueue->release();
-            if(device != nullptr)
+                commandQueue = nullptr;
+            }
+            if(device != nullptr){
                 device->release();
+                device = nullptr;
+            }
 
             // _objc_autoreleasePoolPrint();
         }
@@ -113,9 +122,10 @@ namespace Smol
             return std::make_unique<MetalFence>(*device, initialValue);
         }
 
-        void Submit(RHICommandList& cmdList, RHISwapchain* swapchain);
+        void Submit(RHICommandList& cmdList);
 
         MTL::Device* Get() noexcept{ return device; }
+        MetalCommandList& GetMainCmdList() noexcept{ return *cmdList; }
     };
 
     MetalDevice::MetalDevice()
@@ -196,28 +206,23 @@ namespace Smol
         };
     }
 
-    void MetalDevice::Submit(RHICommandList& cmdList, RHISwapchain* swapchain){
-        impl->Submit(cmdList, swapchain);
+    void MetalDevice::Submit(RHICommandList& cmdList){
+        impl->Submit(cmdList);
     }
 
     void MetalDevice::Impl::Submit(
-        RHICommandList& cmdList,
-        RHISwapchain* swapchain
+        RHICommandList& cmdList
     ){
         auto& mtlCmdList = static_cast<MetalCommandList&>(cmdList);
         auto cmdBuffer = mtlCmdList.Get();
-        if(swapchain != nullptr){
-
-            auto& mtlSwapchain = static_cast<MetalSwapchain&>(*swapchain);
-            auto drawable = mtlSwapchain.GetCurrentDrawable();
-
-            cmdBuffer->presentDrawable(drawable);
-        }
-
         cmdBuffer->commit();
     }
 
     void* MetalDevice::Get() noexcept{
         return impl->Get();
+    }
+
+    RHICommandList& MetalDevice::GetMainCmdList() noexcept{
+        return impl->GetMainCmdList();
     }
 }

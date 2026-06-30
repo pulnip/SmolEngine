@@ -63,6 +63,7 @@ int main(void){
 
     Color clearColor = Colors::Grey;
     auto cmdList = device->CreateCommandList();
+    auto& mainCmdList = device->GetMainCmdList();
 
     Timer timer;
     constexpr f32 framePerSeconds = 0.16f;
@@ -139,9 +140,12 @@ int main(void){
         cmdList->EndRenderPass();
         cmdList->Close();
 
-        device->Submit(*cmdList);
+        mainCmdList.Begin();
+        swapchain->Present(mainCmdList);
+        mainCmdList.Close();
 
-        swapchain->Present();
+        device->Submit(*cmdList);
+        device->Submit(mainCmdList);
     }
 
     cmdList->WaitUntilCompleted();

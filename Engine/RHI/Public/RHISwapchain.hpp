@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RHICommandList.hpp"
 #include "Semantics.hpp"
 #include "Primitives.hpp"
 #include "RHIDefinitions.hpp"
@@ -23,6 +24,6 @@ namespace Smol
         virtual RHITexture& GetCurrentTexture() = 0;
         virtual const RHITexture& GetCurrentTexture() const = 0;
 
-        virtual void Present() = 0;
+        virtual void Present(RHICommandList&) = 0;
     };
 }

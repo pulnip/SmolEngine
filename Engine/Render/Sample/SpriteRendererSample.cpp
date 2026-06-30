@@ -62,6 +62,7 @@ int main(void){
 
     Color clearColor = Colors::Grey;
     auto cmdList = device->CreateCommandList();
+    auto& mainCmdList = device->GetMainCmdList();
 
     while(true){
         bool keepRunning = true;
@@ -117,8 +118,12 @@ int main(void){
         cmdList->EndRenderPass();
         cmdList->Close();
 
+        mainCmdList.Begin();
+        swapchain->Present(mainCmdList);
+        mainCmdList.Close();
+
         device->Submit(*cmdList);
-        swapchain->Present();
+        device->Submit(mainCmdList);
     }
 
     cmdList->WaitUntilCompleted();

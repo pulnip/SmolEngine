@@ -2,9 +2,11 @@
 #include <Metal/Metal.hpp>
 #include <QuartzCore/QuartzCore.hpp>
 #include "Assert.hpp"
+#include "MetalCommandList.hpp"
 #include "MetalSwapchain.hpp"
 #include "MetalTexture.hpp"
 #include "MetalUtil.hpp"
+#include "RHICommandList.hpp"
 
 namespace Smol
 {
@@ -42,7 +44,9 @@ namespace Smol
         backBuffer = nullptr;
     }
 
-    void MetalSwapchain::Present(MTL::CommandBuffer& buffer) const{
-        buffer.presentDrawable(currentDrawable);
+    void MetalSwapchain::Present(RHICommandList& cmdList){
+        auto& mtlCmdList = static_cast<MetalCommandList&>(cmdList);
+        auto cmdBuffer = mtlCmdList.Get();
+        cmdBuffer->presentDrawable(currentDrawable);
     }
 }

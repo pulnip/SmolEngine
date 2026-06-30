@@ -168,6 +168,7 @@ int main(void){
 
         Timer timer;
         auto cmdList = device->CreateCommandList();
+        auto& mainCmdList = device->GetMainCmdList();
 
         while(true){
             bool keepRunning = true;
@@ -233,11 +234,14 @@ int main(void){
 
             cmdList->EndRenderPass();
             cmdList->Close();
+
+            mainCmdList.Begin();
+            uiRenderer.Draw(mainCmdList, swapchain.get());
+            swapchain->Present(mainCmdList);
+            mainCmdList.Close();
+
             device->Submit(*cmdList);
-
-            uiRenderer.Draw(device->GetMainCmdList(), swapchain.get());
-
-            swapchain->Present();
+            device->Submit(mainCmdList);
         }
 
         cmdList->WaitUntilCompleted();

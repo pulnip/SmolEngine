@@ -8,6 +8,7 @@
 #include "MetalTexture.hpp"
 #include "Primitives.hpp"
 #include "RHIAPI.hpp"
+#include "RHICommandList.hpp"
 #include "RHIDefinitions.hpp"
 #include "RHISwapchain.hpp"
 
@@ -44,14 +45,14 @@ namespace Smol
             return backBuffer->GetHeight();
         }
 
-        void Present(MTL::CommandBuffer&) const;
-
         RHITexture& GetCurrentTexture() RHI_OVERRIDE{
             return *backBuffer;
         }
         const RHITexture& GetCurrentTexture() const RHI_OVERRIDE{
             return *backBuffer;
         }
+
+        void Present(RHICommandList&) RHI_OVERRIDE;
 
         CA::MetalDrawable* GetCurrentDrawable() const noexcept{
             return currentDrawable;

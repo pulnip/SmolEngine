@@ -163,7 +163,7 @@ namespace Smol
 
         void SetMarker(CStr name) RHI_OVERRIDE;
 
-        void* GetNative() const noexcept RHI_OVERRIDE{
+        void* GetNative() noexcept RHI_OVERRIDE{
             return commandBuffer;
         }
 
