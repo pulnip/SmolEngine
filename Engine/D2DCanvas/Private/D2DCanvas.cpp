@@ -96,7 +96,7 @@ namespace{
 
 namespace Smol
 {
-    Canvas2DRAII CreateCanvas(RHIDevice& device){
+    Canvas2DRAII CreateD2DCanvas(RHIDevice& device){
         return std::make_unique<D2DCanvas>(device);
     }
 

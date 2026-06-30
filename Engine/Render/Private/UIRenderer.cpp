@@ -35,9 +35,11 @@ namespace Smol
     struct UIContext{};
 }
 
-#if defined(SMOL_DX11RHI)
+#if defined(_WIN32)
 
 #include <imgui_impl_dx11.h>
+// TODO. split UIRendererForDX11, split UIRendererForDX12?
+#include <imgui_impl_dx12.h>
 
 namespace Smol
 {
@@ -109,7 +111,7 @@ namespace Smol
     }
 }
 
-#elif defined(SMOL_METALRHI)
+#elif defined(__APPLE__)
 
 #include <imgui_impl_metal.h>
 #include "RHITexture.hpp"

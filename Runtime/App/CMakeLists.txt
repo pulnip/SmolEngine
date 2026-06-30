@@ -18,6 +18,7 @@ target_link_libraries(SmolApp
 PRIVATE
     Smol::Core
     "$<LINK_LIBRARY:WHOLE_ARCHIVE,Smol::Gameplay>"
+    Smol::ImGuiCanvas
     Smol::Input
     Smol::Log
     Smol::Platform
@@ -27,16 +28,15 @@ PRIVATE
     Smol::UI
 )
 
-if(RENDER_BACKEND STREQUAL "DX11")
+if(WIN32)
     target_link_libraries(SmolApp
     PRIVATE
         Smol::DX11RHI
         Smol::D2DCanvas
     )
-elseif(RENDER_BACKEND STREQUAL "Metal")
+elseif(APPLE)
     target_link_libraries(SmolApp
     PRIVATE
         Smol::MetalRHI
-        Smol::ImGuiCanvas
     )
 endif()

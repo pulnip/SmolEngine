@@ -45,10 +45,10 @@ namespace Smol
             .preRasterizer = RHILegacyFrontendDesc{
                 .topology = RHIPrimitiveTopology::TriangleStrip,
                 .vertexShader = RHIShaderDesc{
-                #if defined(SMOL_DXRHI)
+                #if defined(_WIN32)
                     .path = "Engine/Shader/SpriteQuad.vert.hlsl",
                     .entryPoint = "vs_main"
-                #elif defined(SMOL_METALRHI)
+                #elif defined(__APPLE__)
                     .path = "Engine/Shader/SpriteQuad.metal",
                     .entryPoint = "vs_main"
                 #endif
@@ -58,10 +58,10 @@ namespace Smol
                 .frontCounterClockwise = false
             },
             .fragmentShader = RHIShaderDesc{
-            #if defined(SMOL_DXRHI)
+            #if defined(_WIN32)
                 .path = "Engine/Shader/Sprite.pixel.hlsl",
                 .entryPoint = "ps_main"
-            #elif defined(SMOL_METALRHI)
+            #elif defined(__APPLE__)
                 .path = "Engine/Shader/SpriteQuad.metal",
                 .entryPoint = "fs_main"
             #endif

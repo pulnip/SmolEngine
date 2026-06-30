@@ -9,13 +9,13 @@ add_subdirectory(Reflection)
 add_subdirectory(RHI)
 add_subdirectory(Serialization)
 # 2-1) Infrastructure Implement Layer
-if(RENDER_BACKEND STREQUAL "DX11")
+if(WIN32)
     add_subdirectory(DX11RHI)
     add_subdirectory(D2DCanvas)
-elseif(RENDER_BACKEND STREQUAL "Metal")
+elseif(APPLE)
     add_subdirectory(MetalRHI)
-    add_subdirectory(ImGuiCanvas)
 endif()
+add_subdirectory(ImGuiCanvas)
 
 add_subdirectory(UI)
 

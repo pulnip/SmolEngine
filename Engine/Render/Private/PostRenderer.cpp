@@ -13,10 +13,10 @@ namespace Smol
             .preRasterizer = RHILegacyFrontendDesc{
                 .topology = RHIPrimitiveTopology::TriangleStrip,
                 .vertexShader = RHIShaderDesc{
-                #if defined(SMOL_DXRHI)
+                #if defined(_WIN32)
                     .path = "Engine/Shader/FullscreenQuad.vert.hlsl",
                     .entryPoint = "vs_main"
-                #elif defined(SMOL_METALRHI)
+                #elif defined(__APPLE__)
                     .path = "Engine/Shader/FullscreenQuad.vert.metal",
                     .entryPoint = "vs_main"
                 #endif
@@ -26,10 +26,10 @@ namespace Smol
                 .frontCounterClockwise = false
             },
             .fragmentShader = RHIShaderDesc{
-            #if defined(SMOL_DXRHI)
+            #if defined(_WIN32)
                 .path = "Engine/Shader/RainStreak.pixel.hlsl",
                 .entryPoint = "ps_main"
-            #elif defined(SMOL_METALRHI)
+            #elif defined(__APPLE__)
                 .path = "Engine/Shader/RainStreak.frag.metal",
                 .entryPoint = "fs_main"
             #endif
@@ -65,10 +65,10 @@ namespace Smol
             .preRasterizer = RHILegacyFrontendDesc{
                 .topology = RHIPrimitiveTopology::TriangleStrip,
                 .vertexShader = RHIShaderDesc{
-                #if defined(SMOL_DXRHI)
+                #if defined(_WIN32)
                     .path = "Engine/Shader/FullscreenQuad.vert.hlsl",
                     .entryPoint = "vs_main"
-                #elif defined(SMOL_METALRHI)
+                #elif defined(__APPLE__)
                     .path = "Engine/Shader/FullscreenQuad.vert.metal",
                     .entryPoint = "vs_main"
                 #endif
@@ -78,10 +78,10 @@ namespace Smol
                 .frontCounterClockwise = false
             },
             .fragmentShader = RHIShaderDesc{
-            #if defined(SMOL_DXRHI)
+            #if defined(_WIN32)
                 .path = "Engine/Shader/RainDroplet.pixel.hlsl",
                 .entryPoint = "ps_main"
-            #elif defined(SMOL_METALRHI)
+            #elif defined(__APPLE__)
                 .path = "Engine/Shader/RainDroplet.frag.metal",
                 .entryPoint = "fs_main"
             #endif

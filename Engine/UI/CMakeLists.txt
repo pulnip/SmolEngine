@@ -9,13 +9,12 @@ PRIVATE
     Smol::RHI
 )
 
-smol_rhi_macro(SmolUI)
-if(RENDER_BACKEND STREQUAL "DX11")
+if(WIN32)
     target_link_libraries(SmolUI
     PRIVATE
         Smol::DX11RHI
     )
-elseif(RENDER_BACKEND STREQUAL "Metal")
+elseif(APPLE)
     target_link_libraries(SmolUI
     PRIVATE
         Smol::MetalRHI
