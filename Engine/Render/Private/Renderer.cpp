@@ -3,7 +3,11 @@
 
 namespace Smol
 {
-    Renderer::Renderer(RHIDevice& device){
-        
+    Renderer::Renderer(
+        RHIDevice& device
+    )
+        : device(device)
+    {
+
     }
 }

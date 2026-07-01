@@ -6,6 +6,7 @@ namespace Smol
 {
     class Renderer{
     private:
+        RHIDevice& device;
 
     public:
         Renderer(RHIDevice&);
