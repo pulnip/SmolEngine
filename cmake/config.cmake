@@ -45,6 +45,10 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     )
 endif()
 
+set(RENDER_BACKEND_LINK_OPTIONS "")
+set(RENDER_BACKENDS "")
+set(CANVAS_BACKENDS "")
+
 # OS config
 if(WIN32)
     # find HLSL compiler
@@ -65,8 +69,9 @@ if(WIN32)
         )
     endif()
 
-    set(RENDER_BACKENDS Smol::DX11RHI)
-    set(CANVAS_BACKENDS Smol::D2DCanvas Smol::ImGuiCanvas)
+    list(APPEND RENDER_BACKEND_LINK_OPTIONS /DELAYLOAD:d3d11.dll /DELAYLOAD:d3d12.dll)
+    list(APPEND RENDER_BACKENDS Smol::DX11RHI delayimp.lib)
+    list(APPEND CANVAS_BACKENDS Smol::D2DCanvas Smol::ImGuiCanvas)
 elseif(APPLE)
     execute_process(
         COMMAND xcrun --sdk macosx --show-sdk-path
@@ -80,8 +85,8 @@ elseif(APPLE)
     find_library(QUARTZCORE_LIBRARY QuartzCore REQUIRED)
     find_library(FOUNDATION_LIBRARY Foundation REQUIRED)
 
-    set(RENDER_BACKENDS Smol::MetalRHI)
-    set(CANVAS_BACKENDS Smol::ImGuiCanvas)
+    list(APPEND RENDER_BACKENDS Smol::MetalRHI)
+    list(APPEND CANVAS_BACKENDS Smol::ImGuiCanvas)
 endif()
 
 include(deps)

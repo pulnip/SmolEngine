@@ -3,24 +3,17 @@ function(smol_rhi_sample NAME)
 
     add_executable(${NAME}Sample ${ARG_SOURCES})
 
+    target_link_options(${NAME}Sample
+    PRIVATE
+        ${RENDER_BACKEND_LINK_OPTIONS}
+    )
     target_link_libraries(${NAME}Sample
     PRIVATE
         Smol::Platform
         Smol::Log
+        ${RENDER_BACKENDS}
         ${ARG_DEPENDS}
     )
-
-    if(WIN32)
-        target_link_libraries(${NAME}Sample
-        PRIVATE
-            Smol::DX11RHI
-        )
-    elseif(APPLE)
-        target_link_libraries(${NAME}Sample
-        PRIVATE
-            Smol::MetalRHI
-        )
-    endif()
 endfunction()
 
 smol_rhi_sample(Texture
