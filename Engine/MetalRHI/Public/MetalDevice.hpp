@@ -50,8 +50,9 @@ namespace Smol
 
         RHICapabilities GetCapabilities() const noexcept RHI_OVERRIDE;
 
-        void Submit(RHICommandList&, RHISwapchain*) RHI_OVERRIDE;
+        void Submit(RHICommandList&) RHI_OVERRIDE;
 
         NativeDeviceHandle Get() noexcept RHI_OVERRIDE;
+        RHICommandList& GetMainCmdList() noexcept RHI_OVERRIDE;
     };
 }

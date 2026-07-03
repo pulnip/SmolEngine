@@ -12,11 +12,36 @@
 #include "IntMath.hpp"
 #include "RHIDefinitions.hpp"
 
+namespace{
+    Smol::DeviceContextRAII GetImmediateContext(Smol::Device& device){
+        using namespace Smol;
+
+        DeviceContextRAII context;
+        device.GetImmediateContext(context.GetAddressOf());
+
+        return context;
+    }
+
+    Smol::DeviceContextRAII CreateDeferredContext(Smol::Device& device){
+        using namespace Smol;
+
+        DeviceContextRAII context;
+        if(FAILED(device.CreateDeferredContext(
+            0,
+            context.GetAddressOf()
+        ))){
+            throw std::runtime_error("Failed to create Deferred Context");
+        }
+
+        return context;
+    }
+}
+
 namespace Smol
 {
-    DX11CommandList::DX11CommandList(Device& device, DeviceContext& context)
-        : context(context)
-        , inlineBuffer(device, context,
+    DX11CommandList::DX11CommandList(Device& device)
+        : context(GetImmediateContext(device))
+        , inlineBuffer(device, *context.Get(),
             RHIBufferCreateDesc{
                 .size = 256,
                 .usage = RHIBufferUsage::ConstantBuffer,
@@ -24,7 +49,23 @@ namespace Smol
             },
             "CommandList Inline Buffer"
         )
-    {}
+    {
+        SMOL_ASSERT(context != nullptr);
+    }
+
+    DX11CommandList::DX11CommandList(Device& device, DeviceContext& immediateContext)
+        : context(CreateDeferredContext(device))
+        , inlineBuffer(device, *context.Get(),
+            RHIBufferCreateDesc{
+                .size = 256,
+                .usage = RHIBufferUsage::ConstantBuffer,
+                .access = RHIMemoryAccess::CPUWrite
+            },
+            "CommandList Inline Buffer"
+        )
+    {
+        SMOL_ASSERT(context != nullptr);
+    }
 
     DX11CommandList::~DX11CommandList() = default;
 
@@ -83,7 +124,7 @@ namespace Smol
             dsv = tex->GetOrCreateDSV();
         }
 
-        context.OMSetRenderTargets(
+        context->OMSetRenderTargets(
             desc.colorAttachments.size(),
             rtvs.data(),
             dsv
@@ -94,7 +135,7 @@ namespace Smol
             if(attachment.loadAction != RHILoadAction::Clear)
                 continue;
 
-            context.ClearRenderTargetView(
+            context->ClearRenderTargetView(
                 rtvs[i],
                 &attachment.clearColor[0]
             );
@@ -103,7 +144,7 @@ namespace Smol
         if(dsv != nullptr){
             auto& attachment = *desc.depthAttachment;
 
-            context.ClearDepthStencilView(
+            context->ClearDepthStencilView(
                 dsv,
                 D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
                 attachment.clearDepthStencil.depth,
@@ -129,18 +170,18 @@ namespace Smol
         ID3D11ShaderResourceView* nullSRVs[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = {};
 
         if(maxBindedVSSRV > 0)
-            context.VSSetShaderResources(0, maxBindedVSSRV, nullSRVs);
+            context->VSSetShaderResources(0, maxBindedVSSRV, nullSRVs);
         if(maxBindedPSSRV > 0)
-            context.PSSetShaderResources(0, maxBindedPSSRV, nullSRVs);
+            context->PSSetShaderResources(0, maxBindedPSSRV, nullSRVs);
         if(maxBindedCSSRV > 0)
-            context.CSSetShaderResources(0, maxBindedCSSRV, nullSRVs);
+            context->CSSetShaderResources(0, maxBindedCSSRV, nullSRVs);
 
         maxBindedVSSRV = 0;
         maxBindedPSSRV = 0;
         maxBindedCSSRV = 0;
 
         // Unbind render targets to avoid warnings about resources being bound while being used.
-        context.OMSetRenderTargets(0, nullptr, nullptr);
+        context->OMSetRenderTargets(0, nullptr, nullptr);
     #endif
 
         inRenderPass = false;
@@ -156,7 +197,7 @@ namespace Smol
         SMOL_ASSERT(!inComputePass);
 
         auto& dxPSO = static_cast<DX11GraphicsPipelineState&>(pso);
-        dxPSO.Bind(context);
+        dxPSO.Bind(*context.Get());
     }
 
     void DX11CommandList::SetPipelineState(RHIComputePipelineState& pso){
@@ -169,7 +210,7 @@ namespace Smol
         SMOL_ASSERT(!inRenderPass);
 
         auto& dxPSO = static_cast<DX11ComputePipelineState&>(pso);
-        dxPSO.Bind(context);
+        dxPSO.Bind(*context.Get());
 
         currentComputePSO = &dxPSO;
     }
@@ -189,7 +230,7 @@ namespace Smol
         SMOL_ASSERT(!inComputePass);
 
         auto buf = static_cast<DX11Buffer&>(buffer).Get();
-        context.IASetVertexBuffers(
+        context->IASetVertexBuffers(
             slot,
             1,
             &buf,
@@ -212,7 +253,7 @@ namespace Smol
         SMOL_ASSERT(!inComputePass);
 
         auto buf = static_cast<DX11Buffer&>(buffer).Get();
-        context.IASetIndexBuffer(
+        context->IASetIndexBuffer(
             buf,
             format == RHIIndexFormat::UInt16 ?
                 DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT,
@@ -239,21 +280,21 @@ namespace Smol
 
         switch(stage){
         case VertexShader:
-            context.VSSetConstantBuffers(
+            context->VSSetConstantBuffers(
                 slot,
                 1,
                 &buf
             );
             break;
         case FragmentShader:
-            context.PSSetConstantBuffers(
+            context->PSSetConstantBuffers(
                 slot,
                 1,
                 &buf
             );
             break;
         case ComputeShader:
-            context.CSSetConstantBuffers(
+            context->CSSetConstantBuffers(
                 slot,
                 1,
                 &buf
@@ -289,7 +330,7 @@ namespace Smol
             #if defined(_DEBUG) || !defined(NDEBUG)
                 maxBindedVSSRV = std::max(maxBindedVSSRV, slot+1);
             #endif
-                context.VSSetShaderResources(
+                context->VSSetShaderResources(
                     slot,
                     1,
                     &view
@@ -299,7 +340,7 @@ namespace Smol
             #if defined(_DEBUG) || !defined(NDEBUG)
                 maxBindedPSSRV = std::max(maxBindedPSSRV, slot+1);
             #endif
-                context.PSSetShaderResources(
+                context->PSSetShaderResources(
                     slot,
                     1,
                     &view
@@ -309,7 +350,7 @@ namespace Smol
             #if defined(_DEBUG) || !defined(NDEBUG)
                 maxBindedCSSRV = std::max(maxBindedCSSRV, slot+1);
             #endif
-                context.CSSetShaderResources(
+                context->CSSetShaderResources(
                     slot,
                     1,
                     &view
@@ -326,7 +367,7 @@ namespace Smol
             });
             switch(stage){
             case ComputeShader:
-                context.CSSetUnorderedAccessViews(
+                context->CSSetUnorderedAccessViews(
                     slot,
                     1,
                     &view,
@@ -369,7 +410,7 @@ namespace Smol
             #if defined(_DEBUG) || !defined(NDEBUG)
                 maxBindedVSSRV = std::max(maxBindedVSSRV, slot+1);
             #endif
-                context.VSSetShaderResources(
+                context->VSSetShaderResources(
                     slot,
                     1,
                     &view
@@ -379,7 +420,7 @@ namespace Smol
             #if defined(_DEBUG) || !defined(NDEBUG)
                 maxBindedPSSRV = std::max(maxBindedPSSRV, slot+1);
             #endif
-                context.PSSetShaderResources(
+                context->PSSetShaderResources(
                     slot,
                     1,
                     &view
@@ -389,7 +430,7 @@ namespace Smol
             #if defined(_DEBUG) || !defined(NDEBUG)
                 maxBindedCSSRV = std::max(maxBindedCSSRV, slot+1);
             #endif
-                context.CSSetShaderResources(
+                context->CSSetShaderResources(
                     slot,
                     1,
                     &view
@@ -408,7 +449,7 @@ namespace Smol
             });
             switch(stage){
             case ComputeShader:
-                context.CSSetUnorderedAccessViews(
+                context->CSSetUnorderedAccessViews(
                     slot,
                     1,
                     &view,
@@ -439,21 +480,21 @@ namespace Smol
 
         switch(stage){
         case VertexShader:
-            context.VSSetConstantBuffers(
+            context->VSSetConstantBuffers(
                 slot,
                 1,
                 &buf
             );
             break;
         case FragmentShader:
-            context.PSSetConstantBuffers(
+            context->PSSetConstantBuffers(
                 slot,
                 1,
                 &buf
             );
             break;
         case ComputeShader:
-            context.CSSetConstantBuffers(
+            context->CSSetConstantBuffers(
                 slot,
                 1,
                 &buf
@@ -481,13 +522,13 @@ namespace Smol
 
         switch(stage){
         case VertexShader:
-            context.VSSetSamplers(slot, 1, &s);
+            context->VSSetSamplers(slot, 1, &s);
             break;
         case FragmentShader:
-            context.PSSetSamplers(slot, 1, &s);
+            context->PSSetSamplers(slot, 1, &s);
             break;
         case ComputeShader:
-            context.CSSetSamplers(slot, 1, &s);
+            context->CSSetSamplers(slot, 1, &s);
             break;
         default:
             std::unreachable();
@@ -503,7 +544,7 @@ namespace Smol
             .MinDepth = viewport.minDepth,
             .MaxDepth = viewport.maxDepth
         };
-        context.RSSetViewports(
+        context->RSSetViewports(
             1,
             &vp
         );
@@ -516,7 +557,7 @@ namespace Smol
             .right = scissor.right,
             .bottom = scissor.bottom
         };
-        context.RSSetScissorRects(
+        context->RSSetScissorRects(
             1,
             &rect
         );
@@ -542,7 +583,7 @@ namespace Smol
         //     startVertex
         // );
 
-        context.DrawInstanced(
+        context->DrawInstanced(
             vertexCount,
             instanceCount,
             startVertex,
@@ -566,13 +607,13 @@ namespace Smol
         SMOL_ASSERT(!inComputePass);
 
         // if instanceCount == 1, same as below.
-        // context.DrawIndexed(
+        // context->DrawIndexed(
         //     indexCount,
         //     startIndex,
         //     baseVertex
         // );
 
-        context.DrawIndexedInstanced(
+        context->DrawIndexedInstanced(
             indexCount,
             instanceCount,
             startIndex,
@@ -620,7 +661,7 @@ namespace Smol
         );
         auto threadGroupSize = currentComputePSO->getThreadGroupSize();
 
-        context.Dispatch(
+        context->Dispatch(
             ceilDiv(gridSize.x, threadGroupSize.x),
             ceilDiv(gridSize.y, threadGroupSize.y),
             ceilDiv(gridSize.z, threadGroupSize.z)
@@ -643,7 +684,7 @@ namespace Smol
             .back = 1
         };
 
-        context.CopySubresourceRegion(
+        context->CopySubresourceRegion(
             static_cast<DX11Buffer&>(dst).Get(), 0,
             dstOffset, 0, 0,
             static_cast<DX11Buffer&>(src).Get(), 0,
@@ -655,7 +696,7 @@ namespace Smol
         RHITexture& src,
         RHITexture& dst
     ){
-        context.CopyResource(
+        context->CopyResource(
             static_cast<DX11Texture&>(dst).Get(),
             static_cast<DX11Texture&>(src).Get()
         );
@@ -667,7 +708,7 @@ namespace Smol
     ){
         auto& texture = static_cast<DX11Texture&>(dst.GetCurrentTexture());
 
-        context.CopyResource(
+        context->CopyResource(
             texture.Get(),
             static_cast<DX11Texture&>(src).Get()
         );
@@ -681,5 +722,19 @@ namespace Smol
     ){
         // TODO.
         throw std::runtime_error("Unimplemented");
+    }
+
+    void* DX11CommandList::GetNative() noexcept{
+        return context.Get();
+    }
+
+    COMRAII<ID3D11CommandList> DX11CommandList::Finish(){
+        COMRAII<ID3D11CommandList> cmdList;
+        context->FinishCommandList(
+            FALSE,
+            cmdList.GetAddressOf()
+        );
+
+        return cmdList;
     }
 }

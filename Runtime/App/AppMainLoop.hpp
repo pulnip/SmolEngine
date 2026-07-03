@@ -38,6 +38,7 @@ namespace Smol
         bool Initialize() override;
         bool Update() override;
         bool Render(CommandListPool&, RHISwapchain&) override;
+        bool RenderUI(RHICommandList&, RHISwapchain&) override;
         void Finalize() override;
     };
 }

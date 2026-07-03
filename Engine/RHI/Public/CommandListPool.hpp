@@ -28,6 +28,6 @@ namespace Smol
         friend class OS;
 
         void BeginFrame();
-        void SubmitFrame(RHISwapchain*, RHIFence&, u64 fenceValue);
+        void SubmitFrame(RHIFence&, u64 fenceValue);
     };
 }

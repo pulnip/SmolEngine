@@ -168,6 +168,7 @@ int main(void){
 
         Timer timer;
         auto cmdList = device->CreateCommandList();
+        auto& mainCmdList = device->GetMainCmdList();
 
         while(true){
             bool keepRunning = true;
@@ -200,10 +201,10 @@ int main(void){
             timer.NewFrame();
             swapchain->AcquireNextImage();
 
-            cmdList->Begin();
-
             mountainParam.elapsedTime = timer.GetElapsedTime();
             mountainParamBuf->Upload(mountainParam);
+
+            cmdList->Begin();
 
             std::array colorAttachments = {
                 RHIColorAttachment{
@@ -232,12 +233,15 @@ int main(void){
             cmdList->Draw(4);
 
             cmdList->EndRenderPass();
-
-            uiRenderer.Draw(*cmdList, swapchain.get());
-
             cmdList->Close();
 
-            device->Submit(*cmdList, swapchain.get());
+            mainCmdList.Begin();
+            uiRenderer.Draw(mainCmdList, swapchain.get());
+            swapchain->Present(mainCmdList);
+            mainCmdList.Close();
+
+            device->Submit(*cmdList);
+            device->Submit(mainCmdList);
         }
 
         cmdList->WaitUntilCompleted();

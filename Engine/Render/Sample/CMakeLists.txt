@@ -3,6 +3,10 @@ function(smol_render_sample NAME)
 
     add_executable(${NAME}Sample ${ARG_SOURCES})
 
+    target_link_options(${NAME}Sample
+    PRIVATE
+        ${RENDER_BACKEND_LINK_OPTIONS}
+    )
     target_link_libraries(${NAME}Sample
     PRIVATE
         ${RENDER_BACKENDS}

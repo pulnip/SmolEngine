@@ -61,7 +61,7 @@ namespace Smol
                 device.Get()
             ),
             static_cast<ID3D11DeviceContext*>(
-                device.GetContextOrQueue()
+                device.GetMainCmdList().GetNative()
             )
         );
     }

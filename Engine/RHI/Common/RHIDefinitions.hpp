@@ -273,12 +273,46 @@ namespace Smol
         RHIInputClassification classification;
         u32 instanceDataStepRate; // For per-instance data
     };
+}
 
+template<>
+struct std::hash<Smol::RHIVertexElement>{
+    std::size_t operator()(const Smol::RHIVertexElement& elm) const noexcept{
+        using namespace Smol;
+
+        return hashAll(
+            elm.semanticName,
+            elm.semanticIndex,
+            elm.format,
+            elm.inputSlot,
+            elm.alignedByteOffset,
+            elm.classification,
+            elm.instanceDataStepRate
+        );
+    }
+};
+
+namespace Smol
+{
     struct RHIShaderDesc{
         std::filesystem::path path;
         Str entryPoint = "main";
     };
+}
 
+template<>
+struct std::hash<Smol::RHIShaderDesc>{
+    std::size_t operator()(const Smol::RHIShaderDesc& desc) const noexcept{
+        using namespace Smol;
+
+        return hashAll(
+            desc.path,
+            desc.entryPoint
+        );
+    }
+};
+
+namespace Smol{
     struct RHILegacyFrontendDesc{
         std::optional<std::span<const RHIVertexElement>> vertexLayout = std::nullopt;
         RHIPrimitiveTopology topology = RHIPrimitiveTopology::TriangleList;
@@ -298,7 +332,58 @@ namespace Smol
         RHILegacyFrontendDesc,
         RHIMeshFrontendDesc
     >;
+}
 
+template<>
+struct std::hash<Smol::RHILegacyFrontendDesc>{
+    std::size_t operator()(const Smol::RHILegacyFrontendDesc& desc) const noexcept{
+        using namespace Smol;
+
+        std::size_t h = 0;
+
+        if(desc.vertexLayout.has_value()){
+            for(const auto& elm: *desc.vertexLayout){
+                h = hashAll(h, elm);
+            }
+        }
+
+        return hashAll(
+            h,
+            desc.topology,
+            desc.vertexShader
+        );
+    }
+};
+
+template<>
+struct std::hash<Smol::RHIMeshFrontendDesc>{
+    std::size_t operator()(const Smol::RHIMeshFrontendDesc& desc) const noexcept{
+        using namespace Smol;
+
+        std::size_t h = desc.amplificationShader.has_value() ?
+            hashAll(*desc.amplificationShader) :
+            0;
+
+        return hashAll(
+            h,
+            desc.meshShader
+        );
+    }
+};
+
+template<>
+struct std::hash<Smol::RHIPreRasterizerDesc>{
+    std::size_t operator()(const Smol::RHIPreRasterizerDesc& desc) const noexcept{
+        using namespace Smol;
+
+        return std::visit([](const auto& desc){
+            return hashAll(desc);
+        }, desc);
+    }
+};
+
+namespace Smol
+{
     enum class RHICullMode: u8{
         None,
         Front,
@@ -321,7 +406,27 @@ namespace Smol
         bool multisampleEnable = false;
         bool antialiasedLineEnable = false;
     };
+}
 
+template<>
+struct std::hash<Smol::RHIRasterizerState>{
+    std::size_t operator()(const Smol::RHIRasterizerState& desc) const noexcept{
+        using namespace Smol;
+
+        return hashAll(
+            desc.fillMode,
+            desc.cullMode,
+            desc.frontCounterClockwise,
+            desc.depthBias,
+            desc.depthBiasClamp,
+            desc.slopeScaledDepthBias,
+            desc.multisampleEnable,
+            desc.antialiasedLineEnable
+        );
+    }
+};
+
+namespace Smol{
     enum class RHIComparisonFunc: u8{
         Never,
         Less,
@@ -364,7 +469,55 @@ namespace Smol
         RHIComparisonFunc depthFunc = RHIComparisonFunc::Less;
         std::optional<RHIStencilState> stencil = std::nullopt;
     };
+}
 
+template<>
+struct std::hash<Smol::RHIStencilOpDesc>{
+    std::size_t operator()(const Smol::RHIStencilOpDesc& desc) const noexcept{
+        using namespace Smol;
+
+        return hashAll(
+            desc.func,
+            desc.stencilFailOp,
+            desc.depthFailOp,
+            desc.passOp
+        );
+    }
+};
+
+template<>
+struct std::hash<Smol::RHIStencilState>{
+    std::size_t operator()(const Smol::RHIStencilState& state) const noexcept{
+        using namespace Smol;
+
+        return hashAll(
+            state.readMask,
+            state.writeMask,
+            state.frontFace,
+            state.backFace
+        );
+    }
+};
+
+template<>
+struct std::hash<Smol::RHIDepthStencilState>{
+    std::size_t operator()(const Smol::RHIDepthStencilState& state) const noexcept{
+        using namespace Smol;
+
+        std::size_t h = hashAll(
+            state.format,
+            state.depthWriteEnable,
+            state.depthFunc
+        );
+
+        return state.stencil.has_value() ?
+            hashAll(h, *state.stencil) :
+            h;
+    }
+};
+
+namespace Smol
+{
     enum class RHIBlend: u8{
         Zero,
         One,
@@ -416,7 +569,47 @@ namespace Smol
         bool independentBlendEnable = false;
         std::array<RHIRenderTargetBlendState, RHI_MAX_RENDER_TARGETS> renderTargets;
     };
+}
 
+template<>
+struct std::hash<Smol::RHIRenderTargetBlendState>{
+    std::size_t operator()(const Smol::RHIRenderTargetBlendState& state) const noexcept{
+        using namespace Smol;
+
+        return state.blendEnable ?
+            hashAll(
+                state.srcBlend,
+                state.dstBlend,
+                state.blendOp,
+                state.srcBlendAlpha,
+                state.dstBlendAlpha,
+                state.blendOpAlpha,
+                state.writeMask
+            ) :
+            0;
+    }
+};
+
+template<>
+struct std::hash<Smol::RHIBlendState>{
+    std::size_t operator()(const Smol::RHIBlendState& state) const noexcept{
+        using namespace Smol;
+
+        std::size_t h = hashAll(
+            state.alphaToCoverageEnable,
+            state.independentBlendEnable
+        );
+
+        for(const auto& rtState: state.renderTargets){
+            h = hashAll(h, rtState);
+        }
+
+        return h;
+    }
+};
+
+namespace Smol
+{
     struct RHIGraphicsPipelineStateDesc{
         // Geometry Frontend
         RHIPreRasterizerDesc preRasterizer;
@@ -441,7 +634,50 @@ namespace Smol
         Size3D gridSize = Size3D{1, 1, 1};
         std::optional<Size3D> threadGroupSize = std::nullopt;
     };
+}
 
+template<>
+struct std::hash<Smol::RHIGraphicsPipelineStateDesc>{
+    std::size_t operator()(const Smol::RHIGraphicsPipelineStateDesc& desc) const noexcept{
+        using namespace Smol;
+
+        std::size_t h = hashAll(
+            desc.preRasterizer,
+            desc.rasterizer,
+            desc.fragmentShader
+        );
+
+        if(desc.depthStencil.has_value()){
+            h = hashAll(h, *desc.depthStencil);
+        }
+        if(desc.blend.has_value()){
+            h = hashAll(h, *desc.blend);
+        }
+
+        for(usize i=0; i<desc.renderTargetCount; ++i){
+            h = hashAll(h, desc.renderTargetFormats[i]);
+        }
+
+        return h;
+    }
+};
+
+template<>
+struct std::hash<Smol::RHIComputePipelineStateDesc>{
+    std::size_t operator()(const Smol::RHIComputePipelineStateDesc& desc) const noexcept{
+        std::size_t h = hashAll(
+            desc.computeShader,
+            desc.gridSize
+        );
+
+        return desc.threadGroupSize.has_value() ?
+            hashAll(h, *desc.threadGroupSize) :
+            h;
+    }
+};
+
+namespace Smol
+{
     enum class RHIFilter: u8{
         Nearest,
         Linear
@@ -537,7 +773,39 @@ namespace Smol
         .addressV = RHIAddressMode::Border,
         .addressW = RHIAddressMode::Border
     };
+}
 
+template<>
+struct std::hash<Smol::RHISamplerState>{
+    std::size_t operator()(const Smol::RHISamplerState& desc) const noexcept{
+        using namespace Smol;
+
+        std::size_t h = hashAll(
+            desc.minFilter,
+            desc.magFilter,
+            desc.mipFilter,
+            desc.addressU,
+            desc.addressV,
+            desc.addressW,
+            desc.mipLODBias,
+            desc.minLOD, desc.maxLOD,
+            desc.maxAnisotropy,
+            desc.compareFunc
+        );
+
+        bool anyAddressModeBorder =
+            desc.addressU == RHIAddressMode::Border ||
+            desc.addressV == RHIAddressMode::Border ||
+            desc.addressW == RHIAddressMode::Border;
+
+        return anyAddressModeBorder ?
+            hashAll(h, desc.borderColor) :
+            h;
+    }
+};
+
+namespace Smol
+{
     constexpr u32 RHI_FRAMES_IN_FLIGHT = 3;
 
     struct RHISwapchainCreateDesc{
@@ -661,7 +929,50 @@ namespace Smol
 
         bool operator==(const RHITextureViewDesc&) const = default;
     };
+}
 
+template<>
+struct std::hash<Smol::RHIBufferViewDesc>{
+    std::size_t operator()(const Smol::RHIBufferViewDesc& desc) const noexcept{
+        using namespace Smol;
+
+        std::size_t h = hashAll(
+            desc.offset,
+            desc.size,
+            desc.config.index()
+        );
+
+        using TypedConfig = RHIBufferViewDesc::TypedConfig;
+        using StructuredConfig = RHIBufferViewDesc::StructuredConfig;
+
+        return std::visit([h](const auto& cfg){
+            using T = std::decay_t<decltype(cfg)>;
+            if constexpr(std::is_same_v<T, TypedConfig>){
+                return hashAll(h, cfg.format);
+            }
+            else if constexpr(std::is_same_v<T, StructuredConfig>){
+                return hashAll(h, cfg.stride);
+            }
+            else{
+                return h;
+            }
+        }, desc.config);
+    }
+};
+
+template<>
+struct std::hash<Smol::RHITextureViewDesc>{
+    std::size_t operator()(const Smol::RHITextureViewDesc& desc) const noexcept{
+        using namespace Smol;
+
+        return hashAll(
+            desc.format
+        );
+    }
+};
+
+namespace Smol
+{
     struct RHISlotBindingInfo{
         u32 index = std::numeric_limits<u32>::max();
         RHIBindingAccess access = RHIBindingAccess::ReadOnly;
@@ -683,41 +994,3 @@ namespace Smol
         Size3D reflectedSize = Size3D{1, 1, 1};
     };
 }
-
-template<>
-struct std::hash<Smol::RHIBufferViewDesc>{
-    std::size_t operator()(const Smol::RHIBufferViewDesc& desc) const noexcept{
-        using namespace Smol;
-
-        auto h = hashAll(
-            std::hash<u32>{}(desc.offset),
-            std::hash<u32>{}(desc.size),
-            std::hash<usize>{}(desc.config.index())
-        );
-
-        using TypedConfig = RHIBufferViewDesc::TypedConfig;
-        using StructuredConfig = RHIBufferViewDesc::StructuredConfig;
-
-        std::visit([&h](const auto& cfg){
-            using T = std::decay_t<decltype(cfg)>;
-            if constexpr(std::is_same_v<T, TypedConfig>){
-                hashCombine(h, std::hash<u32>{}(static_cast<u32>(cfg.format)));
-            }
-            else if constexpr(std::is_same_v<T, StructuredConfig>){
-                hashCombine(h, std::hash<u32>{}(cfg.stride));
-            }
-        }, desc.config);
-        return h;
-    }
-};
-
-template<>
-struct std::hash<Smol::RHITextureViewDesc>{
-    std::size_t operator()(const Smol::RHITextureViewDesc& desc) const noexcept{
-        using namespace Smol;
-
-        return Smol::hashAll(
-            static_cast<std::underlying_type_t<RHIPixelFormat>>(desc.format)
-        );
-    }
-};

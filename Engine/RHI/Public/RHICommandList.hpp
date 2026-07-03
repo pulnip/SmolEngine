@@ -156,8 +156,11 @@ namespace Smol
         virtual void EndEvent() = 0;
         virtual void SetMarker(CStr name) = 0;
 
-        // for UI, CommandBuffer for Metal, CommandList for D3D12
-        virtual void* GetNative() const noexcept{ return nullptr; }
+        // for UI,
+        //   DeviceContext for D3D11,
+        //   CommandBuffer for Metal,
+        //   CommandList for D3D12
+        virtual void* GetNative() noexcept = 0;
 
     private:
         // direct use of void* is unsafe

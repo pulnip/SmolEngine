@@ -127,6 +127,8 @@ namespace Smol
 
         sysTimer.Reset();
 
+        auto& mainCmdList = device.GetMainCmdList();
+
         while(true){
             sysTimer.NewFrame();
 
@@ -139,6 +141,14 @@ namespace Smol
             BeginFrame(device);
             if(!mainLoop.Render(cmdListPool, *swapchain)) [[unlikely]]
                 break;
+
+            mainCmdList.Begin();
+            // for Immediate draw of ImGui
+            if(!mainLoop.RenderUI(mainCmdList, *swapchain)) [[unlikely]]
+                break;
+            swapchain->Present(mainCmdList);
+
+            mainCmdList.Close();
             EndFrame(device);
         }
 
@@ -203,10 +213,12 @@ namespace Smol
 
     void OS::Impl::EndFrame(RHIDevice& device){
         cmdListPool.SubmitFrame(
-            swapchain.get(),
             framePacer.GetCurrentFence(),
             framePacer.GetNextFenceValue()
         );
+
+        auto& mainCmdList = device.GetMainCmdList();
+        device.Submit(mainCmdList);
 
         framePacer.EndFrame();
     }
