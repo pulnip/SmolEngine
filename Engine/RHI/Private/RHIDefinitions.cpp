@@ -12,13 +12,8 @@ namespace Smol
         using enum RHIBackend;
 
         switch(e){
-    #if defined(_WIN32)
         case DirectX11: return "DirectX11";
-        case DirectX12: return "DirectX12";
-    #elif defined(__APPLE__)
         case Metal:     return "Metal";
-    #endif
-        case WebGPU:    return "WebGPU";
         default:
             std::unreachable();
         }
