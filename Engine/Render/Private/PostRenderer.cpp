@@ -10,7 +10,7 @@ namespace Smol
 {
     PostRenderer::PostRenderer(RHIDevice& device)
         : rainStreak(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
-            .preRasterizer = RHILegacyFrontendDesc{
+            .preRasterizer = RHIPreRasterizerDesc{
                 .topology = RHIPrimitiveTopology::TriangleStrip,
                 .vertexShader = RHIShaderDesc{
                 #if defined(_WIN32)
@@ -62,7 +62,7 @@ namespace Smol
             .access = RHIMemoryAccess::CPUWrite
         }, "rainStreakParam")),
         rainDroplet(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
-            .preRasterizer = RHILegacyFrontendDesc{
+            .preRasterizer = RHIPreRasterizerDesc{
                 .topology = RHIPrimitiveTopology::TriangleStrip,
                 .vertexShader = RHIShaderDesc{
                 #if defined(_WIN32)

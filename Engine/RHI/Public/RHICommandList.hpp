@@ -65,6 +65,14 @@ namespace Smol
         ) = 0;
 
         // for per-draw data, size should be <= 256B
+        virtual void SetBytes(
+            const void* bytes,
+            usize size,
+            u32 slot,
+            RHIShaderStage stage
+        ) = 0;
+
+        // type-safe helper
         template<typename T>
             requires (!std::is_pointer_v<T> && std::is_trivially_copyable_v<T>)
         void SetBytes(
@@ -111,18 +119,6 @@ namespace Smol
             Size3D gridSize
         ) = 0;
 
-        // Resource barriers (state transitions)
-        // Note: 'before' state is obtained from texture.getState() internally
-        virtual void TransitionBarrier(
-            RHITexture& texture,
-            RHIResourceState after
-        ) = 0;
-
-        virtual void TransitionBarrier(
-            RHIBuffer& buffer,
-            RHIResourceState after
-        ) = 0;
-
         // Copy operations
         virtual void Copy(
             RHIBuffer& src,
@@ -158,17 +154,7 @@ namespace Smol
 
         // for UI,
         //   DeviceContext for D3D11,
-        //   CommandBuffer for Metal,
-        //   CommandList for D3D12
+        //   CommandBuffer for Metal
         virtual void* GetNative() noexcept = 0;
-
-    private:
-        // direct use of void* is unsafe
-        virtual void SetBytes(
-            const void* bytes,
-            usize size,
-            u32 slot,
-            RHIShaderStage stage
-        ) = 0;
     };
 }

@@ -42,7 +42,7 @@ namespace Smol
     )
         : spriteManager(spriteManager)
         , pipeline(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
-            .preRasterizer = RHILegacyFrontendDesc{
+            .preRasterizer = RHIPreRasterizerDesc{
                 .topology = RHIPrimitiveTopology::TriangleStrip,
                 .vertexShader = RHIShaderDesc{
                 #if defined(_WIN32)

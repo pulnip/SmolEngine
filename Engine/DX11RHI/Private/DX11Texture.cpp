@@ -15,9 +15,6 @@ namespace Smol
         StrView name
     )
         : device(device)
-        // , width(desc.width), height(desc.height)
-        // , format(desc.format)
-        , currentState(desc.initialState)
     {
         using enum RHITextureUsage;
 
@@ -102,14 +99,6 @@ namespace Smol
     }
 
     DX11Texture::~DX11Texture() = default;
-
-    void DX11Texture::Upload(
-        const void* data,
-        u32 mipLevel,
-        u32 arraySlice
-    ){
-        // TODO
-    }
 
     RHIPixelFormat DX11Texture::GetFormat() const noexcept{
         D3D11_TEXTURE2D_DESC desc;
@@ -239,29 +228,5 @@ namespace Smol
         SMOL_ASSERT(ret);
 
         return it->second.Get();
-    }
-
-    SRV* DX11Texture::GetOrCreateSRV(){
-        return GetOrCreateSRV(RHITextureViewDesc{
-            .format = GetFormat()
-        });
-    }
-
-    RTV* DX11Texture::GetOrCreateRTV(){
-        return GetOrCreateRTV(RHITextureViewDesc{
-            .format = GetFormat()
-        });
-    }
-
-    UAV* DX11Texture::GetOrCreateUAV(){
-        return GetOrCreateUAV(RHITextureViewDesc{
-            .format = GetFormat()
-        });
-    }
-
-    DSV* DX11Texture::GetOrCreateDSV(){
-        return GetOrCreateDSV(RHITextureViewDesc{
-            .format = GetFormat()
-        });
     }
 }

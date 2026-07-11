@@ -114,20 +114,6 @@ namespace Smol
 
         void Dispatch(Size3D gridSize) RHI_OVERRIDE;
 
-        void TransitionBarrier(
-            RHITexture&,
-            RHIResourceState after
-        ) noexcept RHI_OVERRIDE{
-            // NOTE. No-Op for DX11
-        }
-
-        void TransitionBarrier(
-            RHIBuffer&,
-            RHIResourceState after
-        ) noexcept RHI_OVERRIDE{
-            // NOTE. No-Op for DX11
-        }
-
         void Copy(
             RHIBuffer& src,
             RHIBuffer& dst,

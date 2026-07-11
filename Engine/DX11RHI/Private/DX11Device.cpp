@@ -141,17 +141,11 @@ namespace Smol
             const RHIGraphicsPipelineStateDesc& desc,
             StrView name
         ){
-            if(std::get_if<RHILegacyFrontendDesc>(&desc.preRasterizer)){
-                return std::make_unique<DX11GraphicsPipelineState>(
-                    *device.Get(),
-                    desc,
-                    name
-                );
-            }
-            else{
-                // cannot use Mesh Shader in DirectX 11
-                throw std::runtime_error("Unsupported Graphics Pipeline Frontend");
-            }
+            return std::make_unique<DX11GraphicsPipelineState>(
+                *device.Get(),
+                desc,
+                name
+            );
         }
 
         RHIComputePipelineStateRAII CreatePipelineState(
@@ -166,12 +160,14 @@ namespace Smol
         }
 
         RHISwapchainRAII CreateSwapchain(
-            const RHISwapchainCreateDesc& desc
+            const RHISwapchainCreateDesc& desc,
+            StrView name = {}
         ){
             return std::make_unique<DX11Swapchain>(
                 *device.Get(),
                 *factory.Get(),
-                desc
+                desc,
+                name
             );
         }
 
@@ -246,9 +242,10 @@ namespace Smol
     }
 
     RHISwapchainRAII DX11Device::CreateSwapchain(
-        const RHISwapchainCreateDesc& desc
+        const RHISwapchainCreateDesc& desc,
+        StrView name
     ){
-        return impl->CreateSwapchain(desc);
+        return impl->CreateSwapchain(desc, name);
     }
 
     RHICommandListRAII DX11Device::CreateCommandList(){

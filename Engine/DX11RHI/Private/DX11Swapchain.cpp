@@ -12,7 +12,8 @@ namespace Smol
     DX11Swapchain::DX11Swapchain(
         Device& device,
         Factory& factory,
-        const RHISwapchainCreateDesc& desc
+        const RHISwapchainCreateDesc& desc,
+        StrView name
     )
         : device(device)
         , vsync(desc.vsync)
@@ -55,11 +56,11 @@ namespace Smol
         );
 
     #if defined(_DEBUG) || !defined(NDEBUG)
-        if(!desc.debugName.empty()){
+        if(!name.empty()){
             swapchain->SetPrivateData(
                 WKPDID_D3DDebugObjectName,
-                static_cast<UINT>(desc.debugName.length()),
-                desc.debugName.c_str()
+                static_cast<UINT>(name.length()),
+                name.data()
             );
         }
     #endif

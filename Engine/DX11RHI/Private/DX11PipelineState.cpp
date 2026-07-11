@@ -249,7 +249,7 @@ namespace Smol
         : debugName(name)
     #endif
     {
-        auto& frontend = std::get<RHILegacyFrontendDesc>(desc.preRasterizer);
+        const auto& frontend = desc.preRasterizer;
         primitiveTopology = ::convert(frontend.topology);
 
         auto vsBytecode = CompiledShader(

@@ -103,9 +103,6 @@ namespace Smol
             .bufferCount = 3,
             .vsync = true,
             .allowTearing = false
-        #if defined(_DEBUG) || !defined(NDEBUG)
-            , .debugName = std::format("Swapchain for {}", config.window.title)
-        #endif
         });
     }
 

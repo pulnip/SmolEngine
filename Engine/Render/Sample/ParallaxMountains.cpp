@@ -67,7 +67,7 @@ int main(void){
     try{
         auto device = CreateDevice();
         auto pipeline = device->CreatePipelineState(RHIGraphicsPipelineStateDesc{
-            .preRasterizer = RHILegacyFrontendDesc{
+            .preRasterizer = RHIPreRasterizerDesc{
                 .topology = RHIPrimitiveTopology::TriangleStrip,
                 .vertexShader = {
                 #if defined(_WIN32)

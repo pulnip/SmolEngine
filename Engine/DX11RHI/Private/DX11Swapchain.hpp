@@ -19,7 +19,8 @@ namespace Smol
         DX11Swapchain(
             Device& device,
             Factory& factory,
-            const RHISwapchainCreateDesc& desc
+            const RHISwapchainCreateDesc& desc,
+            StrView name = {}
         );
 
         ~DX11Swapchain();
@@ -35,9 +36,6 @@ namespace Smol
         u32 GetHeight() const noexcept RHI_OVERRIDE;
 
         RHITexture& GetCurrentTexture() RHI_OVERRIDE{
-            return *backBuffer;
-        }
-        const RHITexture& GetCurrentTexture() const RHI_OVERRIDE{
             return *backBuffer;
         }
 

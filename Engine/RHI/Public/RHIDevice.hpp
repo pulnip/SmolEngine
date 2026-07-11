@@ -37,7 +37,8 @@ namespace Smol
         ) = 0;
 
         virtual RHISwapchainRAII CreateSwapchain(
-            const RHISwapchainCreateDesc&
+            const RHISwapchainCreateDesc&,
+            StrView name = {}
         ) = 0;
 
         virtual RHICommandListRAII CreateCommandList() = 0;
