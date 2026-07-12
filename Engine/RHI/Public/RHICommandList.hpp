@@ -23,68 +23,106 @@ namespace Smol
         virtual void SetPipelineState(RHIGraphicsPipelineState&) = 0;
         virtual void SetPipelineState(RHIComputePipelineState&) = 0;
 
-        // Vertex and index buffers
+        // Vertex buffer
         // stride = sizeof(Vertex)
-        virtual void SetVertexBuffer(
+        virtual void SetVertex(
             RHIBuffer&,
             u32 slot,
             u32 stride,
             u32 offset = 0
         ) = 0;
 
-        virtual void SetIndexBuffer(
+        // Index buffer
+        virtual void SetIndex(
             RHIBuffer&,
             RHIIndexFormat format = RHIIndexFormat::UInt32,
             u32 offset = 0
         ) = 0;
 
-        // for Data shared within Multiple Draw Call
-        virtual void SetConstantBuffer(
+        // ConstantBuffer
+        virtual void SetVertexConstant(
             RHIBuffer&,
-            u32 slot,
-            RHIShaderStage,
-            u32 offset = 0
+            u32 slot
         ) = 0;
-
-        // Shader resources (textures, buffers)
-        virtual void SetTexture(
-            RHITexture&,
-            u32 slot,
-            RHIBindingAccess,
-            RHIShaderStage
-        ) = 0;
-
-        // only for Compute Shader
-        virtual void SetBuffer(
+        virtual void SetFragmentConstant(
             RHIBuffer&,
-            u32 slot,
-            RHIBindingAccess,
-            RHIShaderStage stage = RHIShaderStage::ComputeShader
+            u32 slot
         ) = 0;
 
         // for per-draw data, size should be <= 256B
-        virtual void SetBytes(
+        virtual void SetVertexBytes(
             const void* bytes,
             usize size,
-            u32 slot,
-            RHIShaderStage stage
+            u32 slot
+        ) = 0;
+        virtual void SetFragmentBytes(
+            const void* bytes,
+            usize size,
+            u32 slot
         ) = 0;
 
         // type-safe helper
         template<typename T>
             requires (!std::is_pointer_v<T> && std::is_trivially_copyable_v<T>)
-        void SetBytes(
+        void SetVertexBytes(
             const T& data,
-            u32 slot,
-            RHIShaderStage stage
+            u32 slot
         ){
-            SetBytes(&data, sizeof(T), slot, stage);
+            SetVertexBytes(&data, sizeof(T), slot);
+        }
+        template<typename T>
+            requires (!std::is_pointer_v<T> && std::is_trivially_copyable_v<T>)
+        void SetFragmentBytes(
+            const T& data,
+            u32 slot
+        ){
+            SetFragmentBytes(&data, sizeof(T), slot);
         }
 
-        virtual void SetSampler(
+        // Shader resource
+        virtual void SetVertexReadable(
+            RHITexture&,
+            u32 slot
+        ) = 0;
+        virtual void SetVertexReadable(
+            RHIBuffer&,
+            u32 slot
+        ) = 0;
+        virtual void SetFragmentReadable(
+            RHITexture&,
+            u32 slot
+        ) = 0;
+        virtual void SetFragmentReadable(
+            RHIBuffer&,
+            u32 slot
+        ) = 0;
+
+        // Unordered Access
+        virtual void SetVertexWritable(
+            RHITexture&,
+            u32 slot
+        ) = 0;
+        virtual void SetVertexWritable(
+            RHIBuffer&,
+            u32 slot
+        ) = 0;
+        virtual void SetFragmentWritable(
+            RHITexture&,
+            u32 slot
+        ) = 0;
+        virtual void SetFragmentWritable(
+            RHIBuffer&,
+            u32 slot
+        ) = 0;
+
+        // sampler
+        virtual void SetVertexSampler(
             RHISampler&,
-            u32 slot,
-            RHIShaderStage
+            u32 slot
+        ) = 0;
+        virtual void SetFragmentSampler(
+            RHISampler&,
+            u32 slot
         ) = 0;
 
         // Viewport and scissor
@@ -109,6 +147,49 @@ namespace Smol
 
         virtual void BeginCompute() = 0;
         virtual void EndCompute() = 0;
+
+        virtual void SetComputeConstant(
+            RHIBuffer&,
+            u32 slot
+        ) = 0;
+
+        virtual void SetComputeBytes(
+            const void* bytes,
+            usize size,
+            u32 slot
+        ) = 0;
+
+        // type-safe helper
+        template<typename T>
+            requires (!std::is_pointer_v<T> && std::is_trivially_copyable_v<T>)
+        void SetComputeBytes(
+            const T& data,
+            u32 slot
+        ){
+            SetVertexBytes(&data, sizeof(T), slot);
+        }
+
+        virtual void SetComputeReadable(
+            RHITexture&,
+            u32 slot
+        ) = 0;
+        virtual void SetComputeReadable(
+            RHIBuffer&,
+            u32 slot
+        ) = 0;
+        virtual void SetComputeWritable(
+            RHITexture&,
+            u32 slot
+        ) = 0;
+        virtual void SetComputeWritable(
+            RHIBuffer&,
+            u32 slot
+        ) = 0;
+
+        virtual void SetComputeSampler(
+            RHISampler&,
+            u32 slot
+        ) = 0;
 
         // Compute dispatch
         virtual void Dispatch(

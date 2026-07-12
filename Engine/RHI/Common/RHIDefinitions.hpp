@@ -157,12 +157,6 @@ namespace Smol
         const void* initialData = nullptr;
     };
 
-    enum class RHIShaderStage: u8{
-        VertexShader,
-        FragmentShader,
-        ComputeShader,
-    };
-
     enum class RHILoadAction: u8{
         Load,    // Preserve existing contents
         Clear,   // Clear to specified color

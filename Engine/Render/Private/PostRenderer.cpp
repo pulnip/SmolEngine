@@ -149,10 +149,9 @@ namespace Smol
         // Rain Streak
         cmdList.SetPipelineState(*rainStreak);
 
-        cmdList.SetConstantBuffer(
+        cmdList.SetFragmentConstant(
             *rainStreakParam,
-            rainStreakParamSlot,
-            RHIShaderStage::FragmentShader
+            rainStreakParamSlot
         );
 
         // FullscreenQuad with TriangleStrip
@@ -160,10 +159,9 @@ namespace Smol
 
         // Rain Droplet
         cmdList.SetPipelineState(*rainDroplet);
-        cmdList.SetConstantBuffer(
+        cmdList.SetFragmentConstant(
             *rainDropletParam,
-            rainDropletParamSlot,
-            RHIShaderStage::FragmentShader
+            rainDropletParamSlot
         );
         cmdList.Draw(4);
     }

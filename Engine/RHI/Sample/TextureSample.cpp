@@ -138,13 +138,8 @@ int main(void){
             .minDepth = 0, .maxDepth = 1
         });
 
-        cmdList->SetTexture(*texture, 0,
-            RHIBindingAccess::ReadOnly,
-            RHIShaderStage::FragmentShader
-        );
-        cmdList->SetSampler(*sampler, 0,
-            RHIShaderStage::FragmentShader
-        );
+        cmdList->SetFragmentReadable(*texture, 0);
+        cmdList->SetFragmentSampler(*sampler, 0);
 
         cmdList->Draw(4);
 

@@ -1,5 +1,4 @@
 #include <stdexcept>
-#include <utility>
 #include "Assert.hpp"
 #include "DX11Buffer.hpp"
 #include "DX11CommandList.hpp"
@@ -204,7 +203,7 @@ namespace Smol
         currentComputePSO = &dxPSO;
     }
 
-    void DX11CommandList::SetVertexBuffer(
+    void DX11CommandList::SetVertex(
         RHIBuffer& buffer,
         u32 slot,
         u32 stride,
@@ -224,7 +223,7 @@ namespace Smol
         );
     }
 
-    void DX11CommandList::SetIndexBuffer(
+    void DX11CommandList::SetIndex(
         RHIBuffer& buffer,
         RHIIndexFormat format,
         u32 offset
@@ -242,209 +241,45 @@ namespace Smol
         );
     }
 
-    void DX11CommandList::SetConstantBuffer(
+    void DX11CommandList::SetVertexConstant(
         RHIBuffer& buffer,
-        u32 slot,
-        RHIShaderStage stage,
-        u32 offset
+        u32 slot
     ){
-        SMOL_ASSERT(inRenderPass != inComputePass,
-            "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
+        SMOL_ASSERT(inRenderPass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass()?"
         );
-
-        using enum RHIShaderStage;
 
         auto buf = static_cast<DX11Buffer&>(buffer).Get();
-
-        switch(stage){
-        case VertexShader:
-            context->VSSetConstantBuffers(
-                slot,
-                1,
-                &buf
-            );
-            break;
-        case FragmentShader:
-            context->PSSetConstantBuffers(
-                slot,
-                1,
-                &buf
-            );
-            break;
-        case ComputeShader:
-            context->CSSetConstantBuffers(
-                slot,
-                1,
-                &buf
-            );
-            break;
-        default:
-            std::unreachable();
-        }
-    }
-
-    void DX11CommandList::SetTexture(
-        RHITexture& texture,
-        u32 slot,
-        RHIBindingAccess access,
-        RHIShaderStage stage
-    ){
-        SMOL_ASSERT(inRenderPass != inComputePass,
-            "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
+        context->VSSetConstantBuffers(
+            slot,
+            1,
+            &buf
         );
-
-        using enum RHIBindingAccess;
-        using enum RHIShaderStage;
-        auto& dxTex = static_cast<DX11Texture&>(texture);
-
-        switch(access){
-        case ReadOnly: {
-            const auto view = dxTex.GetOrCreateSRV();
-            switch(stage){
-            case VertexShader:
-            #if defined(_DEBUG) || !defined(NDEBUG)
-                maxBindedVSSRV = std::max(maxBindedVSSRV, slot+1);
-            #endif
-                context->VSSetShaderResources(
-                    slot,
-                    1,
-                    &view
-                );
-                break;
-            case FragmentShader:
-            #if defined(_DEBUG) || !defined(NDEBUG)
-                maxBindedPSSRV = std::max(maxBindedPSSRV, slot+1);
-            #endif
-                context->PSSetShaderResources(
-                    slot,
-                    1,
-                    &view
-                );
-                break;
-            case ComputeShader:
-            #if defined(_DEBUG) || !defined(NDEBUG)
-                maxBindedCSSRV = std::max(maxBindedCSSRV, slot+1);
-            #endif
-                context->CSSetShaderResources(
-                    slot,
-                    1,
-                    &view
-                );
-                break;
-            default:
-                std::unreachable();
-            }
-        } break;
-        case ReadWrite: {
-            SMOL_ASSERT(stage == ComputeShader);
-            const auto view = dxTex.GetOrCreateUAV({
-                .format = texture.GetFormat()
-            });
-            switch(stage){
-            case ComputeShader:
-                context->CSSetUnorderedAccessViews(
-                    slot,
-                    1,
-                    &view,
-                    nullptr
-                );
-                break;
-            default:
-                std::unreachable();
-            }
-        } break;
-        default:
-            std::unreachable();
-        }
     }
 
-    void DX11CommandList::SetBuffer(
+    void DX11CommandList::SetFragmentConstant(
         RHIBuffer& buffer,
-        u32 slot,
-        RHIBindingAccess access,
-        RHIShaderStage stage
+        u32 slot
     ){
-        SMOL_ASSERT(inRenderPass != inComputePass,
-            "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
+        SMOL_ASSERT(inRenderPass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass()?"
         );
 
-        using enum RHIBindingAccess;
-        using enum RHIShaderStage;
-        auto& dxBuf = static_cast<DX11Buffer&>(buffer);
-
-        switch(access){
-        case ReadOnly: {
-            const auto view = dxBuf.GetOrCreateSRV(RHIBufferViewDesc{
-                .size = buffer.GetSize()
-            });
-            switch(stage){
-            case VertexShader:
-            #if defined(_DEBUG) || !defined(NDEBUG)
-                maxBindedVSSRV = std::max(maxBindedVSSRV, slot+1);
-            #endif
-                context->VSSetShaderResources(
-                    slot,
-                    1,
-                    &view
-                );
-                break;
-            case FragmentShader:
-            #if defined(_DEBUG) || !defined(NDEBUG)
-                maxBindedPSSRV = std::max(maxBindedPSSRV, slot+1);
-            #endif
-                context->PSSetShaderResources(
-                    slot,
-                    1,
-                    &view
-                );
-                break;
-            case ComputeShader:
-            #if defined(_DEBUG) || !defined(NDEBUG)
-                maxBindedCSSRV = std::max(maxBindedCSSRV, slot+1);
-            #endif
-                context->CSSetShaderResources(
-                    slot,
-                    1,
-                    &view
-                );
-                break;
-            default:
-                std::unreachable();
-            }
-        } break;
-        case ReadWrite: {
-            // cannot bind to VS, GS, HS, DS, TS
-            // TODO. bind to PS is available at OMSetRenderTargetsAndUnorderedAccessViews
-            SMOL_ASSERT(stage == ComputeShader);
-            const auto view = dxBuf.GetOrCreateUAV(RHIBufferViewDesc{
-                .size = buffer.GetSize()
-            });
-            switch(stage){
-            case ComputeShader:
-                context->CSSetUnorderedAccessViews(
-                    slot,
-                    1,
-                    &view,
-                    nullptr
-                );
-                break;
-            default:
-                std::unreachable();
-            }
-        } break;
-        default:
-            std::unreachable();
-        }
+        auto buf = static_cast<DX11Buffer&>(buffer).Get();
+        context->PSSetConstantBuffers(
+            slot,
+            1,
+            &buf
+        );
     }
 
-    void DX11CommandList::SetBytes(
+    void DX11CommandList::SetVertexBytes(
         const void* bytes,
         usize size,
-        u32 slot,
-        RHIShaderStage stage
+        u32 slot
     ){
-        SMOL_ASSERT(inRenderPass != inComputePass,
-            "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
+        SMOL_ASSERT(inRenderPass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass()?"
         );
 
         SMOL_ASSERT(size <= 256);
@@ -452,60 +287,195 @@ namespace Smol
         inlineBuffer.Upload(bytes, size, 0);
         auto buf = inlineBuffer.Get();
 
-        using enum RHIShaderStage;
-
-        switch(stage){
-        case VertexShader:
-            context->VSSetConstantBuffers(
-                slot,
-                1,
-                &buf
-            );
-            break;
-        case FragmentShader:
-            context->PSSetConstantBuffers(
-                slot,
-                1,
-                &buf
-            );
-            break;
-        case ComputeShader:
-            context->CSSetConstantBuffers(
-                slot,
-                1,
-                &buf
-            );
-            break;
-        default:
-            std::unreachable();
-        }
+        context->VSSetConstantBuffers(
+            slot,
+            1,
+            &buf
+        );
     }
 
-    void DX11CommandList::SetSampler(
-        RHISampler& sampler,
-        u32 slot,
-        RHIShaderStage stage
+    void DX11CommandList::SetFragmentBytes(
+        const void* bytes,
+        usize size,
+        u32 slot
     ){
-        SMOL_ASSERT(inRenderPass != inComputePass,
-            "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
+        SMOL_ASSERT(inRenderPass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass()?"
         );
 
-        using enum RHIShaderStage;
+        SMOL_ASSERT(size <= 256);
+
+        inlineBuffer.Upload(bytes, size, 0);
+        auto buf = inlineBuffer.Get();
+
+        context->PSSetConstantBuffers(
+            slot,
+            1,
+            &buf
+        );
+    }
+
+    void DX11CommandList::SetVertexReadable(
+        RHITexture& texture,
+        u32 slot
+    ){
+        SMOL_ASSERT(inRenderPass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass()?"
+        );
+
+        auto& dxTex = static_cast<DX11Texture&>(texture);
+        const auto view = dxTex.GetOrCreateSRV();
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        maxBindedVSSRV = std::max(maxBindedVSSRV, slot+1);
+    #endif
+        context->VSSetShaderResources(
+            slot,
+            1,
+            &view
+        );
+    }
+    void DX11CommandList::SetVertexReadable(
+        RHIBuffer& buffer,
+        u32 slot
+    ){
+        SMOL_ASSERT(inRenderPass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass()?"
+        );
+
+        auto& dxBuf = static_cast<DX11Buffer&>(buffer);
+        const auto view = dxBuf.GetOrCreateSRV();
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        maxBindedVSSRV = std::max(maxBindedVSSRV, slot+1);
+    #endif
+        context->VSSetShaderResources(
+            slot,
+            1,
+            &view
+        );
+    }
+    void DX11CommandList::SetFragmentReadable(
+        RHITexture& texture,
+        u32 slot
+    ){
+        SMOL_ASSERT(inRenderPass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass()?"
+        );
+
+        auto& dxTex = static_cast<DX11Texture&>(texture);
+        const auto view = dxTex.GetOrCreateSRV();
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        maxBindedPSSRV = std::max(maxBindedPSSRV, slot+1);
+    #endif
+        context->PSSetShaderResources(
+            slot,
+            1,
+            &view
+        );
+    }
+    void DX11CommandList::SetFragmentReadable(
+        RHIBuffer& buffer,
+        u32 slot
+    ){
+        SMOL_ASSERT(inRenderPass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass()?"
+        );
+
+        auto& dxBuf = static_cast<DX11Buffer&>(buffer);
+        const auto view = dxBuf.GetOrCreateSRV();
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        maxBindedPSSRV = std::max(maxBindedPSSRV, slot+1);
+    #endif
+        context->PSSetShaderResources(
+            slot,
+            1,
+            &view
+        );
+    }
+
+    void DX11CommandList::SetVertexWritable(
+        RHITexture& texture,
+        u32 slot
+    ){
+        SMOL_ASSERT(inRenderPass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass()?"
+        );
+
+        auto& dxTex = static_cast<DX11Texture&>(texture);
+        const auto view = dxTex.GetOrCreateUAV();
+
+        throw std::runtime_error("Unimplemented");
+    }
+    void DX11CommandList::SetVertexWritable(
+        RHIBuffer& buffer,
+        u32 slot
+    ){
+        SMOL_ASSERT(inRenderPass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass()?"
+        );
+
+        auto& dxBuf = static_cast<DX11Buffer&>(buffer);
+        const auto view = dxBuf.GetOrCreateUAV();
+
+        throw std::runtime_error("Unimplemented");
+    }
+    void DX11CommandList::SetFragmentWritable(
+        RHITexture& texture,
+        u32 slot
+    ){
+        SMOL_ASSERT(inRenderPass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass()?"
+        );
+
+        auto& dxTex = static_cast<DX11Texture&>(texture);
+        const auto view = dxTex.GetOrCreateUAV();
+
+        throw std::runtime_error("Unimplemented");
+    }
+    void DX11CommandList::SetFragmentWritable(
+        RHIBuffer& buffer,
+        u32 slot
+    ){
+        SMOL_ASSERT(inRenderPass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass()?"
+        );
+
+        auto& dxBuf = static_cast<DX11Buffer&>(buffer);
+        const auto view = dxBuf.GetOrCreateUAV();
+
+        throw std::runtime_error("Unimplemented");
+    }
+
+    void DX11CommandList::SetVertexSampler(
+        RHISampler& sampler,
+        u32 slot
+    ){
+        SMOL_ASSERT(inRenderPass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass()?"
+        );
+
         auto s = static_cast<DX11Sampler&>(sampler).Get();
 
-        switch(stage){
-        case VertexShader:
-            context->VSSetSamplers(slot, 1, &s);
-            break;
-        case FragmentShader:
-            context->PSSetSamplers(slot, 1, &s);
-            break;
-        case ComputeShader:
-            context->CSSetSamplers(slot, 1, &s);
-            break;
-        default:
-            std::unreachable();
-        }
+        context->VSSetSamplers(
+            slot,
+            1,
+            &s
+        );
+    }
+    void DX11CommandList::SetFragmentSampler(
+        RHISampler& sampler,
+        u32 slot
+    ){
+        SMOL_ASSERT(inRenderPass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass()?"
+        );
+
+        auto s = static_cast<DX11Sampler&>(sampler).Get();
+
+        context->PSSetSamplers(
+            slot,
+            1,
+            &s
+        );
     }
 
     void DX11CommandList::SetViewport(const RHIViewport& viewport){
@@ -616,6 +586,136 @@ namespace Smol
         inComputePass = false;
     }
 
+    void DX11CommandList::SetComputeConstant(
+        RHIBuffer& buffer,
+        u32 slot
+    ){
+        SMOL_ASSERT(inComputePass,
+            "Not in a pass. Did you call RHICommandList::BeginCompute()?"
+        );
+
+        auto buf = static_cast<DX11Buffer&>(buffer).Get();
+        context->CSSetConstantBuffers(
+            slot,
+            1,
+            &buf
+        );
+    }
+
+    void DX11CommandList::SetComputeBytes(
+        const void* bytes,
+        usize size,
+        u32 slot
+    ){
+        SMOL_ASSERT(inComputePass,
+            "Not in a pass. Did you call RHICommandList::BeginCompute()?"
+        );
+
+        SMOL_ASSERT(size <= 256);
+
+        inlineBuffer.Upload(bytes, size, 0);
+        auto buf = inlineBuffer.Get();
+
+        context->CSSetConstantBuffers(
+            slot,
+            1,
+            &buf
+        );
+    }
+
+    void DX11CommandList::SetComputeReadable(
+        RHITexture& texture,
+        u32 slot
+    ){
+        SMOL_ASSERT(inComputePass,
+            "Not in a pass. Did you call RHICommandList::BeginCompute()?"
+        );
+
+        auto& dxTex = static_cast<DX11Texture&>(texture);
+        const auto view = dxTex.GetOrCreateSRV();
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        maxBindedCSSRV = std::max(maxBindedCSSRV, slot+1);
+    #endif
+        context->CSSetShaderResources(
+            slot,
+            1,
+            &view
+        );
+    }
+    void DX11CommandList::SetComputeReadable(
+        RHIBuffer& buffer,
+        u32 slot
+    ){
+        SMOL_ASSERT(inComputePass,
+            "Not in a pass. Did you call RHICommandList::BeginCompute()?"
+        );
+
+        auto& dxBuf = static_cast<DX11Buffer&>(buffer);
+        const auto view = dxBuf.GetOrCreateSRV();
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        maxBindedCSSRV = std::max(maxBindedCSSRV, slot+1);
+    #endif
+        context->CSSetShaderResources(
+            slot,
+            1,
+            &view
+        );
+    }
+
+    void DX11CommandList::SetComputeWritable(
+        RHITexture& texture,
+        u32 slot
+    ){
+        SMOL_ASSERT(inComputePass,
+            "Not in a pass. Did you call RHICommandList::BeginCompute()?"
+        );
+
+        auto& dxTex = static_cast<DX11Texture&>(texture);
+        const auto view = dxTex.GetOrCreateUAV();
+
+        context->CSSetUnorderedAccessViews(
+            slot,
+            1,
+            &view,
+            nullptr
+        );
+    }
+    void DX11CommandList::SetComputeWritable(
+        RHIBuffer& buffer,
+        u32 slot
+    ){
+        SMOL_ASSERT(inComputePass,
+            "Not in a pass. Did you call RHICommandList::BeginCompute()?"
+        );
+
+        auto& dxBuf = static_cast<DX11Buffer&>(buffer);
+        const auto view = dxBuf.GetOrCreateUAV();
+
+        context->CSSetUnorderedAccessViews(
+            slot,
+            1,
+            &view,
+            nullptr
+        );
+    }
+
+    void DX11CommandList::SetComputeSampler(
+        RHISampler& sampler,
+        u32 slot
+    ){
+        SMOL_ASSERT(inComputePass,
+            "Not in a pass. Did you call RHICommandList::BeginCompute()?"
+        );
+
+        auto s = static_cast<DX11Sampler&>(sampler).Get();
+
+        context->CSSetSamplers(
+            slot,
+            1,
+            &s
+        );
+    }
+
     void DX11CommandList::Dispatch(Size3D gridSize){
         SMOL_ASSERT(inComputePass,
             "Not in a compute pass. Did you call RHICommandList::BeginCompute()?"
@@ -639,7 +739,7 @@ namespace Smol
         SMOL_ASSERT(!inBlitPass,
             "Already in a compute pass. Did you call RHICommandList::EndBlit()?"
         );
-        SMOL_ASSERT(!inRenderPass && !inBlitPass);
+        SMOL_ASSERT(!inRenderPass && !inComputePass);
 
         inBlitPass = true;
     }

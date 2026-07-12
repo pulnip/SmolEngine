@@ -225,10 +225,9 @@ int main(void){
             });
 
             cmdList->SetPipelineState(*pipeline);
-            cmdList->SetConstantBuffer(
+            cmdList->SetFragmentConstant(
                 *mountainParamBuf,
-                mountainParamSlot,
-                RHIShaderStage::FragmentShader
+                mountainParamSlot
             );
             cmdList->Draw(4);
 

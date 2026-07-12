@@ -45,51 +45,80 @@ namespace Smol
         void SetPipelineState(RHIGraphicsPipelineState& pso) RHI_OVERRIDE;
         void SetPipelineState(RHIComputePipelineState& pso) RHI_OVERRIDE;
 
-        void SetVertexBuffer(
-            RHIBuffer& buffer,
+        void SetVertex(
+            RHIBuffer&,
             u32 slot,
             u32 stride,
             u32 offset
         ) RHI_OVERRIDE;
 
-        void SetIndexBuffer(
-            RHIBuffer& buffer,
-            RHIIndexFormat format,
+        void SetIndex(
+            RHIBuffer&,
+            RHIIndexFormat,
             u32 offset
         ) RHI_OVERRIDE;
 
-        void SetConstantBuffer(
-            RHIBuffer& buffer,
-            u32 slot,
-            RHIShaderStage stage,
-            u32 offset
+        void SetVertexConstant(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetFragmentConstant(
+            RHIBuffer&,
+            u32 slot
         ) RHI_OVERRIDE;
 
-        void SetTexture(
-            RHITexture& texture,
-            u32 slot,
-            RHIBindingAccess access,
-            RHIShaderStage stage
-        ) RHI_OVERRIDE;
-
-        void SetBuffer(
-            RHIBuffer& buffer,
-            u32 slot,
-            RHIBindingAccess access,
-            RHIShaderStage stage = RHIShaderStage::ComputeShader
-        ) RHI_OVERRIDE;
-
-        void SetBytes(
+        void SetVertexBytes(
             const void* bytes,
             usize size,
-            u32 slot,
-            RHIShaderStage stage
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetFragmentBytes(
+            const void* bytes,
+            usize size,
+            u32 slot
         ) RHI_OVERRIDE;
 
-        void SetSampler(
-            RHISampler& sampler,
-            u32 slot,
-            RHIShaderStage stage
+        void SetVertexReadable(
+            RHITexture&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetVertexReadable(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetFragmentReadable(
+            RHITexture&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetFragmentReadable(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+
+        void SetVertexWritable(
+            RHITexture&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetVertexWritable(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetFragmentWritable(
+            RHITexture&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetFragmentWritable(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+
+        void SetVertexSampler(
+            RHISampler&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetFragmentSampler(
+            RHISampler&,
+            u32 slot
         ) RHI_OVERRIDE;
 
         void SetViewport(const RHIViewport& viewport) RHI_OVERRIDE;
@@ -112,6 +141,40 @@ namespace Smol
 
         void BeginCompute() noexcept RHI_OVERRIDE;
         void EndCompute() noexcept RHI_OVERRIDE;
+
+        void SetComputeConstant(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+
+        void SetComputeBytes(
+            const void* bytes,
+            usize size,
+            u32 slot
+        ) RHI_OVERRIDE;
+
+        void SetComputeReadable(
+            RHITexture&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetComputeReadable(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+
+        void SetComputeWritable(
+            RHITexture&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetComputeWritable(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+
+        void SetComputeSampler(
+            RHISampler&,
+            u32 slot
+        ) RHI_OVERRIDE;
 
         void Dispatch(Size3D gridSize) RHI_OVERRIDE;
 
