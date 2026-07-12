@@ -1,6 +1,5 @@
 #include <stdexcept>
 #include <utility>
-#include <d3d11.h>
 #include "Assert.hpp"
 #include "DX11Buffer.hpp"
 #include "DX11CommandList.hpp"
@@ -8,7 +7,9 @@
 #include "DX11PipelineState.hpp"
 #include "DX11Sampler.hpp"
 #include "DX11Texture.hpp"
+#include "DX11Util.hpp"
 #include "IntMath.hpp"
+#include "StringUtil.hpp"
 
 namespace{
     Smol::DeviceContextRAII GetImmediateContext(Smol::Device& device){
@@ -49,11 +50,17 @@ namespace Smol
         )
     {
         SMOL_ASSERT(context != nullptr);
+
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        CHECK_HRESULT(context->QueryInterface(
+            IID_PPV_ARGS(annotation.GetAddressOf())
+        ), "Failed to query UserDefinedAnnotation");
+    #endif
     }
 
     DX11CommandList::DX11CommandList(Device& device, DeviceContext& immediateContext)
         : context(CreateDeferredContext(device))
-        , inlineBuffer(device, *context.Get(),
+        , inlineBuffer(device, immediateContext,
             RHIBufferCreateDesc{
                 .size = 256,
                 .usage = RHIBufferUsage::ConstantBuffer,
@@ -63,6 +70,12 @@ namespace Smol
         )
     {
         SMOL_ASSERT(context != nullptr);
+
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        CHECK_HRESULT(context->QueryInterface(
+            IID_PPV_ARGS(annotation.GetAddressOf())
+        ), "Failed to query UserDefinedAnnotation");
+    #endif
     }
 
     DX11CommandList::~DX11CommandList() = default;
@@ -701,12 +714,32 @@ namespace Smol
         return context.Get();
     }
 
+    void DX11CommandList::BeginEvent(CStr name){
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        auto utf16 = toUTF16String(name);
+        annotation->BeginEvent(utf16.c_str());
+    #endif
+    }
+
+    void DX11CommandList::EndEvent(){
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        annotation->EndEvent();
+    #endif
+    }
+
+    void DX11CommandList::SetMarker(CStr name){
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        auto utf16 = toUTF16String(name);
+        annotation->SetMarker(utf16.c_str());
+    #endif
+    }
+
     COMRAII<ID3D11CommandList> DX11CommandList::Finish(){
         COMRAII<ID3D11CommandList> cmdList;
-        context->FinishCommandList(
+        CHECK_HRESULT(context->FinishCommandList(
             FALSE,
             cmdList.GetAddressOf()
-        );
+        ), "Failed to finish CommandList");
 
         return cmdList;
     }

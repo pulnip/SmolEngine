@@ -1,5 +1,6 @@
 #pragma once
 
+#include <d3d11_1.h>
 #include "RHIAPI.hpp"
 #include "RHIDefinitions.hpp"
 #include "RHICommandList.hpp"
@@ -19,6 +20,8 @@ namespace Smol
         bool inBlitPass = false;
         DX11ComputePipelineState* currentComputePSO = nullptr;
     #if defined(_DEBUG) || !defined(NDEBUG)
+        COMRAII<ID3DUserDefinedAnnotation> annotation;
+
         u32 maxBindedVSSRV = 0;
         u32 maxBindedPSSRV = 0;
         u32 maxBindedCSSRV = 0;
@@ -139,15 +142,9 @@ namespace Smol
             // NOTE. No-Op for DX11
         }
 
-        void BeginEvent(CStr name) noexcept RHI_OVERRIDE{
-            // TODO
-        }
-        void EndEvent() noexcept RHI_OVERRIDE{
-            // TODO
-        }
-        void SetMarker(CStr name) noexcept RHI_OVERRIDE{
-            // TODO
-        }
+        void BeginEvent(CStr name) RHI_OVERRIDE;
+        void EndEvent() RHI_OVERRIDE;
+        void SetMarker(CStr name) RHI_OVERRIDE;
 
         void* GetNative() noexcept RHI_OVERRIDE;
 

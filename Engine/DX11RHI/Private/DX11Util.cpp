@@ -1,3 +1,4 @@
+#include <comdef.h>
 #include "DX11Util.hpp"
 #include "RHIDefinitions.hpp"
 
@@ -166,5 +167,10 @@ namespace Smol
         default:
             return Unknown;
         }
+    }
+
+    Str HResultToString(HRESULT hr){
+        _com_error err(hr);
+        return static_cast<const char*>(err.ErrorMessage());
     }
 }
