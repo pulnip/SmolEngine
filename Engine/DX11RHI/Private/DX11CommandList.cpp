@@ -25,12 +25,10 @@ namespace{
         using namespace Smol;
 
         DeviceContextRAII context;
-        if(FAILED(device.CreateDeferredContext(
+        CHECK_HRESULT(device.CreateDeferredContext(
             0,
             context.GetAddressOf()
-        ))){
-            throw std::runtime_error("Failed to create Deferred Context");
-        }
+        ), "Failed to create Deferred Context");
 
         return context;
     }
@@ -60,7 +58,7 @@ namespace Smol
 
     DX11CommandList::DX11CommandList(Device& device, DeviceContext& immediateContext)
         : context(CreateDeferredContext(device))
-        , inlineBuffer(device, immediateContext,
+        , inlineBuffer(device, *context.Get(),
             RHIBufferCreateDesc{
                 .size = 256,
                 .usage = RHIBufferUsage::ConstantBuffer,

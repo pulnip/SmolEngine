@@ -1,6 +1,5 @@
 #include <cstring>
 #include <stdexcept>
-#include <d3d11.h>
 #include <d3d11shader.h>
 #include <d3dcompiler.h>
 #include "RHIDefinitions.hpp"
@@ -145,16 +144,18 @@ namespace{
 				&shaderBlob,
 				&errorBlob
 			))){
-				Smol::Str errorMsg = "HLSL compile failed";
-				if(errorBlob){
-					errorMsg += ": ";
-					errorMsg += static_cast<const char*>(errorBlob->GetBufferPointer());
-				}
-				throw std::runtime_error(errorMsg);
+				throw std::runtime_error(std::format(
+                    "HLSL compile failed: ",
+                    static_cast<const char*>(errorBlob->GetBufferPointer())
+                ));
 			}
 
 			bytecode.resize(shaderBlob->GetBufferSize());
-			std::memcpy(bytecode.data(), shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize());
+			std::memcpy(
+                bytecode.data(),
+                shaderBlob->GetBufferPointer(),
+                shaderBlob->GetBufferSize()
+            );
 
 			if(bytecode.empty()){
 				throw std::runtime_error("Shader bytecode is empty");
@@ -177,7 +178,10 @@ namespace{
 
         for(UINT i=0; i<desc.BoundResources; ++i){
             D3D11_SHADER_INPUT_BIND_DESC bindDesc;
-            refl.GetResourceBindingDesc(i, &bindDesc);
+            CHECK_HRESULT(refl.GetResourceBindingDesc(
+                i,
+                &bindDesc
+            ), "Failed to get ResourceBindingDesc");
 
             using enum Smol::RHIBindingAccess;
 
@@ -257,14 +261,12 @@ namespace Smol
             frontend.vertexShader.entryPoint,
             "vs_5_0"
         );
-        if(FAILED(device.CreateVertexShader(
+        CHECK_HRESULT(device.CreateVertexShader(
             vsBytecode.getBytecode(),
             vsBytecode.getBytecodeLength(),
             nullptr,
             &vertexShader
-        ))) {
-            throw std::runtime_error("Failed to create vertex shader");
-        }
+        ), "Failed to create vertex shader");
 
         // Input Layout
         if(frontend.vertexLayout.has_value()){
@@ -284,15 +286,13 @@ namespace Smol
                     D3D11_INPUT_PER_VERTEX_DATA : D3D11_INPUT_PER_INSTANCE_DATA;
                 dst.InstanceDataStepRate = src.instanceDataStepRate;
             }
-            if(FAILED(device.CreateInputLayout(
+            CHECK_HRESULT(device.CreateInputLayout(
                 elements.data(),
                 static_cast<UINT>(elements.size()),
                 vsBytecode.getBytecode(),
                 vsBytecode.getBytecodeLength(),
                 &inputLayout
-            ))){
-                throw std::runtime_error("Failed to create IDX11InputLayout");
-            }
+            ), "Failed to create IDX11InputLayout");
         }
 
         // RasterizerState
@@ -308,26 +308,22 @@ namespace Smol
             .MultisampleEnable     = desc.rasterizer.multisampleEnable,
             .AntialiasedLineEnable = desc.rasterizer.antialiasedLineEnable
         };
-        if(FAILED(device.CreateRasterizerState(
+        CHECK_HRESULT(device.CreateRasterizerState(
             &rsDesc,
             &rasterizerState
-        ))){
-            throw std::runtime_error("Failed to create IDX11RasterizerState");
-        }
+        ), "Failed to create IDX11RasterizerState");
 
         auto psBytecode = CompiledShader(
             desc.fragmentShader.path,
             desc.fragmentShader.entryPoint,
             "ps_5_0"
         );
-        if(FAILED(device.CreatePixelShader(
+        CHECK_HRESULT(device.CreatePixelShader(
             psBytecode.getBytecode(),
             psBytecode.getBytecodeLength(),
             nullptr,
             &pixelShader
-        ))){
-            throw std::runtime_error("Failed to create pixel shader");
-        }
+        ), "Failed to create pixel shader");
 
         // DepthStencilState
         D3D11_DEPTH_STENCIL_DESC dsDesc{
@@ -352,12 +348,10 @@ namespace Smol
                 dsDesc.BackFace = ::convert(stencil.backFace);
             }
         }
-        if(FAILED(device.CreateDepthStencilState(
+        CHECK_HRESULT(device.CreateDepthStencilState(
             &dsDesc,
             &depthStencilState
-        ))){
-            throw std::runtime_error("Failed to create IDX11DepthStencilState");
-        }
+        ), "Failed to create IDX11DepthStencilState");
 
         // BlendState
         if(desc.blend.has_value()){
@@ -387,32 +381,28 @@ namespace Smol
                 dst.BlendOpAlpha   = ::convert(src.blendOpAlpha);
                 dst.RenderTargetWriteMask = static_cast<UINT8>(src.writeMask);
             }
-            if(FAILED(device.CreateBlendState(
+            CHECK_HRESULT(device.CreateBlendState(
                 &bsDesc,
                 &blendState
-            ))){
-                throw std::runtime_error("Failed to create IDX11BlendState");
-            }
+            ), "Failed to create IDX11BlendState");
         }
 
         // Shader Reflection
         COMRAII<ID3D11ShaderReflection> vsRefl = nullptr, psRefl = nullptr;
-        if(FAILED(D3DReflect(
+        CHECK_HRESULT(D3DReflect(
             vsBytecode.getBytecode(),
             vsBytecode.getBytecodeLength(),
             IID_ID3D11ShaderReflection,
             (void**)&vsRefl
-        ))){
-            throw std::runtime_error("Failed to reflect vertex shader");
-        }
-        if(FAILED(D3DReflect(
+        ), "Failed to reflect vertex shader");
+
+        CHECK_HRESULT(D3DReflect(
             psBytecode.getBytecode(),
             psBytecode.getBytecodeLength(),
             IID_ID3D11ShaderReflection,
             (void**)&psRefl
-        ))){
-            throw std::runtime_error("Failed to reflect pixel shader");
-        }
+        ), "Failed to reflect pixel shader");
+
         bindingInfo = extractGraphicsBindingInfo(
             *vsRefl.Get(), *psRefl.Get()
         );
@@ -468,24 +458,20 @@ namespace Smol
             "cs_5_0"
         );
 
-        if(FAILED(device.CreateComputeShader(
+        CHECK_HRESULT(device.CreateComputeShader(
             csBytecode.getBytecode(),
             csBytecode.getBytecodeLength(),
             nullptr,
             &computeShader
-        ))){
-            throw std::runtime_error("Failed to create compute shader");
-        }
+        ), "Failed to create compute shader");
 
         COMRAII<ID3D11ShaderReflection> refl = nullptr;
-        if(FAILED(D3DReflect(
+        CHECK_HRESULT(D3DReflect(
             csBytecode.getBytecode(),
             csBytecode.getBytecodeLength(),
             IID_ID3D11ShaderReflection,
             (void**)&refl
-        ))){
-            throw std::runtime_error("Failed to reflect compute shader");
-        }
+        ), "Failed to reflect compute shader");
 
         bindingInfo = extractComputeBindingInfo(*refl.Get());
 

@@ -1,7 +1,4 @@
-#include <stdexcept>
 #include <utility>
-#include <d3dcommon.h>
-#include <d3d11.h>
 #include "Assert.hpp"
 #include "DX11Definitions.hpp"
 #include "EnumUtil.hpp"
@@ -104,13 +101,11 @@ namespace Smol
             .pSysMem = desc.initialData
         };
 
-        if(FAILED(device.CreateBuffer(
+        CHECK_HRESULT(device.CreateBuffer(
             &dxDesc,
             desc.initialData != nullptr ? &initData : nullptr,
             &buffer
-        ))){
-            throw std::runtime_error("Failed to create DX11 buffer");
-        }
+        ), "Failed to create DX11 buffer");
 
         #if defined(_DEBUG) || !defined(NDEBUG)
             if(!name.empty()){
@@ -133,13 +128,13 @@ namespace Smol
             SMOL_ASSERT(srcSize <= GetSize() - offset);
 
             D3D11_MAPPED_SUBRESOURCE mapped;
-            context.Map(
+            CHECK_HRESULT(context.Map(
                 buffer.Get(),
                 0,
                 D3D11_MAP_WRITE_DISCARD,
                 0,
                 &mapped
-            );
+            ), "Failed to Map DX11 Buffer");
 
             std::memcpy(
                 ptrAdd(mapped.pData, offset),
@@ -161,13 +156,13 @@ namespace Smol
         SMOL_ASSERT(dstSize <= GetSize() - offset);
 
         D3D11_MAPPED_SUBRESOURCE mapped;
-        context.Map(
+        CHECK_HRESULT(context.Map(
             buffer.Get(),
             0,
             D3D11_MAP_READ,
             0,
             &mapped
-        );
+        ), "Failed to Map DX11 Buffer");
 
         std::memcpy(
             dst,
@@ -229,11 +224,11 @@ namespace Smol
         }, desc.config);
 
         SRVRAII view;
-        device.CreateShaderResourceView(
+        CHECK_HRESULT(device.CreateShaderResourceView(
             buffer.Get(),
             &dxDesc,
             &view
-        );
+        ), "Failed to create SRV");
 
         auto [it, ret] = srvs.emplace(desc, std::move(view));
         SMOL_ASSERT(ret);
@@ -284,11 +279,11 @@ namespace Smol
         }, desc.config);
 
         UAVRAII view;
-        device.CreateUnorderedAccessView(
+        CHECK_HRESULT(device.CreateUnorderedAccessView(
             buffer.Get(),
             &dxDesc,
             &view
-        );
+        ), "Failed to create UAV");
         auto [it, ret] = uavs.emplace(desc, std::move(view));
         SMOL_ASSERT(ret);
 
