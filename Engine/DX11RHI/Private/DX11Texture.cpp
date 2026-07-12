@@ -39,11 +39,9 @@ namespace Smol
             .Format = convert(desc.format, isShaderResource, isDepthTarget),
             // No MSAA
             .SampleDesc = {1, 0},
-            .Usage = needsGPUOnly ?
-                D3D11_USAGE_DEFAULT : D3D11_USAGE_STAGING,
+            .Usage = D3D11_USAGE_DEFAULT,
             .BindFlags = bindFlags,
-            .CPUAccessFlags = needsGPUOnly ?
-                UINT(0) : D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE,
+            .CPUAccessFlags = 0,
             .MiscFlags = 0
         };
         D3D11_SUBRESOURCE_DATA initData{

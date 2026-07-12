@@ -153,7 +153,6 @@ namespace Smol
         u32 arraySize = 1;
         RHIPixelFormat format = RHIPixelFormat::RGBA8_UNORM;
         RHITextureUsage usage = RHITextureUsage::None;
-        RHIMemoryAccess access = RHIMemoryAccess::GPUOnly;
         const void* initialData = nullptr;
     };
 
