@@ -7,10 +7,8 @@
 #include "DX11Definitions.hpp"
 #include "DX11PipelineState.hpp"
 #include "DX11Sampler.hpp"
-#include "DX11Swapchain.hpp"
 #include "DX11Texture.hpp"
 #include "IntMath.hpp"
-#include "RHIDefinitions.hpp"
 
 namespace{
     Smol::DeviceContextRAII GetImmediateContext(Smol::Device& device){
@@ -73,7 +71,7 @@ namespace Smol
         SMOL_ASSERT(!isRecording,
             "Did you call RHICommandList::Close()?"
         );
-        SMOL_ASSERT(!inRenderPass && !inComputePass);
+        SMOL_ASSERT(!inRenderPass && !inComputePass && !inBlitPass);
 
         // NOTE. No-Op for DX11
         isRecording = true;
@@ -83,17 +81,10 @@ namespace Smol
         SMOL_ASSERT(isRecording,
             "Did you call RHICommandList::Begin()?"
         );
-        SMOL_ASSERT(!inRenderPass && !inComputePass);
+        SMOL_ASSERT(!inRenderPass && !inComputePass && !inBlitPass);
 
         // NOTE. No-Op for DX11
         isRecording = false;
-    }
-
-    void DX11CommandList::Reset() noexcept{
-        if(isRecording){
-            Flush();
-            isRecording = false;
-        }
     }
 
     void DX11CommandList::BeginRenderPass(const RHIRenderPassDesc& desc){
@@ -103,9 +94,8 @@ namespace Smol
         SMOL_ASSERT(!inRenderPass,
             "Already in a render pass. Did you call RHICommandList::EndRenderPass()?"
         );
-        SMOL_ASSERT(!inComputePass,
-            "Already in a compute pass. Did you call RHICommandList::EndCompute()?"
-        );
+        SMOL_ASSERT(!inComputePass && !inBlitPass);
+
         SMOL_ASSERT(desc.colorAttachments.size() > 0);
 
         std::array<RTV*, RHI_MAX_RENDER_TARGETS> rtvs;
@@ -156,13 +146,9 @@ namespace Smol
     }
 
     void DX11CommandList::EndRenderPass(){
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::Begin()?"
-        );
         SMOL_ASSERT(inRenderPass,
             "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
-        SMOL_ASSERT(!inComputePass);
 
         // NOTE. No-Op for DX11
     #if defined(_DEBUG) || !defined(NDEBUG)
@@ -188,26 +174,18 @@ namespace Smol
     }
 
     void DX11CommandList::SetPipelineState(RHIGraphicsPipelineState& pso){
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::Begin()?"
-        );
         SMOL_ASSERT(inRenderPass,
             "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
-        SMOL_ASSERT(!inComputePass);
 
         auto& dxPSO = static_cast<DX11GraphicsPipelineState&>(pso);
         dxPSO.Bind(*context.Get());
     }
 
     void DX11CommandList::SetPipelineState(RHIComputePipelineState& pso){
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::Begin()?"
-        );
         SMOL_ASSERT(inComputePass,
             "Not in a compute pass. Did you call RHICommandList::BeginCompute()?"
         );
-        SMOL_ASSERT(!inRenderPass);
 
         auto& dxPSO = static_cast<DX11ComputePipelineState&>(pso);
         dxPSO.Bind(*context.Get());
@@ -221,13 +199,9 @@ namespace Smol
         u32 stride,
         u32 offset
     ){
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::Begin()?"
-        );
         SMOL_ASSERT(inRenderPass,
             "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
-        SMOL_ASSERT(!inComputePass);
 
         auto buf = static_cast<DX11Buffer&>(buffer).Get();
         context->IASetVertexBuffers(
@@ -244,13 +218,9 @@ namespace Smol
         RHIIndexFormat format,
         u32 offset
     ){
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::Begin()?"
-        );
         SMOL_ASSERT(inRenderPass,
             "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
-        SMOL_ASSERT(!inComputePass);
 
         auto buf = static_cast<DX11Buffer&>(buffer).Get();
         context->IASetIndexBuffer(
@@ -267,9 +237,6 @@ namespace Smol
         RHIShaderStage stage,
         u32 offset
     ){
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::Begin()?"
-        );
         SMOL_ASSERT(inRenderPass != inComputePass,
             "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
         );
@@ -311,9 +278,6 @@ namespace Smol
         RHIBindingAccess access,
         RHIShaderStage stage
     ){
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::Begin()?"
-        );
         SMOL_ASSERT(inRenderPass != inComputePass,
             "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
         );
@@ -389,9 +353,6 @@ namespace Smol
         RHIBindingAccess access,
         RHIShaderStage stage
     ){
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::Begin()?"
-        );
         SMOL_ASSERT(inRenderPass != inComputePass,
             "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
         );
@@ -471,6 +432,10 @@ namespace Smol
         u32 slot,
         RHIShaderStage stage
     ){
+        SMOL_ASSERT(inRenderPass != inComputePass,
+            "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
+        );
+
         SMOL_ASSERT(size <= 256);
 
         inlineBuffer.Upload(bytes, size, 0);
@@ -510,9 +475,6 @@ namespace Smol
         u32 slot,
         RHIShaderStage stage
     ){
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::Begin()?"
-        );
         SMOL_ASSERT(inRenderPass != inComputePass,
             "Not in a pass. Did you call RHICommandList::BeginRenderPass/BeginCompute()?"
         );
@@ -536,6 +498,10 @@ namespace Smol
     }
 
     void DX11CommandList::SetViewport(const RHIViewport& viewport){
+        SMOL_ASSERT(inRenderPass,
+            "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
+        );
+
         D3D11_VIEWPORT vp{
             .TopLeftX = viewport.x,
             .TopLeftY = viewport.y,
@@ -551,6 +517,10 @@ namespace Smol
     }
 
     void DX11CommandList::SetScissorRect(const RHIScissorRect& scissor){
+        SMOL_ASSERT(inRenderPass,
+            "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
+        );
+
         D3D11_RECT rect{
             .left = scissor.left,
             .top = scissor.top,
@@ -569,13 +539,9 @@ namespace Smol
         u32 startVertex,
         u32 startInstance
     ){
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::Begin()?"
-        );
         SMOL_ASSERT(inRenderPass,
             "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
-        SMOL_ASSERT(!inComputePass);
 
         // if instanceCount == 1, same as below.
         // context.Draw(
@@ -598,13 +564,9 @@ namespace Smol
         i32 baseVertex,
         u32 startInstance
     ){
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::Begin()?"
-        );
         SMOL_ASSERT(inRenderPass,
             "Not in a render pass. Did you call RHICommandList::BeginRenderPass()?"
         );
-        SMOL_ASSERT(!inComputePass);
 
         // if instanceCount == 1, same as below.
         // context->DrawIndexed(
@@ -629,30 +591,21 @@ namespace Smol
         SMOL_ASSERT(!inComputePass,
             "Already in a compute pass. Did you call RHICommandList::EndCompute()?"
         );
-        SMOL_ASSERT(!inRenderPass,
-            "Already in a render pass. Did you call RHICommandList::EndRenderPass()?"
-        );
+        SMOL_ASSERT(!inRenderPass && !inBlitPass);
 
         inComputePass = true;
         currentComputePSO = nullptr;
     }
 
     void DX11CommandList::EndCompute() noexcept{
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::Begin()?"
-        );
         SMOL_ASSERT(inComputePass,
             "Not in a compute pass. Did you call RHICommandList::BeginCompute()?"
         );
-        SMOL_ASSERT(!inRenderPass);
 
         inComputePass = false;
     }
 
     void DX11CommandList::Dispatch(Size3D gridSize){
-        SMOL_ASSERT(isRecording,
-            "Did you call RHICommandList::Begin()?"
-        );
         SMOL_ASSERT(inComputePass,
             "Not in a compute pass. Did you call RHICommandList::BeginCompute()?"
         );
@@ -668,6 +621,26 @@ namespace Smol
         );
     }
 
+    void DX11CommandList::BeginBlit() noexcept{
+        SMOL_ASSERT(isRecording,
+            "Did you call RHICommandList::Begin()?"
+        );
+        SMOL_ASSERT(!inBlitPass,
+            "Already in a compute pass. Did you call RHICommandList::EndBlit()?"
+        );
+        SMOL_ASSERT(!inRenderPass && !inBlitPass);
+
+        inBlitPass = true;
+    }
+
+    void DX11CommandList::EndBlit() noexcept{
+        SMOL_ASSERT(inBlitPass,
+            "Not in a compute pass. Did you call RHICommandList::BeginBlit()?"
+        );
+
+        inBlitPass = false;
+    }
+
     void DX11CommandList::Copy(
         RHIBuffer& src,
         RHIBuffer& dst,
@@ -675,6 +648,10 @@ namespace Smol
         usize dstOffset,
         usize size
     ){
+        SMOL_ASSERT(inBlitPass,
+            "Not in a compute pass. Did you call RHICommandList::BeginBlit()?"
+        );
+
         D3D11_BOX box{
             .left = static_cast<UINT>(srcOffset),
             .top = 0,
@@ -696,20 +673,12 @@ namespace Smol
         RHITexture& src,
         RHITexture& dst
     ){
+        SMOL_ASSERT(inBlitPass,
+            "Not in a compute pass. Did you call RHICommandList::BeginBlit()?"
+        );
+
         context->CopyResource(
             static_cast<DX11Texture&>(dst).Get(),
-            static_cast<DX11Texture&>(src).Get()
-        );
-    }
-
-    void DX11CommandList::Copy(
-        RHITexture& src,
-        RHISwapchain& dst
-    ){
-        auto& texture = static_cast<DX11Texture&>(dst.GetCurrentTexture());
-
-        context->CopyResource(
-            texture.Get(),
             static_cast<DX11Texture&>(src).Get()
         );
     }
@@ -720,6 +689,10 @@ namespace Smol
         u32 mipLevel,
         u32 arraySlice
     ){
+        SMOL_ASSERT(inBlitPass,
+            "Not in a compute pass. Did you call RHICommandList::BeginBlit()?"
+        );
+
         // TODO.
         throw std::runtime_error("Unimplemented");
     }

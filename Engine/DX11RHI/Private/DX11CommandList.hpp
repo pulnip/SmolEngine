@@ -14,7 +14,9 @@ namespace Smol
         DeviceContextRAII context;
         // simulate command recording
         bool isRecording = false;
-        bool inRenderPass = false, inComputePass = false;
+        bool inRenderPass = false;
+        bool inComputePass = false;
+        bool inBlitPass = false;
         DX11ComputePipelineState* currentComputePSO = nullptr;
     #if defined(_DEBUG) || !defined(NDEBUG)
         u32 maxBindedVSSRV = 0;
@@ -32,11 +34,7 @@ namespace Smol
         ~DX11CommandList();
 
         void Begin() noexcept RHI_OVERRIDE;
-        void Flush() noexcept RHI_OVERRIDE{
-            // NOTE. No-Op for DX11
-        }
         void Close() noexcept RHI_OVERRIDE;
-        void Reset() noexcept RHI_OVERRIDE;
 
         void BeginRenderPass(const RHIRenderPassDesc&) RHI_OVERRIDE;
         void EndRenderPass() RHI_OVERRIDE;
@@ -114,6 +112,9 @@ namespace Smol
 
         void Dispatch(Size3D gridSize) RHI_OVERRIDE;
 
+        void BeginBlit() noexcept RHI_OVERRIDE;
+        void EndBlit() noexcept RHI_OVERRIDE;
+
         void Copy(
             RHIBuffer& src,
             RHIBuffer& dst,
@@ -125,11 +126,6 @@ namespace Smol
         void Copy(
             RHITexture& src,
             RHITexture& dst
-        ) RHI_OVERRIDE;
-
-        void Copy(
-            RHITexture& src,
-            RHISwapchain& dst
         ) RHI_OVERRIDE;
 
         void Copy(

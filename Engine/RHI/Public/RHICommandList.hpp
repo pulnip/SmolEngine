@@ -13,9 +13,7 @@ namespace Smol
 
         // Command list lifecycle
         virtual void Begin() = 0;
-        virtual void Flush() = 0;
         virtual void Close() = 0;
-        virtual void Reset() = 0;
 
         // Render pass control
         virtual void BeginRenderPass(const RHIRenderPassDesc&) = 0;
@@ -80,7 +78,6 @@ namespace Smol
             u32 slot,
             RHIShaderStage stage
         ){
-            // type-safe helper
             SetBytes(&data, sizeof(T), slot, stage);
         }
 
@@ -111,13 +108,15 @@ namespace Smol
         ) = 0;
 
         virtual void BeginCompute() = 0;
-
         virtual void EndCompute() = 0;
 
         // Compute dispatch
         virtual void Dispatch(
             Size3D gridSize
         ) = 0;
+
+        virtual void BeginBlit() = 0;
+        virtual void EndBlit() = 0;
 
         // Copy operations
         virtual void Copy(
@@ -133,10 +132,11 @@ namespace Smol
             RHITexture& dst
         ) = 0;
 
-        virtual void Copy(
+        // helper for RHISwapchain(backBuffer)
+        void Copy(
             RHITexture& src,
             RHISwapchain& dst
-        ) = 0;
+        );
 
         virtual void Copy(
             RHIBuffer& src,

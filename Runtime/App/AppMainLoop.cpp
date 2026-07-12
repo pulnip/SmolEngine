@@ -310,8 +310,9 @@ namespace Smol
         // End RenderPass for sceneTexture
 
         // Copy SceneTexture to BackBuffer
+        cmdList.BeginBlit();
         cmdList.Copy(*scene, swapchain);
-        cmdList.Flush();
+        cmdList.EndBlit();
 
         cmdList.Close();
         return true;
