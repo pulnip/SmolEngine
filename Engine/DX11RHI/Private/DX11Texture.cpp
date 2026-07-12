@@ -1,11 +1,9 @@
-#include <d3d11.h>
-#include <stdexcept>
 #include "Assert.hpp"
 #include "DX11Definitions.hpp"
-#include "EnumUtil.hpp"
-#include "DX11Util.hpp"
-#include "RHIDefinitions.hpp"
 #include "DX11Texture.hpp"
+#include "DX11Util.hpp"
+#include "EnumUtil.hpp"
+#include "RHIDefinitions.hpp"
 
 namespace Smol
 {
@@ -15,9 +13,6 @@ namespace Smol
         StrView name
     )
         : device(device)
-        // , width(desc.width), height(desc.height)
-        // , format(desc.format)
-        , currentState(desc.initialState)
     {
         using enum RHITextureUsage;
 
@@ -57,13 +52,12 @@ namespace Smol
             .SysMemSlicePitch = 0
         };
 
-        if(FAILED(device.CreateTexture2D(
+        CHECK_HRESULT(device.CreateTexture2D(
             &texDesc,
             desc.initialData != nullptr ? &initData : nullptr,
             &texture
-        ))){
-            throw std::runtime_error("Failed to create DX11 texture");
-        }
+        ), "Failed to create DX11 texture");
+
     #if defined(_DEBUG) || !defined(NDEBUG)
         if(!name.empty()){
             texture->SetPrivateData(
@@ -82,13 +76,11 @@ namespace Smol
     )
         : device(device)
     {
-        if(FAILED(swapchain.GetBuffer(
+        CHECK_HRESULT(swapchain.GetBuffer(
             0,
             __uuidof(Texture),
             reinterpret_cast<void**>(texture.GetAddressOf())
-        ))){
-            throw std::runtime_error("Failed to Get Buffer from Swapchain");
-        }
+        ), "Failed to Get Buffer from Swapchain");
 
     #if defined(_DEBUG) || !defined(NDEBUG)
         if(!name.empty()){
@@ -102,14 +94,6 @@ namespace Smol
     }
 
     DX11Texture::~DX11Texture() = default;
-
-    void DX11Texture::Upload(
-        const void* data,
-        u32 mipLevel,
-        u32 arraySlice
-    ){
-        // TODO
-    }
 
     RHIPixelFormat DX11Texture::GetFormat() const noexcept{
         D3D11_TEXTURE2D_DESC desc;
@@ -146,13 +130,11 @@ namespace Smol
         };
 
         SRVRAII view;
-        if(FAILED(device.CreateShaderResourceView(
+        CHECK_HRESULT(device.CreateShaderResourceView(
             texture.Get(),
             &dxDesc,
             &view
-        ))){
-            throw std::runtime_error("Failed to create DX11 SRV");
-        }
+        ), "Failed to create SRV");
 
         auto [it, ret] = srvs.emplace(desc, std::move(view));
         SMOL_ASSERT(ret);
@@ -173,13 +155,11 @@ namespace Smol
         };
 
         RTVRAII view;
-        if(FAILED(device.CreateRenderTargetView(
+        CHECK_HRESULT(device.CreateRenderTargetView(
             texture.Get(),
             &dxDesc,
             &view
-        ))){
-            throw std::runtime_error("Failed to create DX11 RTV");
-        }
+        ), "Failed to create RTV");
 
         auto [it, ret] = rtvs.emplace(desc, std::move(view));
         SMOL_ASSERT(ret);
@@ -200,13 +180,11 @@ namespace Smol
         };
 
         UAVRAII view;
-        if(FAILED(device.CreateUnorderedAccessView(
+        CHECK_HRESULT(device.CreateUnorderedAccessView(
             texture.Get(),
             &dxDesc,
             &view
-        ))){
-            throw std::runtime_error("Failed to create DX11 UAV");
-        }
+        ), "Failed to create UAV");
 
         auto [it, ret] = uavs.emplace(desc, std::move(view));
         SMOL_ASSERT(ret);
@@ -227,41 +205,15 @@ namespace Smol
         };
 
         DSVRAII view;
-        if(FAILED(device.CreateDepthStencilView(
+        CHECK_HRESULT(device.CreateDepthStencilView(
             texture.Get(),
             &dxDesc,
             &view
-        ))){
-            throw std::runtime_error("Failed to create DX11 DSV");
-        }
+        ), "Failed to create DSV");
 
         auto [it, ret] = dsvs.emplace(desc, std::move(view));
         SMOL_ASSERT(ret);
 
         return it->second.Get();
-    }
-
-    SRV* DX11Texture::GetOrCreateSRV(){
-        return GetOrCreateSRV(RHITextureViewDesc{
-            .format = GetFormat()
-        });
-    }
-
-    RTV* DX11Texture::GetOrCreateRTV(){
-        return GetOrCreateRTV(RHITextureViewDesc{
-            .format = GetFormat()
-        });
-    }
-
-    UAV* DX11Texture::GetOrCreateUAV(){
-        return GetOrCreateUAV(RHITextureViewDesc{
-            .format = GetFormat()
-        });
-    }
-
-    DSV* DX11Texture::GetOrCreateDSV(){
-        return GetOrCreateDSV(RHITextureViewDesc{
-            .format = GetFormat()
-        });
     }
 }

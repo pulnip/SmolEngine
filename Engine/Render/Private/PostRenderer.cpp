@@ -10,7 +10,7 @@ namespace Smol
 {
     PostRenderer::PostRenderer(RHIDevice& device)
         : rainStreak(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
-            .preRasterizer = RHILegacyFrontendDesc{
+            .preRasterizer = RHIPreRasterizerDesc{
                 .topology = RHIPrimitiveTopology::TriangleStrip,
                 .vertexShader = RHIShaderDesc{
                 #if defined(_WIN32)
@@ -62,7 +62,7 @@ namespace Smol
             .access = RHIMemoryAccess::CPUWrite
         }, "rainStreakParam")),
         rainDroplet(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
-            .preRasterizer = RHILegacyFrontendDesc{
+            .preRasterizer = RHIPreRasterizerDesc{
                 .topology = RHIPrimitiveTopology::TriangleStrip,
                 .vertexShader = RHIShaderDesc{
                 #if defined(_WIN32)
@@ -149,10 +149,9 @@ namespace Smol
         // Rain Streak
         cmdList.SetPipelineState(*rainStreak);
 
-        cmdList.SetConstantBuffer(
+        cmdList.SetFragmentConstant(
             *rainStreakParam,
-            rainStreakParamSlot,
-            RHIShaderStage::FragmentShader
+            rainStreakParamSlot
         );
 
         // FullscreenQuad with TriangleStrip
@@ -160,10 +159,9 @@ namespace Smol
 
         // Rain Droplet
         cmdList.SetPipelineState(*rainDroplet);
-        cmdList.SetConstantBuffer(
+        cmdList.SetFragmentConstant(
             *rainDropletParam,
-            rainDropletParamSlot,
-            RHIShaderStage::FragmentShader
+            rainDropletParamSlot
         );
         cmdList.Draw(4);
     }

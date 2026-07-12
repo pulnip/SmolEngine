@@ -42,7 +42,7 @@ namespace Smol
     )
         : spriteManager(spriteManager)
         , pipeline(device.CreatePipelineState(RHIGraphicsPipelineStateDesc{
-            .preRasterizer = RHILegacyFrontendDesc{
+            .preRasterizer = RHIPreRasterizerDesc{
                 .topology = RHIPrimitiveTopology::TriangleStrip,
                 .vertexShader = RHIShaderDesc{
                 #if defined(_WIN32)
@@ -123,31 +123,23 @@ namespace Smol
     }
 
     void SpriteRenderer::Draw(RHICommandList& cmdList){
-        using enum RHIShaderStage;
-
         cmdList.SetPipelineState(*pipeline);
 
-        cmdList.SetSampler(*sampler,
-            fs.samp,
-            RHIShaderStage::FragmentShader
-        );
+        cmdList.SetFragmentSampler(*sampler, fs.samp);
 
         for(auto& item: renderItems){
             auto& resource = spriteManager.GetRef(item.handle);
 
             auto c = pack(item, resource.sheetSize);
-            cmdList.SetBytes(
+            cmdList.SetVertexBytes(
                 c,
-                vs.spriteConstants,
-                RHIShaderStage::VertexShader
+                vs.spriteConstants
             );
 
 
-            cmdList.SetTexture(
+            cmdList.SetFragmentReadable(
                 *resource.texture,
-                fs.tex,
-                RHIBindingAccess::ReadOnly,
-                RHIShaderStage::FragmentShader
+                fs.tex
             );
             cmdList.Draw(4);
         }

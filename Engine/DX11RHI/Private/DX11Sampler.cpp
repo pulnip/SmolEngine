@@ -1,5 +1,4 @@
 #include <utility>
-#include <d3d11.h>
 #include "DX11Sampler.hpp"
 #include "DX11Util.hpp"
 #include "RHIDefinitions.hpp"
@@ -65,12 +64,10 @@ namespace Smol
             .MinLOD = desc.minLOD,
             .MaxLOD = desc.maxLOD
         };
-        if(FAILED(device.CreateSamplerState(
+        CHECK_HRESULT(device.CreateSamplerState(
             &samplerDesc,
             &sampler
-        ))){
-            throw std::runtime_error("Failed to create DX11 Sampler");
-        }
+        ), "Failed to create DX11 Sampler");
     }
 
     DX11Sampler::~DX11Sampler() = default;

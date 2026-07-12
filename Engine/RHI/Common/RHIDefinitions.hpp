@@ -15,13 +15,8 @@
 namespace Smol
 {
     enum class RHIBackend{
-    #if defined(_WIN32)
         DirectX11 = 0,
-        DirectX12 = 1,
-    #elif defined(__APPLE__)
-        Metal     = 2,
-    #endif
-        WebGPU    = 3,
+        Metal     = 1
     };
 
     struct RHICapabilities{
@@ -49,10 +44,7 @@ namespace Smol
         ShaderResource   = 1 << 4,
         ShaderRead       = ShaderResource,
         UnorderedAccess  = 1 << 5,
-        ShaderWrite      = UnorderedAccess,
-        // (D3D12) blit pass capability
-        CopySrc          = 1 << 6,
-        CopyDst          = 1 << 7
+        ShaderWrite      = UnorderedAccess
     };
 
     struct RHIBufferCreateDesc{
@@ -145,42 +137,7 @@ namespace Smol
         RenderTarget    = 1 << 1,
         DepthStencil    = 1 << 2,
         UnorderedAccess = 1 << 3,
-        ShaderWrite     = UnorderedAccess,
-        // (D3D12) blit pass capability
-        CopySrc         = 1 << 4,
-        CopyDst         = 1 << 5,
-    };
-
-    // for Resource Barrier,
-    // used at D3D12 or Metal without hazard tracking
-    enum class RHIResourceState: u16{
-        Common                    = 0,
-        Present                   = Common,
-        VertexAndConstantBuffer   = 1 << 0,
-        IndexBuffer               = 1 << 1,
-        RenderTarget              = 1 << 2,
-        UnorderedAccess           = 1 << 3,
-        DepthWrite                = 1 << 4,
-        DepthRead                 = 1 << 5,
-        // VertexShader, MeshShader, ComputeShader
-        NonFragmentShaderResource = 1 << 6,
-        FragmentShaderResource    = 1 << 7,
-        StreamOut                 = 1 << 8,
-        IndirectArgument          = 1 << 9,
-        Predication               = IndirectArgument,
-        CopyDst                   = 1 << 10,
-        CopySrc                   = 1 << 11,
-        ResolveDst                = 1 << 12,
-        ResolveSrc                = 1 << 13,
-        ShaderResource =
-            NonFragmentShaderResource |
-            FragmentShaderResource,
-        GenericRead =
-            VertexAndConstantBuffer |
-            IndexBuffer |
-            ShaderResource |
-            IndirectArgument |
-            CopySrc,
+        ShaderWrite     = UnorderedAccess
     };
 
     struct RHIClearDepthStencil{
@@ -197,17 +154,7 @@ namespace Smol
         RHIPixelFormat format = RHIPixelFormat::RGBA8_UNORM;
         RHITextureUsage usage = RHITextureUsage::None;
         RHIMemoryAccess access = RHIMemoryAccess::GPUOnly;
-        RHIResourceState initialState = RHIResourceState::Common;
         const void* initialData = nullptr;
-        // ClearColor for optimize (only Valid at D3D12)
-        Color clearColor = Colors::Black;
-        RHIClearDepthStencil clearDepthStencil{};
-    };
-
-    enum class RHIShaderStage: u8{
-        VertexShader,
-        FragmentShader,
-        ComputeShader,
     };
 
     enum class RHILoadAction: u8{
@@ -313,7 +260,7 @@ struct std::hash<Smol::RHIShaderDesc>{
 };
 
 namespace Smol{
-    struct RHILegacyFrontendDesc{
+    struct RHIPreRasterizerDesc{
         std::optional<std::span<const RHIVertexElement>> vertexLayout = std::nullopt;
         RHIPrimitiveTopology topology = RHIPrimitiveTopology::TriangleList;
 
@@ -321,22 +268,11 @@ namespace Smol{
             .entryPoint = "vs_main"
         };
     };
-
-    struct RHIMeshFrontendDesc{
-        // Amplification Shader
-        std::optional<RHIShaderDesc> amplificationShader = std::nullopt;
-        RHIShaderDesc meshShader;
-    };
-
-    using RHIPreRasterizerDesc = std::variant<
-        RHILegacyFrontendDesc,
-        RHIMeshFrontendDesc
-    >;
 }
 
 template<>
-struct std::hash<Smol::RHILegacyFrontendDesc>{
-    std::size_t operator()(const Smol::RHILegacyFrontendDesc& desc) const noexcept{
+struct std::hash<Smol::RHIPreRasterizerDesc>{
+    std::size_t operator()(const Smol::RHIPreRasterizerDesc& desc) const noexcept{
         using namespace Smol;
 
         std::size_t h = 0;
@@ -352,33 +288,6 @@ struct std::hash<Smol::RHILegacyFrontendDesc>{
             desc.topology,
             desc.vertexShader
         );
-    }
-};
-
-template<>
-struct std::hash<Smol::RHIMeshFrontendDesc>{
-    std::size_t operator()(const Smol::RHIMeshFrontendDesc& desc) const noexcept{
-        using namespace Smol;
-
-        std::size_t h = desc.amplificationShader.has_value() ?
-            hashAll(*desc.amplificationShader) :
-            0;
-
-        return hashAll(
-            h,
-            desc.meshShader
-        );
-    }
-};
-
-template<>
-struct std::hash<Smol::RHIPreRasterizerDesc>{
-    std::size_t operator()(const Smol::RHIPreRasterizerDesc& desc) const noexcept{
-        using namespace Smol;
-
-        return std::visit([](const auto& desc){
-            return hashAll(desc);
-        }, desc);
     }
 };
 
@@ -611,10 +520,7 @@ struct std::hash<Smol::RHIBlendState>{
 namespace Smol
 {
     struct RHIGraphicsPipelineStateDesc{
-        // Geometry Frontend
         RHIPreRasterizerDesc preRasterizer;
-
-        // Geometry Backend
         RHIRasterizerState rasterizer = {};
         RHIShaderDesc fragmentShader{
             .entryPoint = "fs_main"
@@ -814,9 +720,6 @@ namespace Smol
         u32 bufferCount = RHI_FRAMES_IN_FLIGHT; // Triple buffering
         bool vsync = true;                           // VSync enabled by default
         bool allowTearing = false;                   // Variable refresh rate
-    #if defined(_DEBUG) || !defined(NDEBUG)
-        Str debugName;
-    #endif
     };
 
     inline constexpr u32 getBytesPerPixel(RHIPixelFormat format){

@@ -1,6 +1,4 @@
-#include <stdexcept>
-#include <d3dcommon.h>
-#include <d3d11.h>
+#include <utility>
 #include "Assert.hpp"
 #include "DX11Definitions.hpp"
 #include "EnumUtil.hpp"
@@ -9,6 +7,46 @@
 #include "VariantUtil.hpp"
 #include "DX11Buffer.hpp"
 #include "DX11Util.hpp"
+
+namespace{
+    struct BufferPolicy{
+        D3D11_USAGE usage;
+        UINT CPUAccessFlag;
+    };
+
+    auto Resolve(
+        Smol::RHIMemoryAccess access,
+        Smol::RHIBufferUsage usage
+    ){
+        using namespace Smol;
+        using enum RHIMemoryAccess;
+        using enum RHIBufferUsage;
+
+        const auto isUnorderedAccess = hasFlag(usage, UnorderedAccess);
+        const auto isGPUOnly = (access == GPUOnly);
+        SMOL_ASSERT(!isUnorderedAccess || isGPUOnly);
+
+        switch(access){
+        case GPUOnly:
+            return BufferPolicy{
+                .usage = D3D11_USAGE_DEFAULT,
+                .CPUAccessFlag = 0
+            };
+        case CPUWrite:
+            return BufferPolicy{
+                .usage = D3D11_USAGE_DYNAMIC,
+                .CPUAccessFlag = D3D11_CPU_ACCESS_WRITE
+            };
+        case CPURead:
+            return BufferPolicy{
+                .usage = D3D11_USAGE_STAGING,
+                .CPUAccessFlag = D3D11_CPU_ACCESS_READ
+            };
+        default:
+            std::unreachable();
+        }
+    }
+}
 
 namespace Smol
 {
@@ -23,44 +61,38 @@ namespace Smol
         using enum RHIBufferUsage;
         using enum RHIMemoryAccess;
 
-        const auto hasVertexUsage = hasFlag(desc.usage, VertexBuffer);
-        const auto hasIndexUsage = hasFlag(desc.usage, IndexBuffer);
-        const auto hasConstantUsage = hasFlag(desc.usage, ConstantBuffer);
-        const auto isShaderResource = hasFlag(desc.usage, ShaderResource);
-        const auto isUnorderedAccess = hasFlag(desc.usage, UnorderedAccess);
-
-        const auto isCPUWrite = (desc.access == RHIMemoryAccess::CPUWrite);
-        const auto isCPURead  = (desc.access == RHIMemoryAccess::CPURead);
-
         UINT bindFlags = 0;
-        if(hasVertexUsage)
+        if(hasFlag(desc.usage, VertexBuffer))
             bindFlags |= D3D11_BIND_VERTEX_BUFFER;
-        if(hasIndexUsage)
+        if(hasFlag(desc.usage, IndexBuffer))
             bindFlags |= D3D11_BIND_INDEX_BUFFER;
-        if(hasConstantUsage)
+        if(hasFlag(desc.usage, ConstantBuffer))
             bindFlags |= D3D11_BIND_CONSTANT_BUFFER;
-        if(isShaderResource)
-            bindFlags |= D3D11_BIND_SHADER_RESOURCE;
-        if(isUnorderedAccess)
-            bindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
         UINT miscFlags = 0;
-        // Raw buffer views require this flag (ByteAddressBuffer / RWByteAddressBuffer)
-        if(isShaderResource || isUnorderedAccess)
+        // Shader Read
+        if(hasFlag(desc.usage, ShaderResource)){
+            bindFlags |= D3D11_BIND_SHADER_RESOURCE;
+            // ByteAddressBuffer in HLSL
             miscFlags |= D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
-        if(hasFlag(desc.usage, IndirectArgument))
+        }
+        // Shader Write
+        if(hasFlag(desc.usage, UnorderedAccess)){
+            bindFlags |= D3D11_BIND_UNORDERED_ACCESS;
+            // RWByteAddressBuffer in HLSL
+            miscFlags |= D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
+        }
+        if(hasFlag(desc.usage, IndirectArgument)){
             miscFlags |= D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS;
+        }
 
-        // DYNAMIC+UAV is invalid in DX11; use DEFAULT when UAV binding is needed
-        const auto isDynamicUsage = isCPUWrite && !isUnorderedAccess;
+        const auto policy = ::Resolve(desc.access, desc.usage);
 
         D3D11_BUFFER_DESC dxDesc = {
             .ByteWidth = static_cast<UINT>(desc.size),
-            .Usage = isDynamicUsage ?
-                D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT,
+            .Usage = policy.usage,
             .BindFlags = bindFlags,
-            .CPUAccessFlags = isDynamicUsage ?
-                D3D11_CPU_ACCESS_WRITE : UINT(0),
+            .CPUAccessFlags = policy.CPUAccessFlag,
             .MiscFlags = miscFlags,
             .StructureByteStride = 0
         };
@@ -69,32 +101,11 @@ namespace Smol
             .pSysMem = desc.initialData
         };
 
-        if(FAILED(device.CreateBuffer(
+        CHECK_HRESULT(device.CreateBuffer(
             &dxDesc,
             desc.initialData != nullptr ? &initData : nullptr,
             &buffer
-        ))){
-            throw std::runtime_error("Failed to create DX11 buffer");
-        }
-
-        // Create a staging buffer for CPU readback when access == CPURead
-        if(isCPURead){
-            D3D11_BUFFER_DESC stagingDesc{
-                .ByteWidth = static_cast<UINT>(desc.size),
-                .Usage = D3D11_USAGE_STAGING,
-                .BindFlags = 0,
-                .CPUAccessFlags = D3D11_CPU_ACCESS_READ,
-                .MiscFlags = 0,
-                .StructureByteStride = 0
-            };
-            if(FAILED(device.CreateBuffer(
-                &stagingDesc,
-                nullptr,
-                &stagingBuffer
-            ))){
-                throw std::runtime_error("Failed to create staging buffer for readback");
-            }
-        }
+        ), "Failed to create DX11 buffer");
 
         #if defined(_DEBUG) || !defined(NDEBUG)
             if(!name.empty()){
@@ -117,13 +128,13 @@ namespace Smol
             SMOL_ASSERT(srcSize <= GetSize() - offset);
 
             D3D11_MAPPED_SUBRESOURCE mapped;
-            context.Map(
+            CHECK_HRESULT(context.Map(
                 buffer.Get(),
                 0,
                 D3D11_MAP_WRITE_DISCARD,
                 0,
                 &mapped
-            );
+            ), "Failed to Map DX11 Buffer");
 
             std::memcpy(
                 ptrAdd(mapped.pData, offset),
@@ -143,36 +154,15 @@ namespace Smol
         u32 offset
     ){
         SMOL_ASSERT(dstSize <= GetSize() - offset);
-        SMOL_ASSERT(stagingBuffer != nullptr,
-            "download() requires RHIMemoryAccess::CPURead"
-        );
-
-        // Copy GPU buffer → staging, then Map staging for CPU read
-        const D3D11_BOX srcBox{
-            .left = offset,
-            .top = 0,
-            .front = 0,
-            .right = offset + dstSize,
-            .bottom = 1,
-            .back = 1
-        };
-        context.CopySubresourceRegion(
-            stagingBuffer.Get(),
-            0,
-            0, 0, 0,
-            buffer.Get(),
-            0,
-            &srcBox
-        );
 
         D3D11_MAPPED_SUBRESOURCE mapped;
-        context.Map(
-            stagingBuffer.Get(),
+        CHECK_HRESULT(context.Map(
+            buffer.Get(),
             0,
             D3D11_MAP_READ,
             0,
             &mapped
-        );
+        ), "Failed to Map DX11 Buffer");
 
         std::memcpy(
             dst,
@@ -181,7 +171,7 @@ namespace Smol
         );
 
         context.Unmap(
-            stagingBuffer.Get(),
+            buffer.Get(),
             0
         );
     }
@@ -234,11 +224,11 @@ namespace Smol
         }, desc.config);
 
         SRVRAII view;
-        device.CreateShaderResourceView(
+        CHECK_HRESULT(device.CreateShaderResourceView(
             buffer.Get(),
             &dxDesc,
             &view
-        );
+        ), "Failed to create SRV");
 
         auto [it, ret] = srvs.emplace(desc, std::move(view));
         SMOL_ASSERT(ret);
@@ -289,11 +279,11 @@ namespace Smol
         }, desc.config);
 
         UAVRAII view;
-        device.CreateUnorderedAccessView(
+        CHECK_HRESULT(device.CreateUnorderedAccessView(
             buffer.Get(),
             &dxDesc,
             &view
-        );
+        ), "Failed to create UAV");
         auto [it, ret] = uavs.emplace(desc, std::move(view));
         SMOL_ASSERT(ret);
 

@@ -1,7 +1,3 @@
-#include <stdexcept>
-#include <d3d11.h>
-#include <dxgi1_6.h>
-#include <wrl/client.h>
 #include "DX11Buffer.hpp"
 #include "DX11CommandList.hpp"
 #include "DX11Definitions.hpp"
@@ -12,6 +8,7 @@
 #include "DX11Sampler.hpp"
 #include "DX11Swapchain.hpp"
 #include "DX11Texture.hpp"
+#include "DX11Util.hpp"
 
 namespace Smol
 {
@@ -32,9 +29,10 @@ namespace Smol
             dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
         #endif
 
-            if(FAILED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)))){
-                throw std::runtime_error("Failed to create DXGI factory");
-            }
+            CHECK_HRESULT(CreateDXGIFactory2(
+                dxgiFactoryFlags,
+                IID_PPV_ARGS(&factory)
+            ), "Failed to create DXGI factory");
 
             AdapterRAII adapter, selectedAdapter;
             SIZE_T maxDedicatedMemory = 0;
@@ -78,7 +76,7 @@ namespace Smol
                 D3D_FEATURE_LEVEL_11_0,
             }, actualLevel;
 
-            if(FAILED(D3D11CreateDevice(
+            CHECK_HRESULT(D3D11CreateDevice(
                 selectedAdapter.Get(),
                 D3D_DRIVER_TYPE_UNKNOWN,
                 nullptr,
@@ -90,9 +88,7 @@ namespace Smol
                 &actualLevel,
                 // take immediate context later
                 nullptr
-            ))){
-                throw std::runtime_error("Failed to create DX11 device");
-            }
+            ), "Failed to create DX11 device");
 
             immediateCmdList = std::make_unique<DX11CommandList>(
                 *device.Get()
@@ -141,17 +137,11 @@ namespace Smol
             const RHIGraphicsPipelineStateDesc& desc,
             StrView name
         ){
-            if(std::get_if<RHILegacyFrontendDesc>(&desc.preRasterizer)){
-                return std::make_unique<DX11GraphicsPipelineState>(
-                    *device.Get(),
-                    desc,
-                    name
-                );
-            }
-            else{
-                // cannot use Mesh Shader in DirectX 11
-                throw std::runtime_error("Unsupported Graphics Pipeline Frontend");
-            }
+            return std::make_unique<DX11GraphicsPipelineState>(
+                *device.Get(),
+                desc,
+                name
+            );
         }
 
         RHIComputePipelineStateRAII CreatePipelineState(
@@ -166,12 +156,14 @@ namespace Smol
         }
 
         RHISwapchainRAII CreateSwapchain(
-            const RHISwapchainCreateDesc& desc
+            const RHISwapchainCreateDesc& desc,
+            StrView name = {}
         ){
             return std::make_unique<DX11Swapchain>(
                 *device.Get(),
                 *factory.Get(),
-                desc
+                desc,
+                name
             );
         }
 
@@ -246,9 +238,10 @@ namespace Smol
     }
 
     RHISwapchainRAII DX11Device::CreateSwapchain(
-        const RHISwapchainCreateDesc& desc
+        const RHISwapchainCreateDesc& desc,
+        StrView name
     ){
-        return impl->CreateSwapchain(desc);
+        return impl->CreateSwapchain(desc, name);
     }
 
     RHICommandListRAII DX11Device::CreateCommandList(){

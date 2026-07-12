@@ -1,10 +1,8 @@
-#include <d3d11.h>
 #include <SDL3/SDL_video.h>
-#include <stdexcept>
 #include "DX11Definitions.hpp"
-#include "DX11Util.hpp"
 #include "DX11Swapchain.hpp"
 #include "DX11Texture.hpp"
+#include "DX11Util.hpp"
 #include "RHICommandList.hpp"
 
 namespace Smol
@@ -12,7 +10,8 @@ namespace Smol
     DX11Swapchain::DX11Swapchain(
         Device& device,
         Factory& factory,
-        const RHISwapchainCreateDesc& desc
+        const RHISwapchainCreateDesc& desc,
+        StrView name
     )
         : device(device)
         , vsync(desc.vsync)
@@ -40,14 +39,14 @@ namespace Smol
             SDL_PROP_WINDOW_WIN32_HWND_POINTER,
             nullptr
         );
-        factory.CreateSwapChainForHwnd(
+        CHECK_HRESULT(factory.CreateSwapChainForHwnd(
             &device,
             static_cast<HWND>(hWnd),
             &swapChainDesc,
             nullptr,
             nullptr,
             &swapchain
-        );
+        ), "Failed to create swapchain");
 
         backBuffer = std::make_unique<DX11Texture>(
             device,
@@ -55,11 +54,11 @@ namespace Smol
         );
 
     #if defined(_DEBUG) || !defined(NDEBUG)
-        if(!desc.debugName.empty()){
+        if(!name.empty()){
             swapchain->SetPrivateData(
                 WKPDID_D3DDebugObjectName,
-                static_cast<UINT>(desc.debugName.length()),
-                desc.debugName.c_str()
+                static_cast<UINT>(name.length()),
+                name.data()
             );
         }
     #endif
@@ -72,15 +71,15 @@ namespace Smol
             return;
 
         DXGI_SWAP_CHAIN_DESC1 desc;
-        swapchain->GetDesc1(&desc);
+        CHECK_HRESULT(swapchain->GetDesc1(
+            &desc
+        ), "Failed to get swapchain desc");
 
         backBuffer.reset();
-        if(FAILED(swapchain->ResizeBuffers(
+        CHECK_HRESULT(swapchain->ResizeBuffers(
             0, newWidth, newHeight,
             DXGI_FORMAT_UNKNOWN, desc.Flags
-        ))){
-            throw std::runtime_error("Failed to resize Swapchain buffer");
-        }
+        ), "Failed to resize Swapchain buffer");
 
         // recreate back buffer resource
         backBuffer = std::make_unique<DX11Texture>(
@@ -115,9 +114,9 @@ namespace Smol
         UINT flags = (!vsync && allowTearing) ?
             DXGI_PRESENT_ALLOW_TEARING : 0;
 
-        swapchain->Present(
+        CHECK_HRESULT(swapchain->Present(
             syncInterval,
             flags
-        );
+        ), "Failed to present swapchain");
     }
 }

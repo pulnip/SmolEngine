@@ -40,7 +40,8 @@ namespace Smol
         ) RHI_OVERRIDE;
 
         RHISwapchainRAII CreateSwapchain(
-            const RHISwapchainCreateDesc&
+            const RHISwapchainCreateDesc&,
+            StrView name = {}
         ) RHI_OVERRIDE;
 
         RHICommandListRAII CreateCommandList() RHI_OVERRIDE;

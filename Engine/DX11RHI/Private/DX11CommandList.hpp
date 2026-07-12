@@ -1,5 +1,6 @@
 #pragma once
 
+#include <d3d11_1.h>
 #include "RHIAPI.hpp"
 #include "RHIDefinitions.hpp"
 #include "RHICommandList.hpp"
@@ -14,9 +15,13 @@ namespace Smol
         DeviceContextRAII context;
         // simulate command recording
         bool isRecording = false;
-        bool inRenderPass = false, inComputePass = false;
+        bool inRenderPass = false;
+        bool inComputePass = false;
+        bool inBlitPass = false;
         DX11ComputePipelineState* currentComputePSO = nullptr;
     #if defined(_DEBUG) || !defined(NDEBUG)
+        COMRAII<ID3DUserDefinedAnnotation> annotation;
+
         u32 maxBindedVSSRV = 0;
         u32 maxBindedPSSRV = 0;
         u32 maxBindedCSSRV = 0;
@@ -32,11 +37,7 @@ namespace Smol
         ~DX11CommandList();
 
         void Begin() noexcept RHI_OVERRIDE;
-        void Flush() noexcept RHI_OVERRIDE{
-            // NOTE. No-Op for DX11
-        }
         void Close() noexcept RHI_OVERRIDE;
-        void Reset() noexcept RHI_OVERRIDE;
 
         void BeginRenderPass(const RHIRenderPassDesc&) RHI_OVERRIDE;
         void EndRenderPass() RHI_OVERRIDE;
@@ -44,51 +45,80 @@ namespace Smol
         void SetPipelineState(RHIGraphicsPipelineState& pso) RHI_OVERRIDE;
         void SetPipelineState(RHIComputePipelineState& pso) RHI_OVERRIDE;
 
-        void SetVertexBuffer(
-            RHIBuffer& buffer,
+        void SetVertex(
+            RHIBuffer&,
             u32 slot,
             u32 stride,
             u32 offset
         ) RHI_OVERRIDE;
 
-        void SetIndexBuffer(
-            RHIBuffer& buffer,
-            RHIIndexFormat format,
+        void SetIndex(
+            RHIBuffer&,
+            RHIIndexFormat,
             u32 offset
         ) RHI_OVERRIDE;
 
-        void SetConstantBuffer(
-            RHIBuffer& buffer,
-            u32 slot,
-            RHIShaderStage stage,
-            u32 offset
+        void SetVertexConstant(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetFragmentConstant(
+            RHIBuffer&,
+            u32 slot
         ) RHI_OVERRIDE;
 
-        void SetTexture(
-            RHITexture& texture,
-            u32 slot,
-            RHIBindingAccess access,
-            RHIShaderStage stage
-        ) RHI_OVERRIDE;
-
-        void SetBuffer(
-            RHIBuffer& buffer,
-            u32 slot,
-            RHIBindingAccess access,
-            RHIShaderStage stage = RHIShaderStage::ComputeShader
-        ) RHI_OVERRIDE;
-
-        void SetBytes(
+        void SetVertexBytes(
             const void* bytes,
             usize size,
-            u32 slot,
-            RHIShaderStage stage
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetFragmentBytes(
+            const void* bytes,
+            usize size,
+            u32 slot
         ) RHI_OVERRIDE;
 
-        void SetSampler(
-            RHISampler& sampler,
-            u32 slot,
-            RHIShaderStage stage
+        void SetVertexReadable(
+            RHITexture&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetVertexReadable(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetFragmentReadable(
+            RHITexture&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetFragmentReadable(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+
+        void SetVertexWritable(
+            RHITexture&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetVertexWritable(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetFragmentWritable(
+            RHITexture&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetFragmentWritable(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+
+        void SetVertexSampler(
+            RHISampler&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetFragmentSampler(
+            RHISampler&,
+            u32 slot
         ) RHI_OVERRIDE;
 
         void SetViewport(const RHIViewport& viewport) RHI_OVERRIDE;
@@ -112,21 +142,44 @@ namespace Smol
         void BeginCompute() noexcept RHI_OVERRIDE;
         void EndCompute() noexcept RHI_OVERRIDE;
 
+        void SetComputeConstant(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+
+        void SetComputeBytes(
+            const void* bytes,
+            usize size,
+            u32 slot
+        ) RHI_OVERRIDE;
+
+        void SetComputeReadable(
+            RHITexture&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetComputeReadable(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+
+        void SetComputeWritable(
+            RHITexture&,
+            u32 slot
+        ) RHI_OVERRIDE;
+        void SetComputeWritable(
+            RHIBuffer&,
+            u32 slot
+        ) RHI_OVERRIDE;
+
+        void SetComputeSampler(
+            RHISampler&,
+            u32 slot
+        ) RHI_OVERRIDE;
+
         void Dispatch(Size3D gridSize) RHI_OVERRIDE;
 
-        void TransitionBarrier(
-            RHITexture&,
-            RHIResourceState after
-        ) noexcept RHI_OVERRIDE{
-            // NOTE. No-Op for DX11
-        }
-
-        void TransitionBarrier(
-            RHIBuffer&,
-            RHIResourceState after
-        ) noexcept RHI_OVERRIDE{
-            // NOTE. No-Op for DX11
-        }
+        void BeginBlit() noexcept RHI_OVERRIDE;
+        void EndBlit() noexcept RHI_OVERRIDE;
 
         void Copy(
             RHIBuffer& src,
@@ -142,11 +195,6 @@ namespace Smol
         ) RHI_OVERRIDE;
 
         void Copy(
-            RHITexture& src,
-            RHISwapchain& dst
-        ) RHI_OVERRIDE;
-
-        void Copy(
             RHIBuffer& src,
             RHITexture& dst,
             u32 mipLevel = 0,
@@ -157,15 +205,9 @@ namespace Smol
             // NOTE. No-Op for DX11
         }
 
-        void BeginEvent(CStr name) noexcept RHI_OVERRIDE{
-            // TODO
-        }
-        void EndEvent() noexcept RHI_OVERRIDE{
-            // TODO
-        }
-        void SetMarker(CStr name) noexcept RHI_OVERRIDE{
-            // TODO
-        }
+        void BeginEvent(CStr name) RHI_OVERRIDE;
+        void EndEvent() RHI_OVERRIDE;
+        void SetMarker(CStr name) RHI_OVERRIDE;
 
         void* GetNative() noexcept RHI_OVERRIDE;
 

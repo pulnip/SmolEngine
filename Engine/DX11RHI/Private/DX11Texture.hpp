@@ -11,7 +11,6 @@ namespace Smol
     class DX11Texture final: public RHITexture{
     private:
         TextureRAII texture = nullptr;
-        RHIResourceState currentState = RHIResourceState::Common;
 
         Device& device;
 
@@ -24,7 +23,7 @@ namespace Smol
         DX11Texture(
             Device& device,
             const RHITextureCreateDesc& desc,
-            StrView name
+            StrView name = {}
         );
         DX11Texture(
             Device& device,
@@ -34,12 +33,6 @@ namespace Smol
 
         ~DX11Texture();
 
-        void Upload(
-            const void* data,
-            u32 mipLevel,
-            u32 arraySlice
-        ) RHI_OVERRIDE;
-
         RHIPixelFormat GetFormat() const noexcept RHI_OVERRIDE;
         u32 GetWidth() const noexcept RHI_OVERRIDE;
         u32 GetHeight() const noexcept RHI_OVERRIDE;
@@ -47,29 +40,33 @@ namespace Smol
         void* GetNative() noexcept RHI_OVERRIDE{
             return texture.Get();
         }
-        const void* GetNative() const noexcept RHI_OVERRIDE{
-            return texture.Get();
-        }
-
-        RHIResourceState GetState() const RHI_OVERRIDE{
-            return currentState;
-        }
-
-        void SetState(RHIResourceState state) RHI_OVERRIDE{
-            currentState = state;
-        }
 
         Texture* Get() noexcept{ return texture.Get(); }
-        const Texture* Get() const noexcept{ return texture.Get(); }
 
         SRV* GetOrCreateSRV(const RHITextureViewDesc&);
         RTV* GetOrCreateRTV(const RHITextureViewDesc&);
         UAV* GetOrCreateUAV(const RHITextureViewDesc&);
         DSV* GetOrCreateDSV(const RHITextureViewDesc&);
 
-        SRV* GetOrCreateSRV();
-        RTV* GetOrCreateRTV();
-        UAV* GetOrCreateUAV();
-        DSV* GetOrCreateDSV();
+        SRV* GetOrCreateSRV(){
+            return GetOrCreateSRV(RHITextureViewDesc{
+                .format = GetFormat()
+            });
+        }
+        RTV* GetOrCreateRTV(){
+            return GetOrCreateRTV(RHITextureViewDesc{
+                .format = GetFormat()
+            });
+        }
+        UAV* GetOrCreateUAV(){
+            return GetOrCreateUAV(RHITextureViewDesc{
+                .format = GetFormat()
+            });
+        }
+        DSV* GetOrCreateDSV(){
+            return GetOrCreateDSV(RHITextureViewDesc{
+                .format = GetFormat()
+            });
+        }
     };
 }

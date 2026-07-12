@@ -67,7 +67,7 @@ int main(void){
     try{
         auto device = CreateDevice();
         auto pipeline = device->CreatePipelineState(RHIGraphicsPipelineStateDesc{
-            .preRasterizer = RHILegacyFrontendDesc{
+            .preRasterizer = RHIPreRasterizerDesc{
                 .topology = RHIPrimitiveTopology::TriangleStrip,
                 .vertexShader = {
                 #if defined(_WIN32)
@@ -225,10 +225,9 @@ int main(void){
             });
 
             cmdList->SetPipelineState(*pipeline);
-            cmdList->SetConstantBuffer(
+            cmdList->SetFragmentConstant(
                 *mountainParamBuf,
-                mountainParamSlot,
-                RHIShaderStage::FragmentShader
+                mountainParamSlot
             );
             cmdList->Draw(4);
 

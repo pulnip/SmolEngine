@@ -37,7 +37,8 @@ namespace Smol
         ) = 0;
 
         virtual RHISwapchainRAII CreateSwapchain(
-            const RHISwapchainCreateDesc&
+            const RHISwapchainCreateDesc&,
+            StrView name = {}
         ) = 0;
 
         virtual RHICommandListRAII CreateCommandList() = 0;
@@ -62,7 +63,5 @@ namespace Smol
     RHIDeviceRAII CreateDevice(RHIBackend backend = RHIBackend::DirectX11);
 #elif defined(__APPLE__)
     RHIDeviceRAII CreateDevice(RHIBackend backend = RHIBackend::Metal);
-#else
-    RHIDeviceRAII CreateDevice(RHIBackend backend = RHIBackend::WebGPU);
 #endif
 }
